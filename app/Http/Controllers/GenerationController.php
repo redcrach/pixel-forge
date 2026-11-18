@@ -2,18 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\EstimateGenerationCost;
+use App\Enums\ImageQuality;
+use App\Enums\ImageSize;
 use App\Http\Requests\StoreGenerationRequest;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class GenerationController extends Controller
 {
-    /**
-     * Submit a new generation. Not wired to Pixelforge yet: always answers with an error toast.
-     */
-    public function __invoke(StoreGenerationRequest $request): RedirectResponse
+    public function __invoke(StoreGenerationRequest $request, EstimateGenerationCost $estimateGenerationCost): RedirectResponse
     {
-        Inertia::flash('toast', ['type' => 'error', 'message' => __('Image generation is not available yet.')]);
+        $prompt = $request->validated('prompt');
+        $size = $request->enum('size', ImageSize::class);
+        $quality = $request->enum('quality', ImageQuality::class);
+        $referenceImages = $request->validated('reference_images') ?? [];
+
+        try {
+            $estimateDto = $estimateGenerationCost(
+                prompt: $prompt,
+                size: $size,
+                quality: $quality,
+                referenceImageCount: count($referenceImages),
+            );
+        } catch (ConnectionException|RequestException) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => __('Pricing is temporarily unavailable. Please try again.')]);
+
+            return back();
+        }
+
+        $request->user()->generations()->create([
+            'prompt' => $prompt,
+            'size' => $size,
+            'quality' => $quality,
+            'reference_images' => $referenceImages,
+            'meta_data' => [
+                'estimate' => [
+                    'min_nano' => $estimateDto->totalMinNano,
+                    'max_nano' => $estimateDto->totalMaxNano,
+                ],
+            ],
+        ]);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Your image is being generated.')]);
 
         return back();
     }

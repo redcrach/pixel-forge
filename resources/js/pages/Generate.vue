@@ -15,6 +15,7 @@ import type {
     QualityOption,
     SizeOption,
 } from '@/types';
+import type { FlashToast } from '@/types/ui';
 
 const sizes: SizeOption[] = [
     {
@@ -56,7 +57,16 @@ const form = useForm<GenerateForm>({
 });
 
 function submit(): void {
-    form.submit(storeGeneration(), { preserveScroll: true });
+    form.submit(storeGeneration(), {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            const toast = page.flash.toast as FlashToast | undefined;
+
+            if (toast?.type === 'success') {
+                form.reset();
+            }
+        },
+    });
 }
 
 /** The live estimate, fetched as plain JSON (no page visit) whenever the form changes. */
