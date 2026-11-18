@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureHttpClients();
     }
 
     /**
@@ -45,6 +48,22 @@ class AppServiceProvider extends ServiceProvider
                 ->symbols()
                 ->uncompromised()
             : null,
+        );
+    }
+
+    /**
+     * Register preconfigured HTTP clients for external APIs.
+     *
+     * Usage: Http::pixelforge()->get('/pricing')
+     */
+    protected function configureHttpClients(): void
+    {
+        Http::macro('pixelforge', fn (): PendingRequest => Http::baseUrl(config('pixelforge.base_url'))
+            ->withToken((string) config('pixelforge.api_key'))
+            ->acceptJson()
+            ->asJson()
+            ->connectTimeout(5)
+            ->timeout(config('pixelforge.timeout'))
         );
     }
 }
