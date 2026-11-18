@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum ImageSize: string
 {
-    case Square = '1024x1024';
-    case Landscape = '1536x1024';
-    case Portrait = '1024x1536';
+    case SQUARE = '1024x1024';
+    case LANDSCAPE = '1536x1024';
+    case PORTRAIT = '1024x1536';
 }

@@ -20,8 +20,8 @@ beforeEach(function () {
 test('the docs worst case costs $0.373875 at most, plus the markup', function () {
     $estimate = app(EstimateGenerationCost::class)(
         prompt: str_repeat('a', 400),
-        size: ImageSize::Landscape,
-        quality: ImageQuality::High,
+        size: ImageSize::LANDSCAPE,
+        quality: ImageQuality::HIGH,
         referenceImageCount: 2,
     );
 
@@ -32,8 +32,8 @@ test('the docs worst case costs $0.373875 at most, plus the markup', function ()
 test('it estimates every line as a min and max price', function () {
     $estimate = app(EstimateGenerationCost::class)(
         prompt: str_repeat('a', 214),
-        size: ImageSize::Square,
-        quality: ImageQuality::Medium,
+        size: ImageSize::SQUARE,
+        quality: ImageQuality::MEDIUM,
         referenceImageCount: 2,
     );
 
@@ -54,24 +54,24 @@ test('the output tokens depend on size and quality', function (ImageQuality $qua
 
     expect($estimate->output->tokensMax)->toBe($outputTokens);
 })->with([
-    [ImageQuality::Low, ImageSize::Square, 280],
-    [ImageQuality::Low, ImageSize::Portrait, 420],
-    [ImageQuality::Medium, ImageSize::Square, 1100],
-    [ImageQuality::Medium, ImageSize::Landscape, 1650],
-    [ImageQuality::High, ImageSize::Square, 4300],
-    [ImageQuality::High, ImageSize::Landscape, 6450],
+    [ImageQuality::LOW, ImageSize::SQUARE, 280],
+    [ImageQuality::LOW, ImageSize::PORTRAIT, 420],
+    [ImageQuality::MEDIUM, ImageSize::SQUARE, 1100],
+    [ImageQuality::MEDIUM, ImageSize::LANDSCAPE, 1650],
+    [ImageQuality::HIGH, ImageSize::SQUARE, 4300],
+    [ImageQuality::HIGH, ImageSize::LANDSCAPE, 6450],
 ]);
 
 test('prompt length is counted in unicode characters, not bytes', function () {
     // 8 characters but 16 bytes: ceil(8 / 4) = 2 base tokens.
-    $estimate = app(EstimateGenerationCost::class)('éééééééé', ImageSize::Square, ImageQuality::Low, 0);
+    $estimate = app(EstimateGenerationCost::class)('éééééééé', ImageSize::SQUARE, ImageQuality::LOW, 0);
 
     expect($estimate->text->tokensMin)->toBe(1)
         ->and($estimate->text->tokensMax)->toBe(3);
 });
 
 test('an empty prompt has no text cost', function () {
-    $estimate = app(EstimateGenerationCost::class)('', ImageSize::Square, ImageQuality::Low, 0);
+    $estimate = app(EstimateGenerationCost::class)('', ImageSize::SQUARE, ImageQuality::LOW, 0);
 
     expect($estimate->text->toArray())->toBe([
         'tokens_min' => 0, 'tokens_max' => 0, 'price_min_nano' => 0, 'price_max_nano' => 0,

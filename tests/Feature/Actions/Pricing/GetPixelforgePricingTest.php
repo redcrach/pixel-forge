@@ -22,8 +22,8 @@ test('it fetches the current pricing from pixelforge', function () {
         ->and($pricing->rates->inputImageNano)->toBe(10_000)
         ->and($pricing->rates->outputNano)->toBe(40_000)
         ->and($pricing->rates->reasoningNano)->toBe(12_500)
-        ->and($pricing->outputTokens(ImageQuality::High, ImageSize::Landscape))->toBe(6450)
-        ->and($pricing->reasoningTokens(ImageQuality::Medium))->toBe(['min' => 200, 'max' => 2000])
+        ->and($pricing->outputTokens(ImageQuality::HIGH, ImageSize::LANDSCAPE))->toBe(6450)
+        ->and($pricing->reasoningTokens(ImageQuality::MEDIUM))->toBe(['min' => 200, 'max' => 2000])
         ->and($pricing->textTokenVarianceBasisPoints())->toBe(1500);
 });
 

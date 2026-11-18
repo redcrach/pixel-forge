@@ -20,7 +20,7 @@ test('it returns the estimate for the submitted form values', function () {
     $this->mock(EstimateGenerationCost::class)
         ->shouldReceive('__invoke')
         ->once()
-        ->with('A red fox', ImageSize::Landscape, ImageQuality::High, 2)
+        ->with('A red fox', ImageSize::LANDSCAPE, ImageQuality::HIGH, 2)
         ->andReturn($estimate);
 
     $response = $this->postJson(route('generations.estimate'), [
@@ -37,7 +37,7 @@ test('an empty prompt can still be estimated', function () {
     $this->mock(EstimateGenerationCost::class)
         ->shouldReceive('__invoke')
         ->once()
-        ->with('', ImageSize::Square, ImageQuality::Medium, 0)
+        ->with('', ImageSize::SQUARE, ImageQuality::MEDIUM, 0)
         ->andReturn(estimateTotalling(0, 0));
 
     $this->postJson(route('generations.estimate'), [
