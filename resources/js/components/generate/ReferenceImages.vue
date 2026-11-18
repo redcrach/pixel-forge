@@ -1,79 +1,132 @@
 <script setup lang="ts">
-import { Link2, Plus, Trash2 } from '@lucide/vue';
+import { ImageOff, Link2, Plus, Trash2 } from '@lucide/vue';
+import { computed, ref } from 'vue';
+import InputError from '@/components/InputError.vue';
 import SectionLabel from '@/components/SectionLabel.vue';
 
-defineProps<{
-    urls: string[];
+const props = defineProps<{
     maxImages: number;
+    /** The form's errors, read as `reference_images` and `reference_images.N`. */
+    errors: Partial<Record<string, string>>;
 }>();
+
+const urls = defineModel<string[]>({ required: true });
+
+const newUrl = ref('');
+const brokenPreviews = ref<Set<string>>(new Set());
+
+const canAddMore = computed(() => urls.value.length < props.maxImages);
+
+function addUrl(): void {
+    const url = newUrl.value.trim();
+
+    if (url === '' || !canAddMore.value) {
+        return;
+    }
+
+    urls.value = [...urls.value, url];
+    newUrl.value = '';
+}
+
+function removeUrl(index: number): void {
+    urls.value = urls.value.filter((_, position) => position !== index);
+}
+
+function markPreviewBroken(url: string): void {
+    brokenPreviews.value = new Set(brokenPreviews.value).add(url);
+}
 </script>
 
 <template>
     <section
         class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-2 shadow-sm"
     >
-        <div class="flex items-center justify-between gap-2">
-            <div class="flex flex-col gap-0.5">
-                <div class="flex items-center gap-1">
-                    <SectionLabel>Reference images</SectionLabel>
-                    <span
-                        class="rounded bg-surface-container-high px-1.5 font-mono text-mono-badge text-on-surface-variant"
-                    >
-                        {{ urls.length }} / {{ maxImages }}
-                    </span>
-                </div>
-                <p class="text-label-dense text-on-surface-variant">
-                    Optional. Image URLs only, each billed as 765 image tokens.
-                </p>
-            </div>
-        </div>
-
-        <div v-if="urls.length" class="flex flex-col gap-1">
-            <div
-                v-for="(url, index) in urls"
-                :key="index"
-                class="flex items-center gap-2 rounded border border-outline-variant/30 bg-surface-container-low p-1"
-            >
-                <img
-                    :src="url"
-                    alt=""
-                    class="size-10 shrink-0 rounded border border-outline-variant/50 bg-surface-container-highest object-cover"
-                />
-                <input
-                    type="url"
-                    :value="url"
-                    :aria-label="`Reference image ${index + 1}`"
-                    class="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-on-surface focus:outline-none"
-                />
-                <button
-                    type="button"
-                    title="Remove"
-                    class="flex size-7 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error"
+        <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-1">
+                <SectionLabel>Reference images</SectionLabel>
+                <span
+                    class="rounded bg-surface-container-high px-1.5 font-mono text-mono-badge text-on-surface-variant"
                 >
-                    <Trash2 class="size-4" />
-                </button>
+                    {{ urls.length }} / {{ maxImages }}
+                </span>
             </div>
+            <p class="text-label-dense text-on-surface-variant">
+                Optional. Image URLs only, each billed as 765 image tokens.
+            </p>
         </div>
 
-        <div class="flex items-center gap-1">
+        <ul v-if="urls.length" class="flex flex-col gap-1">
+            <li
+                v-for="(url, index) in urls"
+                :key="`${index}-${url}`"
+                class="flex flex-col gap-0.5"
+            >
+                <div
+                    class="flex items-center gap-2 rounded border bg-surface-container-low p-1"
+                    :class="
+                        errors[`reference_images.${index}`]
+                            ? 'border-error/60'
+                            : 'border-outline-variant/30'
+                    "
+                >
+                    <span
+                        class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded border border-outline-variant/50 bg-surface-container-highest text-outline"
+                    >
+                        <ImageOff
+                            v-if="brokenPreviews.has(url)"
+                            class="size-4"
+                        />
+                        <img
+                            v-else
+                            :src="url"
+                            alt=""
+                            class="size-full object-cover"
+                            @error="markPreviewBroken(url)"
+                        />
+                    </span>
+                    <span
+                        class="min-w-0 flex-1 truncate font-mono text-[11px] text-on-surface"
+                    >
+                        {{ url }}
+                    </span>
+                    <button
+                        type="button"
+                        title="Remove"
+                        class="flex size-7 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error"
+                        @click="removeUrl(index)"
+                    >
+                        <Trash2 class="size-4" />
+                    </button>
+                </div>
+                <InputError :message="errors[`reference_images.${index}`]" />
+            </li>
+        </ul>
+
+        <div v-if="canAddMore" class="flex items-center gap-1">
             <div class="relative flex-1">
                 <Link2
                     class="absolute top-1/2 left-2 size-4 -translate-y-1/2 text-outline"
                 />
                 <input
+                    v-model="newUrl"
                     type="url"
                     placeholder="https://example.com/reference.png"
                     aria-label="Reference image URL"
                     class="w-full rounded border border-outline-variant/30 bg-surface-container-low py-1 pr-2 pl-8 font-mono text-[11px] text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+                    @keydown.enter.prevent="addUrl"
                 />
             </div>
             <button
                 type="button"
-                class="flex shrink-0 items-center gap-0.5 rounded border border-outline-variant/30 bg-surface-container px-2 py-1 text-label-dense text-on-surface transition-colors hover:bg-surface-container-high"
+                :disabled="newUrl.trim() === ''"
+                class="flex shrink-0 items-center gap-0.5 rounded border border-outline-variant/30 bg-surface-container px-2 py-1 text-label-dense text-on-surface transition-colors hover:bg-surface-container-high disabled:opacity-50"
+                @click="addUrl"
             >
                 <Plus class="size-3.5" />
                 Add
             </button>
         </div>
+
+        <InputError :message="errors.reference_images" />
     </section>
 </template>

@@ -15,26 +15,51 @@ export type StudioNavItem = {
     badge?: string;
 };
 
+export type ImageSize = '1024x1024' | '1536x1024' | '1024x1536';
+
+export type ImageQuality = 'low' | 'medium' | 'high';
+
 export type SizeOption = {
+    value: ImageSize;
     ratio: string;
     dimensions: string;
     description: string;
     previewClass: string;
     isDefault?: boolean;
-    isSelected?: boolean;
 };
 
 export type QualityOption = {
+    value: ImageQuality;
     label: string;
     description: string;
-    isSelected?: boolean;
 };
 
-export type CostLineItem = {
-    label: string;
-    detail: string;
-    amount: string;
-    isEstimate?: boolean;
+/** The fields posted to GenerationController@store. */
+export type GenerateForm = {
+    prompt: string;
+    size: ImageSize;
+    quality: ImageQuality;
+    reference_images: string[];
+};
+
+/** One line of the estimate, in tokens and integer nanodollars. */
+export type EstimateLine = {
+    tokens_min: number;
+    tokens_max: number;
+    price_min_nano: number;
+    price_max_nano: number;
+};
+
+/** Response of GenerationEstimateController (POST /generations/estimate). */
+export type GenerationEstimate = {
+    lines: {
+        text: EstimateLine;
+        reference_images: EstimateLine;
+        output: EstimateLine;
+        reasoning: EstimateLine;
+    };
+    total_min_nano: number;
+    total_max_nano: number;
 };
 
 export type TopUpPreset = {

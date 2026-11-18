@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import SectionLabel from '@/components/SectionLabel.vue';
-import type { SizeOption } from '@/types';
+import type { ImageSize, SizeOption } from '@/types';
 
 defineProps<{
     options: SizeOption[];
 }>();
+
+const size = defineModel<ImageSize>({ required: true });
 </script>
 
 <template>
@@ -13,17 +15,20 @@ defineProps<{
     >
         <SectionLabel>Size</SectionLabel>
 
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Size">
             <button
                 v-for="option in options"
-                :key="option.dimensions"
+                :key="option.value"
                 type="button"
+                role="radio"
+                :aria-checked="size === option.value"
                 class="relative flex flex-col rounded-lg p-2 text-left transition-all"
                 :class="
-                    option.isSelected
+                    size === option.value
                         ? 'border-2 border-primary/90 bg-surface-container-low shadow-sm hover:bg-surface-container'
                         : 'border border-outline-variant/40 bg-surface-container-lowest hover:border-outline hover:bg-surface-container-low'
                 "
+                @click="size = option.value"
             >
                 <span
                     v-if="option.isDefault"
@@ -37,7 +42,7 @@ defineProps<{
                         class="flex items-center justify-center rounded-sm"
                         :class="[
                             option.previewClass,
-                            option.isSelected
+                            size === option.value
                                 ? 'border-2 border-primary bg-primary/10'
                                 : 'border border-outline-variant/60 bg-surface-container',
                         ]"
@@ -45,7 +50,7 @@ defineProps<{
                         <span
                             class="font-mono text-[10px]"
                             :class="
-                                option.isSelected
+                                size === option.value
                                     ? 'font-bold text-primary'
                                     : 'text-on-surface-variant'
                             "

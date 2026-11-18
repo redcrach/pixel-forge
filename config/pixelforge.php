@@ -18,4 +18,16 @@ return [
 
     'timeout' => (int) env('PIXELFORGE_TIMEOUT', 10),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markup
+    |--------------------------------------------------------------------------
+    |
+    | What we charge on top of the Pixelforge cost, in basis points
+    | (1/100 of a percent). 2500 = +25%.
+    |
+    */
+
+    'markup_bps' => (int) env('PIXELFORGE_MARKUP_BPS', 2500),
+
 ];

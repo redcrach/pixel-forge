@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { Calculator, LogIn, Zap } from '@lucide/vue';
+import { Calculator, LoaderCircle, LogIn, Zap } from '@lucide/vue';
 import { computed } from 'vue';
 import InsufficientCreditsNotice from '@/components/generate/InsufficientCreditsNotice.vue';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { formatMoney, formatMoneyRange } from '@/lib/money';
 import { login } from '@/routes';
-import type { CostLineItem } from '@/types';
+import type { EstimateLine, GenerationEstimate } from '@/types';
 
 withDefaults(
     defineProps<{
-        lineItems: CostLineItem[];
+        estimate: GenerationEstimate | null;
+        isEstimating: boolean;
+        isEstimateUnavailable: boolean;
+        isSubmitting: boolean;
         hasInsufficientBalance?: boolean;
     }>(),
     {
@@ -24,6 +29,23 @@ withDefaults(
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
+
+const lines: {
+    key: keyof GenerationEstimate['lines'];
+    label: string;
+    isEstimate: boolean;
+}[] = [
+    { key: 'text', label: 'Prompt text', isEstimate: true },
+    { key: 'reference_images', label: 'Reference images', isEstimate: false },
+    { key: 'output', label: 'Output image', isEstimate: false },
+    { key: 'reasoning', label: 'Reasoning', isEstimate: true },
+];
+
+function formatTokens(line: EstimateLine): string {
+    return line.tokens_min === line.tokens_max
+        ? `${line.tokens_min.toLocaleString()} tokens`
+        : `${line.tokens_min.toLocaleString()}–${line.tokens_max.toLocaleString()} tokens`;
+}
 </script>
 
 <template>
@@ -32,71 +54,100 @@ const isAuthenticated = computed(() => page.props.auth.user !== null);
             class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest/95 p-4 shadow-md backdrop-blur"
         >
             <div
-                class="flex items-center gap-1 border-b border-outline-variant/30 pb-1"
+                class="flex items-center justify-between border-b border-outline-variant/30 pb-1"
             >
-                <Calculator class="size-4.5 text-primary" />
-                <h2 class="text-headline-sm tracking-tight text-on-surface">
-                    Cost estimate
-                </h2>
+                <div class="flex items-center gap-1">
+                    <Calculator class="size-4.5 text-primary" />
+                    <h2 class="text-headline-sm tracking-tight text-on-surface">
+                        Cost estimate
+                    </h2>
+                </div>
+                <LoaderCircle
+                    v-if="isEstimating"
+                    class="size-4 animate-spin text-outline"
+                />
             </div>
 
-            <div class="flex flex-wrap items-baseline gap-1 py-0.5">
-                <span
-                    class="font-mono text-[26px] leading-tight font-bold tracking-tight text-on-surface tabular-nums"
-                >
-                    $0.0775
-                </span>
-                <span
-                    class="font-mono text-headline-sm font-normal text-outline"
-                >
-                    –
-                </span>
-                <span
-                    class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
-                >
-                    $0.1058
-                </span>
-                <span class="ml-1 font-mono text-label-dense text-outline">
-                    USD
-                </span>
+            <p
+                v-if="isEstimateUnavailable && !estimate"
+                class="py-4 text-center text-body-dense text-on-surface-variant"
+            >
+                The estimate is unavailable right now. Try again in a moment.
+            </p>
+
+            <div v-else-if="!estimate" class="flex flex-col gap-2 py-1">
+                <Skeleton class="h-8 w-3/4" />
+                <Skeleton class="h-24 w-full" />
             </div>
 
             <div
-                class="flex flex-col divide-y divide-outline-variant/20 border-y border-outline-variant/30 py-0.5 text-label-default"
+                v-else
+                class="flex flex-col gap-2 transition-opacity"
+                :class="{ 'opacity-60': isEstimating }"
             >
+                <div class="flex flex-wrap items-baseline gap-1 py-0.5">
+                    <span
+                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-on-surface tabular-nums"
+                    >
+                        {{ formatMoney(estimate.total_min_nano) }}
+                    </span>
+                    <span
+                        class="font-mono text-headline-sm font-normal text-outline"
+                    >
+                        –
+                    </span>
+                    <span
+                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
+                    >
+                        {{ formatMoney(estimate.total_max_nano) }}
+                    </span>
+                    <span class="ml-1 font-mono text-label-dense text-outline">
+                        USD
+                    </span>
+                </div>
+
                 <div
-                    v-for="item in lineItems"
-                    :key="item.label"
-                    class="flex items-start justify-between gap-2 py-1"
+                    class="flex flex-col divide-y divide-outline-variant/20 border-y border-outline-variant/30 py-0.5 text-label-default"
                 >
-                    <div class="flex flex-col">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-medium text-on-surface">
-                                {{ item.label }}
+                    <div
+                        v-for="line in lines"
+                        :key="line.key"
+                        class="flex items-start justify-between gap-2 py-1"
+                    >
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-medium text-on-surface">
+                                    {{ line.label }}
+                                </span>
+                                <Tooltip v-if="line.isEstimate">
+                                    <TooltipTrigger as-child>
+                                        <span
+                                            class="cursor-help rounded border border-outline-variant/30 bg-surface-container px-1 font-mono text-[9px] text-outline uppercase"
+                                        >
+                                            est
+                                        </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent class="w-48">
+                                        The exact token count is only known once
+                                        the image completes.
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
+                            <span class="font-mono text-[11px] text-outline">
+                                {{ formatTokens(estimate.lines[line.key]) }}
                             </span>
-                            <Tooltip v-if="item.isEstimate">
-                                <TooltipTrigger as-child>
-                                    <span
-                                        class="cursor-help rounded border border-outline-variant/30 bg-surface-container px-1 font-mono text-[9px] text-outline uppercase"
-                                    >
-                                        est
-                                    </span>
-                                </TooltipTrigger>
-                                <TooltipContent class="w-48">
-                                    The exact token count is only known once the
-                                    image completes.
-                                </TooltipContent>
-                            </Tooltip>
                         </div>
-                        <span class="font-mono text-[11px] text-outline">
-                            {{ item.detail }}
+                        <span
+                            class="shrink-0 font-mono text-on-surface tabular-nums"
+                        >
+                            {{
+                                formatMoneyRange(
+                                    estimate.lines[line.key].price_min_nano,
+                                    estimate.lines[line.key].price_max_nano,
+                                )
+                            }}
                         </span>
                     </div>
-                    <span
-                        class="shrink-0 font-mono text-on-surface tabular-nums"
-                    >
-                        {{ item.amount }}
-                    </span>
                 </div>
             </div>
 
@@ -106,37 +157,16 @@ const isAuthenticated = computed(() => page.props.auth.user !== null);
             </p>
 
             <template v-if="isAuthenticated">
-                <div
-                    class="flex flex-col gap-0.5 rounded border border-outline-variant/30 bg-surface-container-low p-1 text-label-default"
-                >
-                    <div class="flex items-center justify-between">
-                        <span class="text-on-surface-variant">
-                            Current balance
-                        </span>
-                        <span class="font-mono text-on-surface tabular-nums">
-                            $4.2731
-                        </span>
-                    </div>
-                    <div
-                        class="flex items-center justify-between border-t border-outline-variant/20 pt-1"
-                    >
-                        <span class="text-on-surface-variant">
-                            After max charge
-                        </span>
-                        <span
-                            class="font-mono font-semibold text-green-400 tabular-nums"
-                        >
-                            $4.1673
-                        </span>
-                    </div>
-                </div>
-
                 <button
-                    type="button"
-                    :disabled="hasInsufficientBalance"
+                    type="submit"
+                    :disabled="isSubmitting || hasInsufficientBalance"
                     class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
                 >
-                    <Zap class="size-4.5" />
+                    <LoaderCircle
+                        v-if="isSubmitting"
+                        class="size-4.5 animate-spin"
+                    />
+                    <Zap v-else class="size-4.5" />
                     Generate image
                 </button>
 
@@ -147,18 +177,14 @@ const isAuthenticated = computed(() => page.props.auth.user !== null);
                 />
             </template>
 
-            <template v-else>
-                <Link
-                    :href="login()"
-                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container"
-                >
-                    <LogIn class="size-4.5" />
-                    Log in to generate
-                </Link>
-                <p class="text-center text-label-dense text-on-surface-variant">
-                    New accounts get $2.00 in free credits.
-                </p>
-            </template>
+            <Link
+                v-else
+                :href="login()"
+                class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container"
+            >
+                <LogIn class="size-4.5" />
+                Log in to generate
+            </Link>
         </section>
     </TooltipProvider>
 </template>
