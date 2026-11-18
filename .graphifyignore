@@ -1,0 +1,30 @@
+# Graphify corpus filter — same syntax as .gitignore.
+# Keeps dependencies, build output, and runtime files out of the code graph.
+
+# Dependencies
+/vendor/
+/node_modules/
+node_modules/
+
+# Runtime / framework state
+/storage/
+/bootstrap/cache/
+
+# Build output & published assets (only stock index.php is hand-written)
+/public/
+
+# Test & tooling artifacts
+.phpunit.cache/
+
+# Graphify's own output
+graphify-out/
+
+# Lock files & minified bundles (noise, no signal)
+composer.lock
+package-lock.json
+*.min.js
+*.min.css
+*.map
+
+# Large data files
+*.sqlite

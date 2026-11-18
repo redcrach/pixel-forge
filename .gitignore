@@ -44,3 +44,5 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /docs
+# Graphify output (see README, "Code knowledge graph")
+graphify-out/
