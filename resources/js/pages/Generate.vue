@@ -2,7 +2,7 @@
 import { Head, useForm, useHttp } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
 import { onMounted, ref, watch } from 'vue';
-import { store as storeGeneration } from '@/actions/App/Http/Controllers/GenerationController';
+import storeGeneration from '@/actions/App/Http/Controllers/GenerationController';
 import estimateGeneration from '@/actions/App/Http/Controllers/GenerationEstimateController';
 import CostEstimatePanel from '@/components/generate/CostEstimatePanel.vue';
 import PromptEditor from '@/components/generate/PromptEditor.vue';

@@ -11,7 +11,7 @@ class GenerationController extends Controller
     /**
      * Submit a new generation. Not wired to Pixelforge yet: always answers with an error toast.
      */
-    public function store(StoreGenerationRequest $request): RedirectResponse
+    public function __invoke(StoreGenerationRequest $request): RedirectResponse
     {
         Inertia::flash('toast', ['type' => 'error', 'message' => __('Image generation is not available yet.')]);
 

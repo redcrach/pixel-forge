@@ -11,7 +11,7 @@ Route::post('generations/estimate', GenerationEstimateController::class)
     ->name('generations.estimate');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('generations', [GenerationController::class, 'store'])->name('generations.store');
+    Route::post('generations', GenerationController::class)->name('generations.store');
     Route::inertia('history', 'History')->name('history');
 });
 

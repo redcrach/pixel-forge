@@ -34,7 +34,7 @@ export type QualityOption = {
     description: string;
 };
 
-/** The fields posted to GenerationController@store. */
+/** The fields posted to GenerationController (POST /generations). */
 export type GenerateForm = {
     prompt: string;
     size: ImageSize;
