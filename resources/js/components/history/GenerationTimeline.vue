@@ -15,7 +15,7 @@ const dotToneClasses: Record<TimelineEvent['tone'], string> = {
 
 <template>
     <div class="flex flex-col gap-1">
-        <h3 class="text-headline-sm text-on-surface">Execution Timeline</h3>
+        <h3 class="text-headline-sm text-on-surface">Timeline</h3>
 
         <ol class="relative flex flex-col gap-2 pl-6">
             <span
@@ -39,6 +39,7 @@ const dotToneClasses: Record<TimelineEvent['tone'], string> = {
                     </span>
                 </div>
                 <span
+                    v-if="event.description"
                     class="text-label-dense"
                     :class="
                         event.tone === 'primary'

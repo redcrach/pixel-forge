@@ -2,21 +2,20 @@ import type { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from '@lucide/vue';
 
 export type GenerationStatus =
-    | 'processing'
-    | 'waiting'
+    | 'pending'
     | 'queued'
+    | 'processing'
     | 'succeeded'
     | 'failed';
 
 export type StudioNavItem = {
     title: string;
-    href?: NonNullable<InertiaLinkProps['href']>;
+    href: NonNullable<InertiaLinkProps['href']>;
     icon: LucideIcon;
     badge?: string;
-    badgeTone?: 'primary' | 'muted';
 };
 
-export type AspectRatioOption = {
+export type SizeOption = {
     ratio: string;
     dimensions: string;
     description: string;
@@ -31,13 +30,6 @@ export type QualityOption = {
     isSelected?: boolean;
 };
 
-export type ReferenceImage = {
-    url: string;
-    thumbnailUrl: string;
-    weight: number;
-    role: string;
-};
-
 export type CostLineItem = {
     label: string;
     detail: string;
@@ -47,16 +39,7 @@ export type CostLineItem = {
 
 export type TopUpPreset = {
     amount: string;
-    images: string;
-    caption: string;
-    badge?: string;
-    tone?: 'primary' | 'tertiary';
     isSelected?: boolean;
-};
-
-export type GenerationTag = {
-    label: string;
-    tone?: 'default' | 'model' | 'primary' | 'success';
 };
 
 export type GenerationSummary = {
@@ -64,14 +47,14 @@ export type GenerationSummary = {
     prompt: string;
     status: GenerationStatus;
     statusLabel: string;
+    size: string;
+    quality: string;
     imageUrl?: string;
     isExpired?: boolean;
-    failureReason?: string;
-    failureCode?: string;
-    tags: GenerationTag[];
-    costLabel: string;
-    costValue: string;
-    isCostPending?: boolean;
+    errorMessage?: string;
+    errorCode?: string;
+    estimate: string;
+    cost: string;
     createdAgo: string;
 };
 
@@ -79,12 +62,11 @@ export type CostBreakdownRow = {
     phase: string;
     estimated: string;
     actual: string;
-    isSaving?: boolean;
 };
 
 export type TimelineEvent = {
     title: string;
-    description: string;
+    description?: string;
     timestamp: string;
     tone: 'muted' | 'processing' | 'succeeded' | 'primary';
 };
@@ -97,19 +79,17 @@ export type GenerationDetails = {
     imageUrl: string;
     imageMeta: string;
     prompt: string;
-    seed: string;
-    sampler: string;
-    steps: number;
-    savedLabel: string;
+    settings: string;
     costRows: CostBreakdownRow[];
     totalEstimated: string;
     totalActual: string;
+    exactCharge: string;
+    releasedHold: string;
     timeline: TimelineEvent[];
 };
 
 export type HistoryFilterTab = {
     label: string;
     count: number;
-    tone: 'primary' | 'processing' | 'succeeded' | 'failed';
     isActive?: boolean;
 };

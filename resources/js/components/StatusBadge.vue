@@ -8,17 +8,17 @@ defineProps<{
 }>();
 
 const toneClasses: Record<GenerationStatus, string> = {
-    processing: 'bg-amber-500/10 text-amber-400',
-    waiting: 'bg-surface-container-high text-on-surface-variant',
+    pending: 'bg-surface-container-high text-on-surface-variant',
     queued: 'bg-sky-500/10 text-sky-400',
+    processing: 'bg-amber-500/10 text-amber-400',
     succeeded: 'bg-green-500/10 text-green-400',
     failed: 'bg-rose-500/10 text-rose-400',
 };
 
 const dotClasses: Partial<Record<GenerationStatus, string>> = {
-    processing: 'bg-amber-400 animate-pulse',
-    waiting: 'bg-outline',
+    pending: 'bg-outline',
     queued: 'bg-sky-400',
+    processing: 'bg-amber-400 animate-pulse',
 };
 </script>
 

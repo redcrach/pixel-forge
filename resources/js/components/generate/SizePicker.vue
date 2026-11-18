@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import SectionLabel from '@/components/SectionLabel.vue';
-import type { AspectRatioOption } from '@/types';
+import type { SizeOption } from '@/types';
 
 defineProps<{
-    options: AspectRatioOption[];
+    options: SizeOption[];
 }>();
 </script>
 
@@ -11,24 +11,12 @@ defineProps<{
     <section
         class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-2 shadow-sm"
     >
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1">
-                <SectionLabel>Aspect Ratio &amp; Canvas</SectionLabel>
-                <span
-                    class="rounded border border-tertiary/20 bg-tertiary/10 px-1.5 py-0.5 font-mono text-mono-badge text-tertiary"
-                >
-                    HD Matrix
-                </span>
-            </div>
-            <span class="text-label-dense text-on-surface-variant">
-                Selected: 1:1 Square
-            </span>
-        </div>
+        <SectionLabel>Size</SectionLabel>
 
-        <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
+        <div class="grid grid-cols-3 gap-2">
             <button
                 v-for="option in options"
-                :key="option.ratio"
+                :key="option.dimensions"
                 type="button"
                 class="relative flex flex-col rounded-lg p-2 text-left transition-all"
                 :class="
@@ -39,7 +27,7 @@ defineProps<{
             >
                 <span
                     v-if="option.isDefault"
-                    class="absolute top-2 right-2 rounded bg-primary px-1.5 py-0.5 font-mono text-mono-badge font-semibold text-primary-foreground"
+                    class="absolute top-2 right-2 hidden rounded bg-primary px-1.5 py-0.5 font-mono text-mono-badge font-semibold text-primary-foreground sm:inline"
                 >
                     Default
                 </span>

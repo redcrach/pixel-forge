@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import { CloudUpload, ImagePlus, Plus } from '@lucide/vue';
-import { computed } from 'vue';
-import ReferenceImageRow from '@/components/generate/ReferenceImageRow.vue';
+import { Link2, Plus, Trash2 } from '@lucide/vue';
 import SectionLabel from '@/components/SectionLabel.vue';
-import type { ReferenceImage } from '@/types';
 
-const props = defineProps<{
-    images: ReferenceImage[];
+defineProps<{
+    urls: string[];
     maxImages: number;
 }>();
-
-const emptySlotNumbers = computed(() =>
-    Array.from(
-        { length: Math.max(props.maxImages - props.images.length, 0) },
-        (_, index) => props.images.length + index + 1,
-    ),
-);
 </script>
 
 <template>
@@ -23,74 +13,67 @@ const emptySlotNumbers = computed(() =>
         class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-2 shadow-sm"
     >
         <div class="flex items-center justify-between gap-2">
-            <div>
+            <div class="flex flex-col gap-0.5">
                 <div class="flex items-center gap-1">
-                    <SectionLabel>Reference Images</SectionLabel>
+                    <SectionLabel>Reference images</SectionLabel>
                     <span
                         class="rounded bg-surface-container-high px-1.5 font-mono text-mono-badge text-on-surface-variant"
                     >
-                        {{ images.length }} of {{ maxImages }} used
+                        {{ urls.length }} / {{ maxImages }}
                     </span>
                 </div>
-                <p class="mt-0.5 text-label-dense text-on-surface-variant">
-                    Upload or input image URLs, max {{ maxImages }} images for
-                    composition or style transfer
+                <p class="text-label-dense text-on-surface-variant">
+                    Optional. Image URLs only, each billed as 765 image tokens.
                 </p>
+            </div>
+        </div>
+
+        <div v-if="urls.length" class="flex flex-col gap-1">
+            <div
+                v-for="(url, index) in urls"
+                :key="index"
+                class="flex items-center gap-2 rounded border border-outline-variant/30 bg-surface-container-low p-1"
+            >
+                <img
+                    :src="url"
+                    alt=""
+                    class="size-10 shrink-0 rounded border border-outline-variant/50 bg-surface-container-highest object-cover"
+                />
+                <input
+                    type="url"
+                    :value="url"
+                    :aria-label="`Reference image ${index + 1}`"
+                    class="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-on-surface focus:outline-none"
+                />
+                <button
+                    type="button"
+                    title="Remove"
+                    class="flex size-7 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error"
+                >
+                    <Trash2 class="size-4" />
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+            <div class="relative flex-1">
+                <Link2
+                    class="absolute top-1/2 left-2 size-4 -translate-y-1/2 text-outline"
+                />
+                <input
+                    type="url"
+                    placeholder="https://example.com/reference.png"
+                    aria-label="Reference image URL"
+                    class="w-full rounded border border-outline-variant/30 bg-surface-container-low py-1 pr-2 pl-8 font-mono text-[11px] text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+                />
             </div>
             <button
                 type="button"
                 class="flex shrink-0 items-center gap-0.5 rounded border border-outline-variant/30 bg-surface-container px-2 py-1 text-label-dense text-on-surface transition-colors hover:bg-surface-container-high"
             >
                 <Plus class="size-3.5" />
-                Add Slot
+                Add
             </button>
         </div>
-
-        <div class="flex flex-col gap-1">
-            <ReferenceImageRow
-                v-for="image in images"
-                :key="image.url"
-                :image="image"
-            />
-
-            <button
-                v-for="slotNumber in emptySlotNumbers"
-                :key="slotNumber"
-                type="button"
-                class="group flex items-center justify-between rounded border border-dashed border-outline-variant/40 bg-surface-container-lowest p-1 text-left transition-colors hover:border-outline-variant"
-            >
-                <span class="flex items-center gap-2">
-                    <span
-                        class="flex size-12 items-center justify-center rounded border border-dashed border-outline-variant/60 text-outline transition-colors group-hover:text-primary"
-                    >
-                        <ImagePlus class="size-4.5" />
-                    </span>
-                    <span class="flex flex-col">
-                        <span
-                            class="text-body-dense text-on-surface-variant transition-colors group-hover:text-on-surface"
-                        >
-                            Drop style image or click to browse
-                        </span>
-                        <span class="text-label-dense text-outline">
-                            Empty slot #{{ slotNumber }} • PNG, JPG or WEBP up
-                            to 20MB
-                        </span>
-                    </span>
-                </span>
-                <span
-                    class="rounded bg-surface-container-low px-1 py-1 text-label-dense text-outline transition-colors group-hover:bg-surface-container"
-                >
-                    Assign Ref
-                </span>
-            </button>
-        </div>
-
-        <button
-            type="button"
-            class="flex w-full items-center justify-center gap-1 rounded border border-outline-variant/30 bg-surface-container-low py-1 text-body-dense text-on-surface transition-colors hover:border-outline-variant hover:bg-surface-container"
-        >
-            <CloudUpload class="size-4 text-primary" />
-            + Add Reference Image ({{ images.length }} of {{ maxImages }} used)
-        </button>
     </section>
 </template>

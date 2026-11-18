@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Calculator, Zap } from '@lucide/vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Calculator, LogIn, Zap } from '@lucide/vue';
+import { computed } from 'vue';
 import InsufficientCreditsNotice from '@/components/generate/InsufficientCreditsNotice.vue';
 import {
     Tooltip,
@@ -7,11 +9,21 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { login } from '@/routes';
 import type { CostLineItem } from '@/types';
 
-defineProps<{
-    lineItems: CostLineItem[];
-}>();
+withDefaults(
+    defineProps<{
+        lineItems: CostLineItem[];
+        hasInsufficientBalance?: boolean;
+    }>(),
+    {
+        hasInsufficientBalance: false,
+    },
+);
+
+const page = usePage();
+const isAuthenticated = computed(() => page.props.auth.user !== null);
 </script>
 
 <template>
@@ -20,48 +32,33 @@ defineProps<{
             class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest/95 p-4 shadow-md backdrop-blur"
         >
             <div
-                class="flex items-center justify-between border-b border-outline-variant/30 pb-1"
+                class="flex items-center gap-1 border-b border-outline-variant/30 pb-1"
             >
-                <div class="flex items-center gap-1">
-                    <Calculator class="size-4.5 text-primary" />
-                    <h2 class="text-headline-sm tracking-tight text-on-surface">
-                        Cost Estimate
-                    </h2>
-                </div>
-                <span
-                    class="flex items-center gap-1 rounded bg-surface-container-high px-1 py-0.5 font-mono text-label-dense text-on-surface-variant"
-                >
-                    <span class="size-1.5 rounded-full bg-tertiary" />
-                    Calculated per token
-                </span>
+                <Calculator class="size-4.5 text-primary" />
+                <h2 class="text-headline-sm tracking-tight text-on-surface">
+                    Cost estimate
+                </h2>
             </div>
 
-            <div class="flex flex-col py-0.5">
+            <div class="flex flex-wrap items-baseline gap-1 py-0.5">
                 <span
-                    class="text-label-dense tracking-wider text-outline uppercase"
+                    class="font-mono text-[26px] leading-tight font-bold tracking-tight text-on-surface tabular-nums"
                 >
-                    Estimated Job Range
+                    $0.0775
                 </span>
-                <div class="mt-1 flex flex-wrap items-baseline gap-1">
-                    <span
-                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-on-surface tabular-nums"
-                    >
-                        $0.0680
-                    </span>
-                    <span
-                        class="font-mono text-headline-sm font-normal text-outline"
-                    >
-                        –
-                    </span>
-                    <span
-                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
-                    >
-                        $0.0960
-                    </span>
-                    <span class="ml-1 font-mono text-label-dense text-outline">
-                        USD
-                    </span>
-                </div>
+                <span
+                    class="font-mono text-headline-sm font-normal text-outline"
+                >
+                    –
+                </span>
+                <span
+                    class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
+                >
+                    $0.1058
+                </span>
+                <span class="ml-1 font-mono text-label-dense text-outline">
+                    USD
+                </span>
             </div>
 
             <div
@@ -86,9 +83,8 @@ defineProps<{
                                     </span>
                                 </TooltipTrigger>
                                 <TooltipContent class="w-48">
-                                    Final price is calculated from actual usage
-                                    when the image completes. Failed generations
-                                    are free.
+                                    The exact token count is only known once the
+                                    image completes.
                                 </TooltipContent>
                             </Tooltip>
                         </div>
@@ -102,56 +98,67 @@ defineProps<{
                         {{ item.amount }}
                     </span>
                 </div>
-                <div
-                    class="flex items-center justify-between pt-1 font-semibold"
-                >
-                    <span class="text-on-surface">Total Estimated Cost</span>
-                    <span class="font-mono text-primary tabular-nums">
-                        $0.0680 – $0.0960
-                    </span>
-                </div>
             </div>
 
-            <div
-                class="flex flex-col gap-0.5 rounded border border-outline-variant/30 bg-surface-container-low p-1 text-label-default"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="text-on-surface-variant">Current Balance</span>
-                    <span class="font-mono text-on-surface tabular-nums">
-                        $4.2731
-                    </span>
-                </div>
+            <p class="text-label-dense text-on-surface-variant">
+                You're charged the actual cost when the image completes. Failed
+                generations are free.
+            </p>
+
+            <template v-if="isAuthenticated">
                 <div
-                    class="flex items-center justify-between border-t border-outline-variant/20 pt-1"
+                    class="flex flex-col gap-0.5 rounded border border-outline-variant/30 bg-surface-container-low p-1 text-label-default"
                 >
-                    <span class="text-on-surface-variant">
-                        Balance after max charge ($0.0960)
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <span class="size-1.5 rounded-full bg-green-400" />
+                    <div class="flex items-center justify-between">
+                        <span class="text-on-surface-variant">
+                            Current balance
+                        </span>
+                        <span class="font-mono text-on-surface tabular-nums">
+                            $4.2731
+                        </span>
+                    </div>
+                    <div
+                        class="flex items-center justify-between border-t border-outline-variant/20 pt-1"
+                    >
+                        <span class="text-on-surface-variant">
+                            After max charge
+                        </span>
                         <span
                             class="font-mono font-semibold text-green-400 tabular-nums"
                         >
-                            $4.1771
+                            $4.1673
                         </span>
-                    </span>
+                    </div>
                 </div>
-            </div>
 
-            <button
-                type="button"
-                class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container active:scale-[0.99]"
-            >
-                <Zap class="size-4.5" />
-                Generate Image
-                <kbd
-                    class="ml-0.5 rounded border border-white/20 bg-black/20 px-1.5 py-0.5 font-mono text-mono-badge"
+                <button
+                    type="button"
+                    :disabled="hasInsufficientBalance"
+                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
                 >
-                    ⌘ + Enter
-                </kbd>
-            </button>
+                    <Zap class="size-4.5" />
+                    Generate image
+                </button>
 
-            <InsufficientCreditsNotice max-cost="$0.096" balance="$0.05" />
+                <InsufficientCreditsNotice
+                    v-if="hasInsufficientBalance"
+                    max-cost="$0.1058"
+                    balance="$0.0500"
+                />
+            </template>
+
+            <template v-else>
+                <Link
+                    :href="login()"
+                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container"
+                >
+                    <LogIn class="size-4.5" />
+                    Log in to generate
+                </Link>
+                <p class="text-center text-label-dense text-on-surface-variant">
+                    New accounts get $2.00 in free credits.
+                </p>
+            </template>
         </section>
     </TooltipProvider>
 </template>

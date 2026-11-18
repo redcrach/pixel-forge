@@ -19,7 +19,7 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useBuyCreditsDialog } from '@/composables/useBuyCreditsDialog';
 import { useInitials } from '@/composables/useInitials';
-import { generate } from '@/routes';
+import { home, login, register } from '@/routes';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -51,28 +51,12 @@ const { openBuyCredits } = useBuyCreditsDialog();
                 </SheetContent>
             </Sheet>
 
-            <Link :href="generate()">
+            <Link :href="home()">
                 <StudioLogo />
             </Link>
         </div>
 
-        <div class="flex items-center gap-3">
-            <div
-                class="hidden items-center gap-1 rounded-full bg-surface-container-high/60 px-2 py-0.5 md:flex"
-            >
-                <span class="relative flex size-2">
-                    <span
-                        class="absolute inline-flex size-full animate-ping rounded-full bg-tertiary opacity-75"
-                    />
-                    <span
-                        class="relative inline-flex size-2 rounded-full bg-tertiary"
-                    />
-                </span>
-                <span class="text-label-dense text-on-surface-variant">
-                    All systems normal
-                </span>
-            </div>
-
+        <div v-if="user" class="flex items-center gap-3">
             <div
                 class="flex items-center gap-1 rounded-lg bg-surface-container-high px-2 py-0.5"
             >
@@ -131,6 +115,21 @@ const { openBuyCredits } = useBuyCreditsDialog();
                     <UserMenuContent :user="user" />
                 </DropdownMenuContent>
             </DropdownMenu>
+        </div>
+
+        <div v-else class="flex items-center gap-1">
+            <Link
+                :href="login()"
+                class="rounded-lg px-2 py-1 text-label-default text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+            >
+                Log in
+            </Link>
+            <Link
+                :href="register()"
+                class="rounded-lg bg-primary px-2 py-1 text-label-default text-primary-foreground transition-colors hover:bg-primary-container"
+            >
+                Register
+            </Link>
         </div>
     </header>
 </template>

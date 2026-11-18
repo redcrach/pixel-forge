@@ -2,11 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::inertia('/', 'Generate')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-    Route::inertia('generate', 'Generate')->name('generate');
     Route::inertia('history', 'History')->name('history');
 });
 
