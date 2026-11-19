@@ -18,17 +18,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@test.com',
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@pixelforge.local',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
-
-        // Through the ledger, so the cached balance and the transactions agree
-        $addCredits = app(AddCredits::class);
-        $addCredits($user, 2_000_000_000, CreditTransactionType::WELCOME);
-        $addCredits($user, 10_000_000_000);
     }
 }

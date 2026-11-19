@@ -4,9 +4,6 @@ namespace App\Enums;
 
 enum CreditTransactionType: string
 {
-    /** The $2.00 every new account starts with. */
-    case WELCOME = 'welcome';
-
     /** Credits bought (simulated, no real payment). */
     case PURCHASE = 'purchase';
 
