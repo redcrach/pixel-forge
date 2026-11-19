@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Pixelforge has no CSRF token: its webhooks are verified by signature instead.
         $middleware->preventRequestForgery(except: ['webhooks/pixelforge']);
 
+        // Behind the Docker reverse proxy (Caddy in production), which terminates HTTPS. Only the scheme is
+        // trusted, so URLs come out as https://; the container's NGINX already resolves the client IP.
+        $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_PROTO);
+
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,

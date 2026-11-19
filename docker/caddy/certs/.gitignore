@@ -1,0 +1,3 @@
+# Cloudflare Origin Certificate files (origin.pem, origin-key.pem) live here on the server only.
+*
+!.gitignore

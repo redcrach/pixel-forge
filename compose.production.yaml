@@ -1,0 +1,149 @@
+# Production on a single server (e.g. a Vultr instance with Docker), behind Cloudflare.
+#
+# Cloudflare: DNS record for APP_DOMAIN proxied (orange cloud), SSL/TLS mode "Full (strict)".
+# Server: this file, docker/caddy/Caddyfile, the Origin Certificate in docker/caddy/certs/
+# (origin.pem + origin-key.pem) and a .env (see .env.production.example). Then:
+#
+#   docker compose -f compose.production.yaml build
+#   docker compose -f compose.production.yaml up -d
+#
+# Firewall (Vultr's, not ufw: published Docker ports bypass ufw): allow 443 from Cloudflare's IP ranges
+# only (https://www.cloudflare.com/ips/) and 22 from your own IP. Nothing else is exposed.
+#
+# Code is baked into the image; the web container migrates (one at a time) and caches on start.
+
+x-laravel-environment: &laravel-environment
+    APP_ENV: production
+    APP_DEBUG: 'false'
+    APP_URL: https://${APP_DOMAIN}
+    DB_CONNECTION: pgsql
+    DB_HOST: pgsql
+    DB_PORT: 5432
+    REDIS_CLIENT: phpredis
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+    CACHE_STORE: redis
+    QUEUE_CONNECTION: redis
+    SESSION_DRIVER: redis
+    BROADCAST_CONNECTION: reverb
+    # Laravel publishes broadcasts straight to the Reverb container; browsers use wss://APP_DOMAIN through Caddy
+    REVERB_HOST: reverb
+    REVERB_PORT: 8080
+    REVERB_SCHEME: http
+    REVERB_SERVER_HOST: 0.0.0.0
+    REVERB_SERVER_PORT: 8080
+    LOG_CHANNEL: stderr
+
+x-php: &php
+    image: pixelforge:latest
+    build:
+        context: .
+        target: production
+        args:
+            VITE_APP_NAME: ${APP_NAME:-Pixelforge Studio}
+            VITE_REVERB_APP_KEY: ${REVERB_APP_KEY}
+            VITE_REVERB_HOST: ${APP_DOMAIN}
+            VITE_REVERB_PORT: 443
+            VITE_REVERB_SCHEME: https
+    env_file: .env
+    environment:
+        <<: *laravel-environment
+    depends_on:
+        pgsql:
+            condition: service_healthy
+        redis:
+            condition: service_healthy
+    restart: unless-stopped
+
+services:
+    caddy:
+        image: caddy:2.10-alpine
+        # Cloudflare reaches the server over HTTPS on 443 only (Full (strict))
+        ports:
+            - '443:443'
+        environment:
+            APP_DOMAIN: ${APP_DOMAIN}
+        volumes:
+            # The folder (Caddyfile + certs/), not single files, so edits on the server are always picked up
+            - ./docker/caddy:/etc/caddy:ro
+            - caddy_data:/data
+            - caddy_config:/config
+        depends_on:
+            app:
+                condition: service_healthy
+        restart: unless-stopped
+
+    app:
+        <<: *php
+        volumes:
+            - app_storage:/var/www/html/storage/app
+        environment:
+            <<: *laravel-environment
+            HEALTHCHECK_PATH: /up
+            # The visitor's IP comes from Cloudflare's CF-Connecting-IP header (Caddy passes it through)
+            TRUSTED_PROXY: cloudflare
+            AUTORUN_ENABLED: 'true'
+            # Several app replicas start together: the Redis lock lets one migrate at a time
+            AUTORUN_LARAVEL_MIGRATION_ISOLATION: 'true'
+
+    queue:
+        <<: *php
+        command: ['php', 'artisan', 'queue:work', '--queue=generations,default', '--tries=3', '--max-time=3600']
+        stop_signal: SIGTERM
+        # Let a running job finish before a deploy stops the worker
+        stop_grace_period: 60s
+        volumes:
+            - app_storage:/var/www/html/storage/app
+        healthcheck:
+            test: ['CMD', 'healthcheck-queue']
+            start_period: 10s
+
+    scheduler:
+        <<: *php
+        command: ['php', 'artisan', 'schedule:work']
+        stop_signal: SIGTERM
+        healthcheck:
+            test: ['CMD', 'healthcheck-schedule']
+            start_period: 10s
+
+    reverb:
+        <<: *php
+        command: ['php', 'artisan', 'reverb:start', '--host=0.0.0.0', '--port=8080']
+        stop_signal: SIGTERM
+        healthcheck:
+            test: ['CMD', 'healthcheck-reverb']
+            start_period: 10s
+
+    pgsql:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - pgsql:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+            interval: 5s
+            retries: 10
+        restart: unless-stopped
+
+    redis:
+        image: redis:7.4-alpine
+        command: ['redis-server', '--appendonly', 'yes', '--requirepass', '${REDIS_PASSWORD}']
+        volumes:
+            - redis:/data
+        healthcheck:
+            test: ['CMD-SHELL', 'redis-cli -a "$${REDIS_PASSWORD}" --no-auth-warning ping | grep -q PONG']
+            interval: 5s
+            retries: 10
+        environment:
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        restart: unless-stopped
+
+volumes:
+    caddy_data:
+    caddy_config:
+    app_storage:
+    pgsql:
+    redis:

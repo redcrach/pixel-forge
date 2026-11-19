@@ -1,0 +1,18 @@
+# Production reverse proxy behind Cloudflare (proxied DNS, SSL/TLS mode "Full (strict)").
+#
+# Cloudflare serves the public certificate. Between Cloudflare and this server, Caddy uses a
+# Cloudflare Origin Certificate, so there is no Let's Encrypt here: it couldn't validate the domain
+# behind Cloudflare's proxy anyway. Put the two files in docker/caddy/certs/ on the server
+# (Cloudflare dashboard → SSL/TLS → Origin Server → Create Certificate).
+{$APP_DOMAIN} {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin-key.pem
+
+	encode zstd gzip
+
+	# Reverb: WebSocket connections (/app/{key}) and its HTTP API (/apps/...)
+	@reverb path /app/* /apps/*
+	reverse_proxy @reverb reverb:8080
+
+	# Everything else: PHP-FPM + NGINX in the app container
+	reverse_proxy app:8080
+}
