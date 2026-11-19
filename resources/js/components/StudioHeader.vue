@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { Bell, Menu, Plus } from '@lucide/vue';
+import { Menu, Plus } from '@lucide/vue';
 import { computed } from 'vue';
 import StudioLogo from '@/components/StudioLogo.vue';
 import StudioSidebar from '@/components/StudioSidebar.vue';
@@ -79,17 +79,6 @@ const { openBuyCredits } = useBuyCreditsDialog();
             >
                 <Plus class="size-4" />
                 <span class="hidden sm:inline">Buy credits</span>
-            </button>
-
-            <button
-                type="button"
-                class="relative flex size-8 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
-            >
-                <Bell class="size-5" />
-                <span
-                    class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary"
-                />
-                <span class="sr-only">Notifications</span>
             </button>
 
             <DropdownMenu>
