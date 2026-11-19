@@ -87,3 +87,60 @@ test('an image url older than 24 hours is no longer sent', function () {
             ->where('generations.data.0.is_image_expired', true)
         );
 });
+
+test('the status tabs show only their generations', function (string $statusFilter, array $expectedStatuses) {
+    $user = User::factory()->create();
+    foreach (GenerationStatus::cases() as $status) {
+        Generation::factory()->for($user)->create(['status' => $status]);
+    }
+
+    $this->actingAs($user)
+        ->get(route('history', ['status' => $statusFilter]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('filters.status', $statusFilter)
+            ->has('generations.data', count($expectedStatuses))
+            ->where('generations.data', fn ($generations) => collect($generations)->pluck('status')->sort()->values()->all() === collect($expectedStatuses)->sort()->values()->all())
+        );
+})->with([
+    'in progress' => ['in_progress', ['pending', 'queued', 'processing']],
+    'succeeded' => ['succeeded', ['succeeded']],
+    'failed, including failed submissions' => ['failed', ['failed', 'submission_failed']],
+]);
+
+test('it searches prompts and counts each tab for that search', function () {
+    $user = User::factory()->create();
+    Generation::factory()->for($user)->create(['prompt' => 'A red fox in the snow', 'status' => GenerationStatus::SUCCEEDED]);
+    Generation::factory()->for($user)->create(['prompt' => 'A FOX cub at dawn', 'status' => GenerationStatus::FAILED]);
+    Generation::factory()->for($user)->create(['prompt' => 'A lighthouse on a cliff', 'status' => GenerationStatus::SUCCEEDED]);
+
+    $this->actingAs($user)
+        ->get(route('history', ['search' => 'fox']))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('generations.data', 2)
+            ->where('filters.search', 'fox')
+            ->where('counts', ['all' => 2, 'in_progress' => 0, 'succeeded' => 1, 'failed' => 1])
+        );
+});
+
+test('it can list the oldest generations first', function () {
+    $user = User::factory()->create();
+    $olderGeneration = Generation::factory()->for($user)->create(['created_at' => now()->subHour()]);
+    Generation::factory()->for($user)->create(['created_at' => now()]);
+
+    $this->actingAs($user)
+        ->get(route('history', ['is_desc' => 0]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('filters.is_desc', false)
+            ->where('generations.data.0.id', $olderGeneration->id)
+        );
+});
+
+test('an unknown status tab falls back to all, newest first', function () {
+    $this->actingAs(User::factory()->create())
+        ->get(route('history', ['status' => 'everything']))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('filters.status', 'all')
+            ->where('filters.is_desc', true)
+        );
+});

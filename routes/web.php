@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DownloadGenerationImageController;
 use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\GenerationEstimateController;
 use App\Http\Controllers\HistoryController;
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(HandlePrecognitiveRequests::class)
         ->name('generations.store');
     Route::get('history', HistoryController::class)->name('history');
+    Route::get('generations/{generation}/image', DownloadGenerationImageController::class)
+        ->name('generations.image.download');
 });
 
 require __DIR__.'/settings.php';

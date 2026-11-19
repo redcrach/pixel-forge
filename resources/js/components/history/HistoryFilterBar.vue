@@ -1,32 +1,39 @@
 <script setup lang="ts">
-import type { HistoryFilterTab } from '@/types';
+import type { HistoryFilterTab, HistoryStatusFilter } from '@/types';
 
 defineProps<{
     tabs: HistoryFilterTab[];
 }>();
+
+const activeStatus = defineModel<HistoryStatusFilter>({ required: true });
 </script>
 
 <template>
     <div
-        class="flex items-center gap-0.5 self-start overflow-x-auto rounded-lg bg-surface-container-lowest p-0.5"
+        class="flex items-center gap-0.5 self-start overflow-x-auto rounded-lg border border-border-subtle bg-surface-container-lowest p-0.5"
+        role="tablist"
+        aria-label="Filter by status"
     >
         <button
             v-for="tab in tabs"
-            :key="tab.label"
+            :key="tab.value"
             type="button"
-            class="flex items-center gap-0.5 rounded-md px-2 py-0.5 text-label-default whitespace-nowrap transition-all"
+            role="tab"
+            :aria-selected="activeStatus === tab.value"
+            class="flex items-center gap-1 rounded border px-2 py-1 text-label-default whitespace-nowrap transition-all"
             :class="
-                tab.isActive
-                    ? 'bg-surface-container-high text-on-surface'
-                    : 'text-on-surface-variant hover:text-on-surface'
+                activeStatus === tab.value
+                    ? 'border-primary/40 bg-primary/10 font-semibold text-primary'
+                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
             "
+            @click="activeStatus = tab.value"
         >
             {{ tab.label }}
             <span
-                class="rounded px-1 font-mono text-mono-badge"
+                class="rounded-full px-1.5 font-mono text-mono-badge tabular-nums"
                 :class="
-                    tab.isActive
-                        ? 'bg-surface-container-highest text-primary'
+                    activeStatus === tab.value
+                        ? 'bg-primary text-primary-foreground'
                         : 'bg-surface-container-high text-outline'
                 "
             >

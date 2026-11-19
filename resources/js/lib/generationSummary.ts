@@ -4,6 +4,8 @@ import type {
     GenerationHistoryItem,
     GenerationStatus,
     GenerationSummary,
+    HistoryFilters,
+    HistoryStatusFilter,
     ImageQuality,
 } from '@/types';
 
@@ -24,6 +26,39 @@ const qualityLabels: Record<ImageQuality, string> = {
 
 export function isFailedStatus(status: GenerationStatus): boolean {
     return status === 'failed' || status === 'submission_failed';
+}
+
+/** Mirrors App\\Enums\\HistoryStatusFilter::statuses(). */
+const statusesPerFilter: Record<HistoryStatusFilter, GenerationStatus[]> = {
+    all: [
+        'pending',
+        'submission_failed',
+        'queued',
+        'processing',
+        'succeeded',
+        'failed',
+    ],
+    in_progress: ['pending', 'queued', 'processing'],
+    succeeded: ['succeeded'],
+    failed: ['failed', 'submission_failed'],
+};
+
+/**
+ * Whether a generation pushed over the socket belongs in the list as it is filtered right now,
+ * using the same rules as the server (status tab, case-insensitive prompt search).
+ */
+export function matchesHistoryFilters(
+    generation: GenerationHistoryItem,
+    filters: HistoryFilters,
+): boolean {
+    const matchesStatus = statusesPerFilter[filters.status].includes(
+        generation.status,
+    );
+    const matchesSearch = generation.prompt
+        .toLowerCase()
+        .includes(filters.search.toLowerCase());
+
+    return matchesStatus && matchesSearch;
 }
 
 /**
@@ -73,5 +108,7 @@ export function toGenerationSummary(
         estimate: formatEstimate(generation),
         cost: formatCost(generation),
         createdAgo: formatTimeAgo(new Date(generation.created_at)),
+        canDownload:
+            generation.status === 'succeeded' && generation.image_url !== null,
     };
 }

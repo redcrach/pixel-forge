@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CloudOff, Hourglass, ListOrdered, LoaderCircle } from '@lucide/vue';
 import { computed } from 'vue';
+import DownloadImageButton from '@/components/history/DownloadImageButton.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { isFailedStatus } from '@/lib/generationSummary';
 import type { GenerationSummary } from '@/types';
@@ -146,7 +147,7 @@ const isFinished = computed(
             </div>
 
             <div
-                class="flex items-end justify-between border-t border-border-subtle pt-2"
+                class="flex items-center justify-between border-t border-border-subtle pt-2"
             >
                 <div class="flex flex-col">
                     <span class="text-label-dense text-outline">
@@ -164,9 +165,15 @@ const isFinished = computed(
                         {{ generation.cost }}
                     </span>
                 </div>
-                <span class="text-label-dense text-outline">
-                    {{ generation.createdAgo }}
-                </span>
+                <div class="flex items-center gap-2">
+                    <span class="text-label-dense text-outline">
+                        {{ generation.createdAgo }}
+                    </span>
+                    <DownloadImageButton
+                        v-if="generation.canDownload"
+                        :generation-id="generation.id"
+                    />
+                </div>
             </div>
         </div>
     </article>

@@ -91,8 +91,27 @@ export type GenerationUpdatedPayload = {
     generation: GenerationHistoryItem;
 };
 
+/** The status tabs on the History page (App\\Enums\\HistoryStatusFilter). */
+export type HistoryStatusFilter =
+    | 'all'
+    | 'in_progress'
+    | 'succeeded'
+    | 'failed';
+
+export type HistoryViewMode = 'grid' | 'list';
+
+/** The filters the server applied, echoed back so the toolbar shows them. */
+export type HistoryFilters = {
+    status: HistoryStatusFilter;
+    search: string;
+    /** Newest first when true, oldest first otherwise. */
+    is_desc: boolean;
+};
+
 /** Props of the History page (HistoryController). */
 export type HistoryPageProps = {
+    filters: HistoryFilters;
+    counts: Record<HistoryStatusFilter, number>;
     generations: { data: GenerationHistoryItem[] };
 };
 
@@ -111,6 +130,8 @@ export type GenerationSummary = {
     estimate: string;
     cost: string;
     createdAgo: string;
+    /** Succeeded with an image that hasn't expired. */
+    canDownload: boolean;
 };
 
 export type CostBreakdownRow = {
@@ -144,7 +165,7 @@ export type GenerationDetails = {
 };
 
 export type HistoryFilterTab = {
+    value: HistoryStatusFilter;
     label: string;
     count: number;
-    isActive?: boolean;
 };

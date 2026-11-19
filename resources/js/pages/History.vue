@@ -1,19 +1,28 @@
 <script setup lang="ts">
 import { Head, InfiniteScroll, router, usePage } from '@inertiajs/vue3';
 import { useEcho } from '@laravel/echo-vue';
-import { LoaderCircle } from '@lucide/vue';
-import { computed } from 'vue';
+import { LoaderCircle, SearchX } from '@lucide/vue';
+import { useStorage, watchDebounced } from '@vueuse/core';
+import { computed, ref, watch } from 'vue';
 import EmptyHistory from '@/components/history/EmptyHistory.vue';
 import GenerationCard from '@/components/history/GenerationCard.vue';
+import GenerationRow from '@/components/history/GenerationRow.vue';
+import HistoryToolbar from '@/components/history/HistoryToolbar.vue';
 import {
     GENERATION_UPDATED_EVENT,
     generationChannel,
 } from '@/lib/generationChannel';
-import { toGenerationSummary } from '@/lib/generationSummary';
+import {
+    matchesHistoryFilters,
+    toGenerationSummary,
+} from '@/lib/generationSummary';
+import { history } from '@/routes';
 import type {
     GenerationHistoryItem,
     GenerationUpdatedPayload,
+    HistoryFilterTab,
     HistoryPageProps,
+    HistoryViewMode,
 } from '@/types';
 
 const props = defineProps<HistoryPageProps>();
@@ -23,25 +32,84 @@ const generationSummaries = computed(() =>
     props.generations.data.map(toGenerationSummary),
 );
 
+const status = ref(props.filters.status);
+const search = ref(props.filters.search);
+const isDescending = ref(props.filters.is_desc);
+
+/** A per-browser preference, so it lives in localStorage rather than on the server. */
+const viewMode = useStorage<HistoryViewMode>('pixelforge.history.view', 'grid');
+
+const tabs = computed<HistoryFilterTab[]>(() => [
+    { value: 'all', label: 'All', count: props.counts.all },
+    {
+        value: 'in_progress',
+        label: 'In progress',
+        count: props.counts.in_progress,
+    },
+    { value: 'succeeded', label: 'Succeeded', count: props.counts.succeeded },
+    { value: 'failed', label: 'Failed', count: props.counts.failed },
+]);
+
+const hasActiveFilters = computed(
+    () => props.filters.status !== 'all' || props.filters.search !== '',
+);
+
 /**
- * A pushed generation replaces its card in place, or appears at the top when it is new.
+ * The server filters and sorts, so infinite scroll keeps working. Defaults are left out of the URL,
+ * and the scroll prop is reset so pagination starts again from the first page.
+ */
+function applyFilters(): void {
+    router.get(
+        history.url(),
+        {
+            status: status.value === 'all' ? undefined : status.value,
+            search: search.value.trim() || undefined,
+            is_desc: isDescending.value ? undefined : 0,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            reset: ['generations'],
+        },
+    );
+}
+
+watch([status, isDescending], applyFilters);
+watchDebounced(search, applyFilters, { debounce: 300 });
+
+/**
+ * A pushed generation replaces its card in place, appears at the top when it is new,
+ * or leaves the list when it no longer matches the current tab or search.
  * Patched locally: reloading the list would throw away the pages already scrolled.
  */
 function applyPushedGeneration(
     generations: GenerationHistoryItem[],
     pushedGeneration: GenerationHistoryItem,
 ): GenerationHistoryItem[] {
-    const isAlreadyListed = generations.some(
-        (generation) => generation.id === pushedGeneration.id,
+    const otherGenerations = generations.filter(
+        (generation) => generation.id !== pushedGeneration.id,
     );
+    const isAlreadyListed = otherGenerations.length !== generations.length;
 
-    if (!isAlreadyListed) {
-        return [pushedGeneration, ...generations];
+    if (!matchesHistoryFilters(pushedGeneration, props.filters)) {
+        return otherGenerations;
     }
 
-    return generations.map((generation) =>
-        generation.id === pushedGeneration.id ? pushedGeneration : generation,
-    );
+    if (isAlreadyListed) {
+        return generations.map((generation) =>
+            generation.id === pushedGeneration.id
+                ? pushedGeneration
+                : generation,
+        );
+    }
+
+    // Oldest first: a new generation belongs at the very end, where scrolling will reach it.
+    if (!props.filters.is_desc) {
+        return generations;
+    }
+
+    return [pushedGeneration, ...generations];
 }
 
 useEcho<GenerationUpdatedPayload>(
@@ -71,35 +139,64 @@ useEcho<GenerationUpdatedPayload>(
             </p>
         </div>
 
-        <EmptyHistory v-if="generationSummaries.length === 0" />
+        <EmptyHistory v-if="props.counts.all === 0 && !hasActiveFilters" />
 
-        <!-- Newest first: only older pages load as you scroll, and the URL stays /history. -->
-        <InfiniteScroll
-            v-else
-            data="generations"
-            only-next
-            preserve-url
-            items-element="#generation-grid"
-        >
+        <template v-else>
+            <HistoryToolbar
+                v-model:status="status"
+                v-model:search="search"
+                v-model:is-descending="isDescending"
+                v-model:view-mode="viewMode"
+                :tabs="tabs"
+            />
+
             <div
-                id="generation-grid"
-                class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3"
+                v-if="generationSummaries.length === 0"
+                class="flex flex-col items-center gap-1 rounded-lg border border-border-subtle bg-surface-raised px-6 py-10 text-center"
             >
-                <GenerationCard
-                    v-for="generation in generationSummaries"
-                    :key="generation.id"
-                    :generation="generation"
-                />
+                <SearchX class="size-6 text-outline" />
+                <p class="text-body-default text-on-surface">
+                    No generations match these filters.
+                </p>
             </div>
 
-            <template #loading>
+            <!-- Only older pages load as you scroll; the URL keeps the filters but not the cursor. -->
+            <InfiniteScroll
+                v-else
+                data="generations"
+                only-next
+                preserve-url
+                items-element="#generation-items"
+            >
                 <div
-                    class="flex items-center justify-center gap-1 py-3 text-label-default text-on-surface-variant"
+                    v-if="viewMode === 'grid'"
+                    id="generation-items"
+                    class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3"
                 >
-                    <LoaderCircle class="size-4 animate-spin" />
-                    Loading older generations…
+                    <GenerationCard
+                        v-for="generation in generationSummaries"
+                        :key="generation.id"
+                        :generation="generation"
+                    />
                 </div>
-            </template>
-        </InfiniteScroll>
+
+                <div v-else id="generation-items" class="flex flex-col gap-2">
+                    <GenerationRow
+                        v-for="generation in generationSummaries"
+                        :key="generation.id"
+                        :generation="generation"
+                    />
+                </div>
+
+                <template #loading>
+                    <div
+                        class="flex items-center justify-center gap-1 py-3 text-label-default text-on-surface-variant"
+                    >
+                        <LoaderCircle class="size-4 animate-spin" />
+                        Loading older generations…
+                    </div>
+                </template>
+            </InfiniteScroll>
+        </template>
     </div>
 </template>
