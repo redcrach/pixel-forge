@@ -26,6 +26,11 @@ return new class extends Migration
             $table->json('meta_data')->nullable();
             $table->unsignedBigInteger('provider_cost_nano')->nullable();
             $table->unsignedBigInteger('final_price_nano')->nullable();
+            // Token counts from Pixelforge's usage object, null until the generation succeeded
+            $table->unsignedInteger('input_text_tokens')->nullable();
+            $table->unsignedInteger('input_image_tokens')->nullable();
+            $table->unsignedInteger('output_tokens')->nullable();
+            $table->unsignedInteger('reasoning_tokens')->nullable();
             $table->text('image_url')->nullable();
 
             $table->timestamp('completed_at')->nullable();

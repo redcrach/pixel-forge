@@ -28,11 +28,14 @@ use Illuminate\Support\Carbon;
  * @property array{
  *     estimate?: array{min_nano: int, max_nano: int},
  *     rates?: array<string, string>,
- *     usage?: array<string, int>,
  *     error?: array{code: string, message: string},
  * }|null $meta_data
  * @property int|null $provider_cost_nano
  * @property int|null $final_price_nano
+ * @property int|null $input_text_tokens Token counts are null until the generation succeeded
+ * @property int|null $input_image_tokens
+ * @property int|null $output_tokens
+ * @property int|null $reasoning_tokens
  * @property string|null $image_url
  * @property Carbon|null $completed_at
  * @property Carbon|null $created_at
@@ -49,6 +52,10 @@ use Illuminate\Support\Carbon;
     'meta_data',
     'provider_cost_nano',
     'final_price_nano',
+    'input_text_tokens',
+    'input_image_tokens',
+    'output_tokens',
+    'reasoning_tokens',
     'image_url',
     'completed_at',
 ])]
@@ -127,6 +134,10 @@ class Generation extends Model
             'meta_data' => 'array',
             'provider_cost_nano' => 'integer',
             'final_price_nano' => 'integer',
+            'input_text_tokens' => 'integer',
+            'input_image_tokens' => 'integer',
+            'output_tokens' => 'integer',
+            'reasoning_tokens' => 'integer',
             'completed_at' => 'datetime',
         ];
     }

@@ -86,7 +86,7 @@ class ApplyGenerationUpdate
         $generation->final_price_nano = ($this->applyMarkup)($providerCostNano);
         $generation->image_url = $pixelforgeGeneration->imageUrl;
         $generation->completed_at = $pixelforgeGeneration->completedAt;
-        $generation->meta_data = [...$generation->meta_data ?? [], 'usage' => $usage->toArray()];
+        $generation->fill($usage->toArray());
 
         ($this->settleCredits)($generation, $generation->final_price_nano);
     }

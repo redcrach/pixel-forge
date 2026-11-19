@@ -31,7 +31,12 @@ class GenerationResource extends JsonResource
             'estimated_min_nano' => $this->meta_data['estimate']['min_nano'] ?? null,
             'estimated_max_nano' => $this->meta_data['estimate']['max_nano'] ?? null,
             'final_price_nano' => $this->final_price_nano,
-            'usage' => $this->meta_data['usage'] ?? null,
+            'usage' => $this->output_tokens === null ? null : [
+                'input_text_tokens' => $this->input_text_tokens,
+                'input_image_tokens' => $this->input_image_tokens,
+                'output_tokens' => $this->output_tokens,
+                'reasoning_tokens' => $this->reasoning_tokens,
+            ],
             'image_url' => $this->isImageUrlExpired() ? null : $this->image_url,
             'is_image_expired' => $this->image_url !== null && $this->isImageUrlExpired(),
             'error' => $this->meta_data['error'] ?? null,

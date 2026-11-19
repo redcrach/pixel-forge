@@ -38,7 +38,12 @@ test('a succeeded generation records its actual cost from its own rates and usag
         ->and($updatedGeneration->final_price_nano)->toBe(381_887_500)
         ->and($updatedGeneration->image_url)->toStartWith('https://pixelforge.promptedit.dev/images/')
         ->and($updatedGeneration->completed_at->toIso8601ZuluString())->toBe('2026-11-04T14:03:29Z')
-        ->and($updatedGeneration->meta_data['usage']['reasoning_tokens'])->toBe(3184);
+        ->and($updatedGeneration->only(['input_text_tokens', 'input_image_tokens', 'output_tokens', 'reasoning_tokens']))->toBe([
+            'input_text_tokens' => 12,
+            'input_image_tokens' => 765,
+            'output_tokens' => 6450,
+            'reasoning_tokens' => 3184,
+        ]);
 });
 
 test('a failed generation keeps the reason and costs nothing', function () {
