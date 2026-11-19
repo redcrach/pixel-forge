@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vite-plus/test';
-import { formatMoney, formatMoneyRange } from '@/lib/money';
+import { dollarsToNano, formatMoney, formatMoneyRange } from '@/lib/money';
 
 describe('formatMoney', () => {
     test('rounds half up to 4 decimals by default', () => {
@@ -31,5 +31,22 @@ describe('formatMoneyRange', () => {
 
     test('a single amount is shown once, rounded up', () => {
         expect(formatMoneyRange(447_531_250, 447_531_250)).toBe('$0.4476');
+    });
+});
+
+describe('dollarsToNano', () => {
+    test('converts typed dollars exactly', () => {
+        expect(dollarsToNano('10')).toBe(10_000_000_000);
+        expect(dollarsToNano('12.34')).toBe(12_340_000_000);
+        expect(dollarsToNano('0.1')).toBe(100_000_000);
+        expect(dollarsToNano(' 500.00 ')).toBe(500_000_000_000);
+    });
+
+    test('rejects anything that is not a plain amount with up to 2 decimals', () => {
+        expect(dollarsToNano('')).toBeNull();
+        expect(dollarsToNano('10.001')).toBeNull();
+        expect(dollarsToNano('-5')).toBeNull();
+        expect(dollarsToNano('ten')).toBeNull();
+        expect(dollarsToNano('1e3')).toBeNull();
     });
 });

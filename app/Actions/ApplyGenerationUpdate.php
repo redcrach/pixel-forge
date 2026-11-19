@@ -2,6 +2,8 @@
 
 namespace App\Actions;
 
+use App\Actions\Credits\ReleaseCredits;
+use App\Actions\Credits\SettleCredits;
 use App\Actions\Pricing\ApplyMarkup;
 use App\Actions\Pricing\CalculateProviderCost;
 use App\Dto\Pixelforge\PixelforgeGenerationResponseDto;
@@ -21,6 +23,8 @@ class ApplyGenerationUpdate
     public function __construct(
         private CalculateProviderCost $calculateProviderCost,
         private ApplyMarkup $applyMarkup,
+        private SettleCredits $settleCredits,
+        private ReleaseCredits $releaseCredits,
     ) {}
 
     public function __invoke(Generation $generation, PixelforgeGenerationResponseDto $pixelforgeGeneration): Generation
@@ -83,14 +87,18 @@ class ApplyGenerationUpdate
         $generation->image_url = $pixelforgeGeneration->imageUrl;
         $generation->completed_at = $pixelforgeGeneration->completedAt;
         $generation->meta_data = [...$generation->meta_data ?? [], 'usage' => $usage->toArray()];
+
+        ($this->settleCredits)($generation, $generation->final_price_nano);
     }
 
     /**
-     * A failed generation costs nothing: only the reason is kept.
+     * A failed generation costs nothing: the reason is kept and its hold comes back.
      */
     private function recordFailure(Generation $generation, PixelforgeGenerationResponseDto $pixelforgeGeneration): void
     {
         $generation->completed_at = $pixelforgeGeneration->completedAt;
         $generation->meta_data = [...$generation->meta_data ?? [], 'error' => $pixelforgeGeneration->error];
+
+        ($this->releaseCredits)($generation);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CreditTransactionType;
 use App\Enums\GenerationStatus;
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -81,6 +83,24 @@ class Generation extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return HasMany<CreditTransaction, $this>
+     */
+    public function creditTransactions(): HasMany
+    {
+        return $this->hasMany(CreditTransaction::class);
+    }
+
+    /**
+     * What is still set aside for this generation: its hold, minus anything already released.
+     */
+    public function heldCreditsNano(): int
+    {
+        return -(int) $this->creditTransactions()
+            ->whereIn('type', [CreditTransactionType::HOLD, CreditTransactionType::RELEASE])
+            ->sum('amount_nano');
     }
 
     /**

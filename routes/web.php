@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BuyCreditsController;
 use App\Http\Controllers\DownloadGenerationImageController;
 use App\Http\Controllers\GeneratePageController;
 use App\Http\Controllers\GenerationController;
@@ -26,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(HandlePrecognitiveRequests::class)
         ->name('generations.store');
     Route::get('history', HistoryController::class)->name('history');
+    Route::post('credits', BuyCreditsController::class)->name('credits.store');
     Route::get('generations/{generation}', ShowGenerationController::class)->name('generations.show');
     Route::get('generations/{generation}/image', DownloadGenerationImageController::class)
         ->name('generations.image.download');

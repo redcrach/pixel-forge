@@ -21,6 +21,8 @@ declare module '@inertiajs/core' {
             auth: Auth;
             /** How many generations the signed-in user has, null for guests. */
             generationCount: number | null;
+            /** The signed-in user's credits in integer nanodollars (live), null for guests. */
+            balanceNano: number | null;
             [key: string]: unknown;
         };
     }

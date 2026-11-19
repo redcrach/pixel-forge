@@ -83,3 +83,9 @@ test('someone else\'s generation cannot be remixed', function (bool $isGuest) {
     'another user' => [false],
     'a guest' => [true],
 ]);
+
+test('every page receives the signed-in user\'s balance', function () {
+    $this->actingAs(User::factory()->create(['balance_nano' => 4_273_100_000]))
+        ->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page->where('balanceNano', 4_273_100_000));
+});

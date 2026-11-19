@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Actions\Credits\AddCredits;
+use App\Enums\CreditTransactionType;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,5 +25,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@test.com',
             'password' => Hash::make('password'),
         ]);
+
+        // Through the ledger, so the cached balance and the transactions agree
+        $addCredits = app(AddCredits::class);
+        $addCredits($user, 2_000_000_000, CreditTransactionType::WELCOME);
+        $addCredits($user, 10_000_000_000);
     }
 }

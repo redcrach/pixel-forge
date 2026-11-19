@@ -131,3 +131,20 @@ test('running out of retries does not fail a generation pixelforge already accep
 
     expect($generation->refresh()->status)->toBe(GenerationStatus::QUEUED);
 });
+
+test('a rejected submission gives the hold back', function () {
+    Http::fake(pixelforgeError(400, 'content_policy_violation'));
+    $generation = userWithHeldGeneration();
+
+    runSubmitGeneration($generation);
+
+    expect($generation->user->refresh()->balance_nano)->toBe(1_000_000_000);
+});
+
+test('running out of retries gives the hold back', function () {
+    $generation = userWithHeldGeneration();
+
+    (new SubmitGeneration($generation))->failed(null);
+
+    expect($generation->user->refresh()->balance_nano)->toBe(1_000_000_000);
+});

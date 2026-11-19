@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
+ * @property int $balance_nano Cached sum of credit_transactions, in nanodollars
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -32,11 +33,28 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * New accounts start at zero (the welcome credit is added through the ledger).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'balance_nano' => 0,
+    ];
+
+    /**
      * @return HasMany<Generation, $this>
      */
     public function generations(): HasMany
     {
         return $this->hasMany(Generation::class);
+    }
+
+    /**
+     * @return HasMany<CreditTransaction, $this>
+     */
+    public function creditTransactions(): HasMany
+    {
+        return $this->hasMany(CreditTransaction::class);
     }
 
     /**
@@ -49,6 +67,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance_nano' => 'integer',
         ];
     }
 }

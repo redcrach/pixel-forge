@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Actions\ApplyGenerationUpdate;
+use App\Actions\Credits\ReleaseCredits;
 use App\Dto\Pixelforge\PixelforgeGenerationResponseDto;
 use App\Enums\GenerationStatus;
 use App\Enums\PixelforgeErrorCode;
@@ -157,6 +158,8 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
                     'error' => ['code' => $errorCode, 'message' => $errorMessage],
                 ],
             ]);
+
+            app(ReleaseCredits::class)($generation);
         });
     }
 }

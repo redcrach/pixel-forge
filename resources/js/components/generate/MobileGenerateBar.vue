@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { LoaderCircle, LogIn, Zap } from '@lucide/vue';
+import { LoaderCircle, LogIn, Plus, Zap } from '@lucide/vue';
 import { computed } from 'vue';
+import { useBuyCreditsDialog } from '@/composables/useBuyCreditsDialog';
 import { formatMoneyRange } from '@/lib/money';
 import { login } from '@/routes';
 import type { GenerationEstimate } from '@/types';
@@ -17,7 +18,10 @@ const props = defineProps<{
     isEstimateUnavailable: boolean;
     isSubmitting: boolean;
     isPromptEmpty: boolean;
+    hasInsufficientBalance: boolean;
 }>();
+
+const { openBuyCredits } = useBuyCreditsDialog();
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
@@ -54,7 +58,17 @@ const estimateLabel = computed(() => {
             </div>
 
             <button
-                v-if="isAuthenticated"
+                v-if="isAuthenticated && hasInsufficientBalance"
+                type="button"
+                class="ml-auto flex shrink-0 items-center gap-1 rounded bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground transition-colors hover:bg-primary-container"
+                @click="openBuyCredits"
+            >
+                <Plus class="size-4.5" />
+                Buy credits
+            </button>
+
+            <button
+                v-else-if="isAuthenticated"
                 type="submit"
                 :disabled="isSubmitting || isPromptEmpty"
                 class="ml-auto flex shrink-0 items-center gap-1 rounded bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-colors hover:bg-primary-container active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"

@@ -63,11 +63,6 @@ export type GenerationEstimate = {
     total_max_nano: number;
 };
 
-export type TopUpPreset = {
-    amount: string;
-    isSelected?: boolean;
-};
-
 /** A generation as GenerationResource sends it. Money is in integer nanodollars. */
 export type GenerationHistoryItem = {
     id: string;

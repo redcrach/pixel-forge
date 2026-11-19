@@ -35,3 +35,20 @@ export function formatMoneyRange(minNano: number, maxNano: number): string {
         ? formatMoney(maxNano, 4, 'up')
         : `${formatMoney(minNano)} – ${formatMoney(maxNano, 4, 'up')}`;
 }
+
+/**
+ * A dollar amount typed by the user ("12.34") as integer nanodollars, without floating point,
+ * or null when it isn't a plain amount with at most 2 decimals (the server validates the same).
+ */
+export function dollarsToNano(amount: string): number | null {
+    const match = /^(\d{1,6})(?:\.(\d{1,2}))?$/.exec(amount.trim());
+
+    if (match === null) {
+        return null;
+    }
+
+    const cents =
+        BigInt(match[1]) * 100n + BigInt((match[2] ?? '').padEnd(2, '0'));
+
+    return Number(cents * 10_000_000n);
+}

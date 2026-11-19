@@ -1,8 +1,11 @@
 <?php
 
 use App\Actions\ApplyGenerationUpdate;
+use App\Actions\Credits\AddCredits;
+use App\Actions\Credits\HoldCredits;
 use App\Jobs\SubmitGeneration;
 use App\Models\Generation;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
@@ -116,4 +119,22 @@ function pixelforgeEventBody(string $eventId, string $type, array $generation): 
 function succeededGenerationFor(Generation $generation): array
 {
     return [...pixelforgeFixture('generation-succeeded'), 'metadata' => ['order_id' => $generation->id]];
+}
+
+/**
+ * A user with $1.00 and one submitted generation holding its $0.10 maximum.
+ */
+function userWithHeldGeneration(int $balanceNano = 1_000_000_000, int $maximumCostNano = 100_000_000): Generation
+{
+    $user = User::factory()->create();
+    app(AddCredits::class)($user, $balanceNano);
+    $generation = Generation::factory()->for($user)->create();
+    app(HoldCredits::class)($generation, $maximumCostNano);
+
+    return $generation;
+}
+
+function ledgerSumNano(User $user): int
+{
+    return (int) $user->creditTransactions()->sum('amount_nano');
 }

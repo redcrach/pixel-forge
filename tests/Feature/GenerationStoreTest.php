@@ -3,6 +3,7 @@
 use App\Actions\EstimateGenerationCost;
 use App\Dto\Pricing\EstimateLineDto;
 use App\Dto\Pricing\GenerationEstimateDto;
+use App\Enums\CreditTransactionType;
 use App\Enums\GenerationStatus;
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
@@ -31,7 +32,7 @@ test('guests are redirected to the login page', function () {
 });
 
 test('it stores a pending generation with the estimate, queues its submission and says it is being generated', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['balance_nano' => 1_000_000_000]);
     $this->actingAs($user);
 
     $emptyLine = new EstimateLineDto(0, 0, 0, 0);
@@ -58,6 +59,41 @@ test('it stores a pending generation with the estimate, queues its submission an
         ->and($generation->meta_data)->toBe(['estimate' => ['min_nano' => 58_437_500, 'max_nano' => 86_637_500]]);
 
     Queue::assertPushedOn('generations', SubmitGeneration::class, fn (SubmitGeneration $job) => $job->generation->is($generation));
+});
+
+test('submitting holds the maximum estimate from the balance', function () {
+    $user = User::factory()->create(['balance_nano' => 1_000_000_000]);
+    $this->actingAs($user);
+    $emptyLine = new EstimateLineDto(0, 0, 0, 0);
+    $this->mock(EstimateGenerationCost::class)
+        ->shouldReceive('__invoke')
+        ->andReturn(new GenerationEstimateDto($emptyLine, $emptyLine, $emptyLine, $emptyLine, 58_437_500, 86_637_500));
+
+    $this->post(route('generations.store'), validGeneration())->assertInertiaFlash('toast.type', 'success');
+
+    $hold = $user->generations()->sole()->creditTransactions()->sole();
+    expect($hold->type)->toBe(CreditTransactionType::HOLD)
+        ->and($hold->amount_nano)->toBe(-86_637_500)
+        ->and($user->refresh()->balance_nano)->toBe(1_000_000_000 - 86_637_500);
+});
+
+test('a balance below the maximum estimate is refused and nothing is created', function () {
+    $user = User::factory()->create(['balance_nano' => 86_637_499]);
+    $this->actingAs($user);
+    $emptyLine = new EstimateLineDto(0, 0, 0, 0);
+    $this->mock(EstimateGenerationCost::class)
+        ->shouldReceive('__invoke')
+        ->andReturn(new GenerationEstimateDto($emptyLine, $emptyLine, $emptyLine, $emptyLine, 58_437_500, 86_637_500));
+
+    $this->from(route('home'))
+        ->post(route('generations.store'), validGeneration())
+        ->assertRedirect(route('home'))
+        ->assertInertiaFlash('toast.type', 'error')
+        ->assertInertiaFlash('toast.message', 'Not enough credits: this image can cost up to $0.0867 and your balance is $0.0866.');
+
+    expect($user->generations()->exists())->toBeFalse()
+        ->and($user->refresh()->balance_nano)->toBe(86_637_499);
+    Queue::assertNothingPushed();
 });
 
 test('reference images are optional', function () {

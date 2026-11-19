@@ -131,6 +131,17 @@ const estimateRequest = useHttp<
 });
 
 const estimate = ref<GenerationEstimate | null>(null);
+
+/**
+ * Submitting holds the maximum estimate, so a balance below it can't generate.
+ * Shown up front; the server's hold check still has the final word.
+ */
+const hasInsufficientBalance = computed(
+    () =>
+        estimate.value !== null &&
+        page.props.balanceNano !== null &&
+        page.props.balanceNano < estimate.value.total_max_nano,
+);
 const isEstimateUnavailable = ref(false);
 
 function refreshEstimate(): void {
@@ -201,6 +212,7 @@ onMounted(refreshEstimate);
                 :is-estimate-unavailable="isEstimateUnavailable"
                 :is-submitting="form.processing"
                 :is-prompt-empty="isPromptEmpty"
+                :has-insufficient-balance="hasInsufficientBalance"
             />
         </div>
 
@@ -210,6 +222,7 @@ onMounted(refreshEstimate);
             :is-estimate-unavailable="isEstimateUnavailable"
             :is-submitting="form.processing"
             :is-prompt-empty="isPromptEmpty"
+            :has-insufficient-balance="hasInsufficientBalance"
         />
     </form>
 </template>

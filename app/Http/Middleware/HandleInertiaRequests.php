@@ -45,7 +45,27 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'generationCount' => $this->generationCount($request),
+            'balanceNano' => $this->balanceNano($request),
         ];
+    }
+
+    /**
+     * Live: holds, settles and releases all come with a generation change, so the header follows them.
+     * Purchases reload the page props themselves.
+     */
+    private function balanceNano(Request $request): ?LiveProp
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return null;
+        }
+
+        return Inertia::live(
+            fn (): int => $user->balance_nano,
+            on: GenerationUpdated::class,
+            channel: GenerationUpdated::channelFor($user),
+        );
     }
 
     /**

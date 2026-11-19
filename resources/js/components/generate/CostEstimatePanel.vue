@@ -174,9 +174,9 @@ function formatTokens(line: EstimateLine): string {
                 </button>
 
                 <InsufficientCreditsNotice
-                    v-if="hasInsufficientBalance"
-                    max-cost="$0.1058"
-                    balance="$0.0500"
+                    v-if="hasInsufficientBalance && estimate"
+                    :max-cost="formatMoney(estimate.total_max_nano, 4, 'up')"
+                    :balance="formatMoney(page.props.balanceNano ?? 0)"
                 />
             </template>
 

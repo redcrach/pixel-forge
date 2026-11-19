@@ -61,3 +61,31 @@ test('a late queued update never moves a finished generation backwards', functio
     expect($updatedGeneration->status)->toBe(GenerationStatus::SUCCEEDED)
         ->and($updatedGeneration->final_price_nano)->toBe(381_887_500);
 });
+
+test('success charges the actual price and gives the rest of the hold back', function () {
+    $generation = userWithHeldGeneration(balanceNano: 1_000_000_000, maximumCostNano: 450_000_000);
+    $generation->update(['status' => GenerationStatus::PROCESSING]);
+
+    app(ApplyGenerationUpdate::class)($generation, PixelforgeGenerationResponseDto::make(pixelforgeFixture('generation-succeeded')));
+
+    expect($generation->user->refresh()->balance_nano)->toBe(1_000_000_000 - 381_887_500);
+});
+
+test('failure gives the whole hold back', function () {
+    $generation = userWithHeldGeneration(balanceNano: 1_000_000_000, maximumCostNano: 450_000_000);
+    $generation->update(['status' => GenerationStatus::PROCESSING]);
+
+    app(ApplyGenerationUpdate::class)($generation, PixelforgeGenerationResponseDto::make(pixelforgeFixture('generation-failed')));
+
+    expect($generation->user->refresh()->balance_nano)->toBe(1_000_000_000);
+});
+
+test('a duplicate success webhook charges only once', function () {
+    $generation = userWithHeldGeneration(balanceNano: 1_000_000_000, maximumCostNano: 450_000_000);
+    $succeeded = PixelforgeGenerationResponseDto::make(pixelforgeFixture('generation-succeeded'));
+
+    app(ApplyGenerationUpdate::class)($generation, $succeeded);
+    app(ApplyGenerationUpdate::class)($generation, $succeeded);
+
+    expect($generation->user->refresh()->balance_nano)->toBe(1_000_000_000 - 381_887_500);
+});
