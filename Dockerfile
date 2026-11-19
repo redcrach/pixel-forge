@@ -15,7 +15,8 @@ FROM ${PHP_IMAGE} AS base
 
 USER root
 # bcmath: exact decimal math for Pixelforge rates (App\Dto\Pricing\RatesDto)
-RUN install-php-extensions bcmath
+# intl: number and date formatting in the Filament admin panel
+RUN install-php-extensions bcmath intl
 USER www-data
 
 ############################################
