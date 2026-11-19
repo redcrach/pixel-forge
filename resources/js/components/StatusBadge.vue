@@ -13,6 +13,7 @@ const toneClasses: Record<GenerationStatus, string> = {
     processing: 'bg-amber-500/10 text-amber-400',
     succeeded: 'bg-green-500/10 text-green-400',
     failed: 'bg-rose-500/10 text-rose-400',
+    submission_failed: 'bg-rose-500/10 text-rose-400',
 };
 
 const dotClasses: Partial<Record<GenerationStatus, string>> = {
@@ -28,7 +29,10 @@ const dotClasses: Partial<Record<GenerationStatus, string>> = {
         :class="toneClasses[status]"
     >
         <CircleCheck v-if="status === 'succeeded'" class="size-3" />
-        <CircleX v-else-if="status === 'failed'" class="size-3" />
+        <CircleX
+            v-else-if="status === 'failed' || status === 'submission_failed'"
+            class="size-3"
+        />
         <span
             v-else
             class="size-1.5 rounded-full"

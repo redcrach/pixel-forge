@@ -3,6 +3,7 @@ import type { LucideIcon } from '@lucide/vue';
 
 export type GenerationStatus =
     | 'pending'
+    | 'submission_failed'
     | 'queued'
     | 'processing'
     | 'succeeded'

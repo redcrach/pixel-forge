@@ -84,7 +84,7 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
      */
     public function failed(?Throwable $exception): void
     {
-        $this->markFailed('retries_exhausted', __('Pixelforge stayed unavailable, so the image could not be generated.'));
+        $this->markSubmissionFailed('retries_exhausted', __('Pixelforge stayed unavailable, so the image could not be generated.'));
     }
 
     /**
@@ -117,7 +117,7 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
 
     /**
      * Temporary problems are retried after a random delay, so queued jobs don't all retry at the same moment.
-     * Anything else is permanent and fails the generation.
+     * Anything else is permanent and fails the submission.
      */
     private function handleRejection(Response $response): void
     {
@@ -129,14 +129,18 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
             PixelforgeErrorCode::OVERLOADED => $this->release($retryAfterSeconds + random_int(1, 5)),
             default => $response->serverError()
                 ? $this->release(random_int(10, 30))
-                : $this->markFailed(
+                : $this->markSubmissionFailed(
                     (string) $response->json('error.code', 'request_failed'),
                     (string) $response->json('error.message', __('Pixelforge rejected the generation.')),
                 ),
         };
     }
 
-    private function markFailed(string $errorCode, string $errorMessage): void
+    /**
+     * Only a generation Pixelforge never accepted fails here. If Pixelforge did accept it after all,
+     * its later updates still move it forward (see GenerationStatus::SUBMISSION_FAILED).
+     */
+    private function markSubmissionFailed(string $errorCode, string $errorMessage): void
     {
         DB::transaction(function () use ($errorCode, $errorMessage): void {
             $generation = Generation::query()->lockForUpdate()->findOrFail($this->generation->id);
@@ -146,7 +150,7 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
             }
 
             $generation->update([
-                'status' => GenerationStatus::FAILED,
+                'status' => GenerationStatus::SUBMISSION_FAILED,
                 'completed_at' => now(),
                 'meta_data' => [
                     ...($generation->meta_data ?? []),

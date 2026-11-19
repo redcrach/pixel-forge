@@ -6,6 +6,7 @@ enum GenerationStatus: string
 {
     /** Created locally, not yet accepted by Pixelforge. */
     case PENDING = 'pending';
+    case SUBMISSION_FAILED = 'submission_failed';
     case QUEUED = 'queued';
     case PROCESSING = 'processing';
     case SUCCEEDED = 'succeeded';
@@ -14,7 +15,7 @@ enum GenerationStatus: string
     public function rank(): int
     {
         return match ($this) {
-            self::PENDING => 0,
+            self::PENDING, self::SUBMISSION_FAILED => 0,
             self::QUEUED => 1,
             self::PROCESSING => 2,
             self::SUCCEEDED, self::FAILED => 3,

@@ -14,17 +14,6 @@ beforeEach(function () {
     Http::preventStrayRequests();
 });
 
-/**
- * Runs the job the way a worker would, with queue interactions (release, fail) faked.
- */
-function runSubmitGeneration(Generation $generation): SubmitGeneration
-{
-    $job = (new SubmitGeneration($generation))->withFakeQueueInteractions();
-    $job->handle(app(ApplyGenerationUpdate::class));
-
-    return $job;
-}
-
 function pixelforgeError(int $status, string $code, array $headers = []): array
 {
     return ['*/generations' => Http::response(['error' => ['type' => 'error', 'code' => $code, 'message' => "Pixelforge says {$code}."]], $status, $headers)];
@@ -115,7 +104,7 @@ test('a permanent rejection fails the generation without retrying', function (in
     runSubmitGeneration($generation)->assertNotReleased();
 
     $generation->refresh();
-    expect($generation->status)->toBe(GenerationStatus::FAILED)
+    expect($generation->status)->toBe(GenerationStatus::SUBMISSION_FAILED)
         ->and($generation->completed_at)->not->toBeNull()
         ->and($generation->meta_data['error'])->toBe(['code' => $errorCode, 'message' => "Pixelforge says {$errorCode}."]);
 })->with([
@@ -131,7 +120,7 @@ test('running out of retries fails a pending generation', function () {
     (new SubmitGeneration($generation))->failed(null);
 
     $generation->refresh();
-    expect($generation->status)->toBe(GenerationStatus::FAILED)
+    expect($generation->status)->toBe(GenerationStatus::SUBMISSION_FAILED)
         ->and($generation->meta_data['error']['code'])->toBe('retries_exhausted');
 });
 

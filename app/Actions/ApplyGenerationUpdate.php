@@ -8,6 +8,7 @@ use App\Dto\Pixelforge\PixelforgeGenerationResponseDto;
 use App\Dto\Pricing\RatesDto;
 use App\Enums\GenerationStatus;
 use App\Models\Generation;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 
@@ -39,17 +40,32 @@ class ApplyGenerationUpdate
         $generation->meta_data = [...($generation->meta_data ?? []), 'rates' => $pixelforgeGeneration->rates];
 
         if ($generation->status->canTransitionTo($pixelforgeGeneration->status)) {
+            if ($generation->status === GenerationStatus::SUBMISSION_FAILED) {
+                $this->forgetSubmissionFailure($generation);
+            }
+
             $generation->status = $pixelforgeGeneration->status;
 
             match ($pixelforgeGeneration->status) {
                 GenerationStatus::SUCCEEDED => $this->recordSuccess($generation, $pixelforgeGeneration),
                 GenerationStatus::FAILED => $this->recordFailure($generation, $pixelforgeGeneration),
+                default => null,
             };
+
         }
 
         $generation->save();
 
         return $generation;
+    }
+
+    /**
+     * We gave up on the submit, but Pixelforge accepted it after all: its update wins over our guess.
+     */
+    private function forgetSubmissionFailure(Generation $generation): void
+    {
+        $generation->completed_at = null;
+        $generation->meta_data = Arr::except($generation->meta_data ?? [], 'error');
     }
 
     /**

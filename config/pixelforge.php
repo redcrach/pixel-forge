@@ -30,4 +30,19 @@ return [
 
     'markup_bps' => (int) env('PIXELFORGE_MARKUP_BPS', 2500),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Webhooks
+    |--------------------------------------------------------------------------
+    |
+    | The signing secret (whsec_...) of this environment's API key, and how
+    | many seconds a signature's timestamp may be off before it is rejected
+    | as a replay.
+    |
+    */
+
+    'webhook_secret' => env('PIXELFORGE_WEBHOOK_SECRET'),
+
+    'webhook_tolerance' => (int) env('PIXELFORGE_WEBHOOK_TOLERANCE', 300),
+
 ];

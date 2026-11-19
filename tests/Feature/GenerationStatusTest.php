@@ -11,6 +11,8 @@ test('a status can move forward', function (GenerationStatus $from, GenerationSt
     [GenerationStatus::QUEUED, GenerationStatus::SUCCEEDED],
     [GenerationStatus::PROCESSING, GenerationStatus::SUCCEEDED],
     [GenerationStatus::PROCESSING, GenerationStatus::FAILED],
+    'pixelforge accepted it after we gave up' => [GenerationStatus::SUBMISSION_FAILED, GenerationStatus::QUEUED],
+    'pixelforge finished it after we gave up' => [GenerationStatus::SUBMISSION_FAILED, GenerationStatus::SUCCEEDED],
 ]);
 
 test('a status never moves backwards or stays the same', function (GenerationStatus $from, GenerationStatus $to) {
@@ -19,6 +21,7 @@ test('a status never moves backwards or stays the same', function (GenerationSta
     [GenerationStatus::PROCESSING, GenerationStatus::QUEUED],
     [GenerationStatus::QUEUED, GenerationStatus::PENDING],
     [GenerationStatus::PROCESSING, GenerationStatus::PROCESSING],
+    [GenerationStatus::SUBMISSION_FAILED, GenerationStatus::PENDING],
 ]);
 
 test('a final status never changes', function (GenerationStatus $from, GenerationStatus $to) {
