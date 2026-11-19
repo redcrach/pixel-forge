@@ -1,16 +1,60 @@
 <script setup lang="ts">
-import { Head, InfiniteScroll } from '@inertiajs/vue3';
+import { Head, InfiniteScroll, router, usePage } from '@inertiajs/vue3';
+import { useEcho } from '@laravel/echo-vue';
 import { LoaderCircle } from '@lucide/vue';
 import { computed } from 'vue';
 import EmptyHistory from '@/components/history/EmptyHistory.vue';
 import GenerationCard from '@/components/history/GenerationCard.vue';
+import {
+    GENERATION_UPDATED_EVENT,
+    generationChannel,
+} from '@/lib/generationChannel';
 import { toGenerationSummary } from '@/lib/generationSummary';
-import type { HistoryPageProps } from '@/types';
+import type {
+    GenerationHistoryItem,
+    GenerationUpdatedPayload,
+    HistoryPageProps,
+} from '@/types';
 
 const props = defineProps<HistoryPageProps>();
+const page = usePage();
 
 const generationSummaries = computed(() =>
     props.generations.data.map(toGenerationSummary),
+);
+
+/**
+ * A pushed generation replaces its card in place, or appears at the top when it is new.
+ * Patched locally: reloading the list would throw away the pages already scrolled.
+ */
+function applyPushedGeneration(
+    generations: GenerationHistoryItem[],
+    pushedGeneration: GenerationHistoryItem,
+): GenerationHistoryItem[] {
+    const isAlreadyListed = generations.some(
+        (generation) => generation.id === pushedGeneration.id,
+    );
+
+    if (!isAlreadyListed) {
+        return [pushedGeneration, ...generations];
+    }
+
+    return generations.map((generation) =>
+        generation.id === pushedGeneration.id ? pushedGeneration : generation,
+    );
+}
+
+useEcho<GenerationUpdatedPayload>(
+    generationChannel(page.props.auth.user!.id),
+    GENERATION_UPDATED_EVENT,
+    ({ generation }) => {
+        router.replaceProp('generations.data', (generations: unknown) =>
+            applyPushedGeneration(
+                generations as GenerationHistoryItem[],
+                generation,
+            ),
+        );
+    },
 );
 </script>
 

@@ -86,6 +86,11 @@ export type GenerationHistoryItem = {
     completed_at: string | null;
 };
 
+/** Payload of the GenerationUpdated broadcast. */
+export type GenerationUpdatedPayload = {
+    generation: GenerationHistoryItem;
+};
+
 /** Props of the History page (HistoryController). */
 export type HistoryPageProps = {
     generations: { data: GenerationHistoryItem[] };

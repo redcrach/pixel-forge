@@ -1,9 +1,16 @@
 import { createInertiaApp } from '@inertiajs/vue3';
+import { echo } from '@inertiajs/vue3/echo';
+import { configureEcho } from '@laravel/echo-vue';
 import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+
+// Reverb pushes generation updates to the browser (see App\Events\GenerationUpdated).
+configureEcho({
+    broadcaster: 'reverb',
+});
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -31,6 +38,8 @@ void createInertiaApp({
     progress: {
         color: '#4B5563',
     },
+    // Live props reload themselves when their broadcast event arrives, and after a dropped connection returns.
+    live: echo(),
 });
 
 // This will set light / dark mode on page load...

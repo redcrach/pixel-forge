@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\GenerationStatus;
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
+use App\Events\GenerationUpdated;
 use Database\Factories\GenerationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -55,6 +56,16 @@ class Generation extends Model
     use HasFactory, HasUuids;
 
     private const IMAGE_URL_LIFETIME_HOURS = 24;
+
+    /**
+     * Every new or changed generation is pushed to its owner's browser.
+     *
+     * @var array<string, class-string>
+     */
+    protected $dispatchesEvents = [
+        'created' => GenerationUpdated::class,
+        'updated' => GenerationUpdated::class,
+    ];
 
     /**
      * @var array<string, mixed>

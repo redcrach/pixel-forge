@@ -2,7 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Events\GenerationUpdated;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\LiveProp;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -41,7 +44,25 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'generationCount' => fn (): ?int => $request->user()?->generations()->count(),
+            'generationCount' => $this->generationCount($request),
         ];
+    }
+
+    /**
+     * Live: refreshed in the browser whenever one of the user's generations is created or changes.
+     */
+    private function generationCount(Request $request): ?LiveProp
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return null;
+        }
+
+        return Inertia::live(
+            fn (): int => $user->generations()->count(),
+            on: GenerationUpdated::class,
+            channel: GenerationUpdated::channelFor($user),
+        );
     }
 }
