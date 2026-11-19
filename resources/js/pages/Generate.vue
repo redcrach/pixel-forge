@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { Head, useForm, useHttp, usePage } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import storeGeneration from '@/actions/App/Http/Controllers/GenerationController';
 import estimateGeneration from '@/actions/App/Http/Controllers/GenerationEstimateController';
 import CostEstimatePanel from '@/components/generate/CostEstimatePanel.vue';
+import MobileGenerateBar from '@/components/generate/MobileGenerateBar.vue';
 import PromptEditor from '@/components/generate/PromptEditor.vue';
 import QualitySelector from '@/components/generate/QualitySelector.vue';
 import ReferenceImages from '@/components/generate/ReferenceImages.vue';
 import SizePicker from '@/components/generate/SizePicker.vue';
+import { focusFirstInvalidField } from '@/lib/focusFirstInvalidField';
 import type {
     GenerateForm,
     GenerationHistoryItem,
@@ -79,6 +81,9 @@ if (props.remix) {
 }
 
 const page = usePage();
+
+/** Generate stays disabled until there is a prompt; the server validates it either way. */
+const isPromptEmpty = computed(() => form.prompt.trim() === '');
 const isAuthenticated = computed(() => page.props.auth.user !== null);
 
 /** Guests can't submit, so their fields aren't validated live either. */
@@ -104,6 +109,8 @@ function submit(): void {
                 form.reset();
             }
         },
+        // On a phone the failing field is often scrolled away behind the bottom bar
+        onError: (errors) => nextTick(() => focusFirstInvalidField(errors)),
     });
 }
 
@@ -168,10 +175,10 @@ onMounted(refreshEstimate);
     <Head title="Generate" />
 
     <form
-        class="grid grid-cols-1 items-start gap-3 xl:grid-cols-12"
+        class="grid grid-cols-1 items-start gap-3 pb-24 lg:grid-cols-12 lg:pb-0"
         @submit.prevent="submit"
     >
-        <div class="flex flex-col gap-3 xl:col-span-8">
+        <div class="flex flex-col gap-3 lg:col-span-7 xl:col-span-8">
             <PromptEditor
                 v-model="form.prompt"
                 :error="form.errors.prompt"
@@ -187,13 +194,22 @@ onMounted(refreshEstimate);
             />
         </div>
 
-        <div class="xl:sticky xl:top-16 xl:col-span-4">
+        <div class="lg:sticky lg:top-16 lg:col-span-5 xl:col-span-4">
             <CostEstimatePanel
                 :estimate="estimate"
                 :is-estimating="estimateRequest.processing"
                 :is-estimate-unavailable="isEstimateUnavailable"
                 :is-submitting="form.processing"
+                :is-prompt-empty="isPromptEmpty"
             />
         </div>
+
+        <MobileGenerateBar
+            :estimate="estimate"
+            :is-estimating="estimateRequest.processing"
+            :is-estimate-unavailable="isEstimateUnavailable"
+            :is-submitting="form.processing"
+            :is-prompt-empty="isPromptEmpty"
+        />
     </form>
 </template>

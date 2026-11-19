@@ -8,7 +8,8 @@ defineProps<{
 }>();
 
 const toneClasses: Record<GenerationStatus, string> = {
-    pending: 'border-border-prominent bg-surface-container-high text-on-surface-variant',
+    pending:
+        'border-border-prominent bg-surface-container-high text-on-surface-variant',
     queued: 'border-tertiary/40 bg-tertiary/10 text-tertiary',
     processing: 'border-amber-400/40 bg-amber-400/10 text-amber-400',
     succeeded: 'border-primary/40 bg-primary/10 text-primary',

@@ -10,7 +10,7 @@ const activeStatus = defineModel<HistoryStatusFilter>({ required: true });
 
 <template>
     <div
-        class="flex items-center gap-0.5 self-start overflow-x-auto rounded-lg border border-border-subtle bg-surface-container-lowest p-0.5"
+        class="grid w-full grid-cols-2 gap-0.5 rounded-lg border border-border-subtle bg-surface-container-lowest p-0.5 sm:flex sm:[scrollbar-width:none] sm:items-center sm:overflow-x-auto lg:w-auto lg:self-start [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="Filter by status"
     >
@@ -20,7 +20,7 @@ const activeStatus = defineModel<HistoryStatusFilter>({ required: true });
             type="button"
             role="tab"
             :aria-selected="activeStatus === tab.value"
-            class="flex items-center gap-1 rounded border px-2 py-1 text-label-default whitespace-nowrap transition-all"
+            class="flex min-h-11 min-w-0 items-center justify-between gap-1 rounded border px-2 py-1 text-label-default whitespace-nowrap transition-all sm:min-h-0 sm:justify-start"
             :class="
                 activeStatus === tab.value
                     ? 'border-primary/40 bg-primary/10 font-semibold text-primary'

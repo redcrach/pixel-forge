@@ -16,6 +16,13 @@ const props = defineProps<{
 }>();
 
 const isFailed = computed(() => isFailedStatus(props.generation.status));
+
+const costClasses = computed(() => ({
+    'text-primary': isFailed.value,
+    'font-semibold text-on-surface': props.generation.status === 'succeeded',
+    'text-on-surface-variant':
+        !isFailed.value && props.generation.status !== 'succeeded',
+}));
 </script>
 
 <template>
@@ -45,7 +52,7 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
                     :label="generation.statusLabel"
                 />
                 <span
-                    v-for="tag in [generation.size, generation.quality]"
+                    v-for="tag in [generation.shape, generation.quality]"
                     :key="tag"
                     class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
                 >
@@ -58,6 +65,18 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
                     {{ generation.errorMessage }}
                 </span>
             </div>
+            <div class="flex min-w-0 flex-col sm:hidden">
+                <span
+                    class="font-mono text-mono-metric tabular-nums"
+                    :class="costClasses"
+                >
+                    {{ generation.cost }}
+                </span>
+                <span class="text-label-dense text-outline">
+                    Est. {{ generation.estimate }} ·
+                    {{ generation.createdAgo }}
+                </span>
+            </div>
         </div>
 
         <div class="hidden shrink-0 flex-col items-end sm:flex">
@@ -66,15 +85,12 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
             </span>
             <span
                 class="font-mono text-mono-metric tabular-nums"
-                :class="{
-                    'text-primary': isFailed,
-                    'font-semibold text-on-surface':
-                        generation.status === 'succeeded',
-                    'text-on-surface-variant':
-                        !isFailed && generation.status !== 'succeeded',
-                }"
+                :class="costClasses"
             >
                 {{ generation.cost }}
+            </span>
+            <span class="text-label-dense text-outline md:hidden">
+                {{ generation.createdAgo }}
             </span>
         </div>
 
@@ -88,7 +104,7 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
             v-if="generation.canDownload"
             :generation-id="generation.id"
         />
-        <span v-else class="size-8 shrink-0" aria-hidden="true" />
+        <span v-else class="size-11 shrink-0 sm:size-8" aria-hidden="true" />
         <!-- The whole row opens the generation; the download button sits above this link. -->
         <Link
             :href="showGeneration(generation.id)"

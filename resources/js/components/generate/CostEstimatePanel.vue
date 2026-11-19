@@ -20,6 +20,7 @@ withDefaults(
         isEstimating: boolean;
         isEstimateUnavailable: boolean;
         isSubmitting: boolean;
+        isPromptEmpty: boolean;
         hasInsufficientBalance?: boolean;
     }>(),
     {
@@ -99,7 +100,7 @@ function formatTokens(line: EstimateLine): string {
                     <span
                         class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
                     >
-                        {{ formatMoney(estimate.total_max_nano) }}
+                        {{ formatMoney(estimate.total_max_nano, 4, 'up') }}
                     </span>
                     <span class="ml-1 font-mono text-label-dense text-outline">
                         USD
@@ -159,8 +160,10 @@ function formatTokens(line: EstimateLine): string {
             <template v-if="isAuthenticated">
                 <button
                     type="submit"
-                    :disabled="isSubmitting || hasInsufficientBalance"
-                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    :disabled="
+                        isSubmitting || isPromptEmpty || hasInsufficientBalance
+                    "
+                    class="hidden w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:flex"
                 >
                     <LoaderCircle
                         v-if="isSubmitting"
@@ -180,7 +183,7 @@ function formatTokens(line: EstimateLine): string {
             <Link
                 v-else
                 :href="login()"
-                class="flex w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container"
+                class="hidden w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container lg:flex"
             >
                 <LogIn class="size-4.5" />
                 Log in to generate

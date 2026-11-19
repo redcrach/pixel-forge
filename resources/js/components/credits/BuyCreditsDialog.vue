@@ -23,7 +23,7 @@ const presets: TopUpPreset[] = [
     <Dialog v-model:open="isOpen">
         <DialogContent
             :show-close-button="false"
-            class="gap-4 rounded-lg border border-border-prominent bg-[#202020] p-6 shadow-[0_8px_24px_rgba(0,0,0,0.65)] sm:max-w-md"
+            class="max-h-[calc(100svh-2rem)] gap-4 overflow-y-auto rounded-lg border border-border-prominent bg-[#202020] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.65)] sm:max-w-md sm:p-6"
         >
             <div class="flex flex-col gap-0.5">
                 <div class="flex items-center justify-between">
@@ -110,7 +110,7 @@ const presets: TopUpPreset[] = [
                             max="500"
                             step="1"
                             placeholder="15.00"
-                            class="w-full rounded border border-border-subtle bg-[#141414] py-2 pr-2 pl-7 font-mono text-mono-metric text-on-surface transition-colors placeholder:text-outline focus:border-primary focus:outline-none"
+                            class="w-full rounded border border-border-subtle bg-[#141414] py-2 pr-2 pl-7 font-mono text-base text-on-surface transition-colors placeholder:text-outline focus:border-primary focus:outline-none sm:text-sm"
                         />
                     </div>
                     <span class="text-label-dense text-outline">

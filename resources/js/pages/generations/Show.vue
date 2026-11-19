@@ -66,9 +66,13 @@ const tokenLines = computed(() => {
 function formatDateTime(isoDateTime: string | null): string {
     return isoDateTime === null
         ? '—'
-        : new Date(isoDateTime).toLocaleString(undefined, {
-              dateStyle: 'medium',
-              timeStyle: 'short',
+        : new Date(isoDateTime).toLocaleString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hourCycle: 'h23',
           });
 }
 
@@ -97,37 +101,43 @@ useEcho<GenerationUpdatedPayload>(
     <Head :title="`Generation · ${summary.statusLabel}`" />
 
     <div class="flex flex-col gap-4">
-        <div class="flex flex-wrap items-center gap-2">
-            <Link
-                :href="history()"
-                class="flex items-center gap-1 rounded border border-border-subtle bg-surface-raised px-2 py-1 font-mono text-label-default text-on-surface-variant transition-colors hover:border-border-prominent hover:text-on-surface"
-            >
-                <ArrowLeft class="size-4" />
-                History
-            </Link>
-            <span class="font-mono text-label-default text-outline">/</span>
-            <h1 class="font-display text-headline-lg text-on-surface">
-                Generation
-            </h1>
-            <StatusBadge
-                :status="generation.status"
-                :label="summary.statusLabel"
-            />
-            <span
-                class="rounded-full border border-border-subtle bg-surface-raised px-2 py-0.5 font-mono text-label-default tabular-nums"
-                :class="
-                    generation.status === 'succeeded'
-                        ? 'text-primary'
-                        : 'text-on-surface-variant'
-                "
-            >
-                {{ summary.cost }}
-            </span>
+        <div
+            class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
+        >
+            <div class="flex items-center gap-2">
+                <Link
+                    :href="history()"
+                    class="flex min-h-11 items-center gap-1 rounded border border-border-subtle bg-surface-raised px-2 py-1 font-mono text-label-default text-on-surface-variant transition-colors hover:border-border-prominent hover:text-on-surface sm:min-h-0"
+                >
+                    <ArrowLeft class="size-4" />
+                    History
+                </Link>
+                <span class="font-mono text-label-default text-outline">/</span>
+                <h1 class="font-display text-headline-lg text-on-surface">
+                    Generation
+                </h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <StatusBadge
+                    :status="generation.status"
+                    :label="summary.statusLabel"
+                />
+                <span
+                    class="rounded-full border border-border-subtle bg-surface-raised px-2 py-0.5 font-mono text-label-default tabular-nums"
+                    :class="
+                        generation.status === 'succeeded'
+                            ? 'text-primary'
+                            : 'text-on-surface-variant'
+                    "
+                >
+                    {{ summary.cost }}
+                </span>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
             <section
-                class="flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface-raised xl:col-span-8"
+                class="flex min-w-0 flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface-raised xl:col-span-8"
             >
                 <div
                     class="flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle px-3 py-2"
@@ -157,7 +167,7 @@ useEcho<GenerationUpdatedPayload>(
                                 type="button"
                                 role="radio"
                                 :aria-checked="isActualSize === option.isActual"
-                                class="rounded px-2 py-0.5 transition-colors"
+                                class="flex min-h-11 min-w-11 items-center justify-center rounded px-2 py-0.5 transition-colors sm:min-h-0 sm:min-w-0"
                                 :class="
                                     isActualSize === option.isActual
                                         ? 'bg-primary/10 text-primary'
@@ -172,7 +182,7 @@ useEcho<GenerationUpdatedPayload>(
                         <a
                             v-if="summary.canDownload"
                             :href="downloadGenerationImage.url(generation.id)"
-                            class="flex items-center gap-1 rounded border border-border-prominent bg-surface-container-lowest px-2 py-1 font-mono text-label-default font-semibold text-canvas-light transition-colors hover:border-primary hover:text-primary"
+                            class="flex min-h-11 items-center gap-1 rounded border border-border-prominent bg-surface-container-lowest px-2 py-1 font-mono text-label-default font-semibold text-canvas-light transition-colors hover:border-primary hover:text-primary sm:min-h-0"
                         >
                             <Download class="size-4" />
                             Download PNG
@@ -181,8 +191,12 @@ useEcho<GenerationUpdatedPayload>(
                 </div>
 
                 <div
-                    class="flex min-h-[420px] items-center justify-center bg-surface-container-lowest"
-                    :class="isActualSize ? 'max-h-[75vh] overflow-auto' : 'p-4'"
+                    class="flex min-h-64 items-center-safe justify-center-safe bg-surface-container-lowest sm:min-h-[420px]"
+                    :class="
+                        isActualSize
+                            ? 'max-h-[75vh] overflow-auto'
+                            : 'p-2 sm:p-4'
+                    "
                 >
                     <img
                         v-if="summary.imageUrl"
@@ -271,7 +285,7 @@ useEcho<GenerationUpdatedPayload>(
                 </div>
             </section>
 
-            <aside class="flex flex-col gap-3 xl:col-span-4">
+            <aside class="flex min-w-0 flex-col gap-3 xl:col-span-4">
                 <Link
                     :href="home({ query: { remix: generation.id } })"
                     class="flex items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)]"
@@ -292,7 +306,7 @@ useEcho<GenerationUpdatedPayload>(
                         </h2>
                         <button
                             type="button"
-                            class="flex items-center gap-1 font-mono text-label-default text-primary hover:underline"
+                            class="flex min-h-11 items-center gap-1 px-1 font-mono text-label-default text-primary hover:underline sm:min-h-0 sm:px-0"
                             @click="copyPrompt"
                         >
                             <Copy class="size-3.5" />
@@ -315,7 +329,9 @@ useEcho<GenerationUpdatedPayload>(
                         <SlidersHorizontal class="size-4 text-tertiary" />
                         Settings
                     </h2>
-                    <dl class="grid grid-cols-2 gap-x-3 gap-y-2">
+                    <dl
+                        class="grid grid-cols-1 gap-x-3 gap-y-2 min-[400px]:grid-cols-2"
+                    >
                         <div
                             v-for="setting in [
                                 { label: 'Size', value: summary.size },

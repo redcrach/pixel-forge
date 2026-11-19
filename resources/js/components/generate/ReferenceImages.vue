@@ -68,6 +68,7 @@ function markPreviewBroken(url: string): void {
 
 <template>
     <section
+        data-field="reference_images"
         class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
     >
         <div class="flex flex-col gap-0.5">
@@ -88,6 +89,7 @@ function markPreviewBroken(url: string): void {
             <li
                 v-for="(url, index) in urls"
                 :key="`${index}-${url}`"
+                :data-field="`reference_images.${index}`"
                 class="flex flex-col gap-0.5"
             >
                 <div
@@ -121,7 +123,7 @@ function markPreviewBroken(url: string): void {
                     <button
                         type="button"
                         title="Remove"
-                        class="flex size-7 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error"
+                        class="flex size-11 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error sm:size-7"
                         @click="removeUrl(index)"
                     >
                         <Trash2 class="size-4" />
@@ -143,7 +145,7 @@ function markPreviewBroken(url: string): void {
                         placeholder="https://example.com/reference.png"
                         aria-label="Reference image URL"
                         :aria-invalid="newUrlError !== null"
-                        class="w-full rounded border bg-surface-container-lowest py-1.5 pr-2 pl-8 font-mono text-[11px] text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
+                        class="min-h-11 w-full rounded border bg-surface-container-lowest py-1.5 pr-2 pl-8 font-mono text-base text-on-surface placeholder:text-outline focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                         :class="
                             newUrlError
                                 ? 'border-error/60'
@@ -155,7 +157,7 @@ function markPreviewBroken(url: string): void {
                 <button
                     type="button"
                     :disabled="newUrl.trim() === ''"
-                    class="flex shrink-0 items-center gap-0.5 rounded border border-border-prominent bg-surface-raised px-2 py-1.5 text-label-dense text-canvas-light transition-colors hover:border-[#4a4a4a] hover:bg-[#242424] disabled:opacity-50"
+                    class="flex min-h-11 shrink-0 items-center gap-0.5 rounded border border-border-prominent bg-surface-raised px-3 py-1.5 text-label-dense text-canvas-light transition-colors hover:border-[#4a4a4a] hover:bg-[#242424] disabled:opacity-50 sm:min-h-0 sm:px-2"
                     @click="addUrl"
                 >
                     <Plus class="size-3.5" />

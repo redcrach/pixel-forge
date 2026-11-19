@@ -35,8 +35,8 @@ const viewModes: {
     >
         <HistoryFilterBar v-model="status" :tabs="tabs" />
 
-        <div class="flex flex-1 items-center gap-2">
-            <label class="relative flex-1">
+        <div class="flex flex-1 flex-wrap items-center gap-2 sm:flex-nowrap">
+            <label class="relative w-full sm:w-auto sm:flex-1">
                 <span class="sr-only">Search prompts</span>
                 <Search
                     class="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-outline"
@@ -45,15 +45,15 @@ const viewModes: {
                     v-model="search"
                     type="search"
                     placeholder="Search prompts…"
-                    class="w-full rounded border border-border-subtle bg-[#141414] py-1.5 pr-2 pl-8 text-body-dense text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
+                    class="min-h-11 w-full rounded border border-border-subtle bg-[#141414] py-1.5 pr-2 pl-8 text-base text-on-surface placeholder:text-outline focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                 />
             </label>
 
-            <label class="shrink-0">
+            <label class="flex-1 sm:flex-none">
                 <span class="sr-only">Sort</span>
                 <select
                     v-model="isDescending"
-                    class="rounded border border-border-subtle bg-[#141414] py-1.5 pr-7 pl-2 font-mono text-label-default text-on-surface focus:border-primary focus:outline-none"
+                    class="min-h-11 w-full rounded border border-border-subtle bg-[#141414] py-1.5 pr-7 pl-2 font-mono text-base text-on-surface focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                 >
                     <option :value="true">Newest first</option>
                     <option :value="false">Oldest first</option>
@@ -72,7 +72,7 @@ const viewModes: {
                     role="radio"
                     :aria-checked="viewMode === mode.value"
                     :title="mode.label"
-                    class="flex size-7 items-center justify-center rounded transition-colors"
+                    class="flex size-11 items-center justify-center rounded transition-colors sm:size-7"
                     :class="
                         viewMode === mode.value
                             ? 'bg-primary/10 text-primary'

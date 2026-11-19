@@ -11,6 +11,7 @@ const quality = defineModel<ImageQuality>({ required: true });
 
 <template>
     <section
+        data-field="quality"
         class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
     >
         <SectionLabel>Quality</SectionLabel>
@@ -26,7 +27,7 @@ const quality = defineModel<ImageQuality>({ required: true });
                 type="button"
                 role="radio"
                 :aria-checked="quality === option.value"
-                class="rounded px-2 py-1 text-center text-label-dense transition-colors"
+                class="min-h-11 rounded px-2 py-1 text-center text-label-dense transition-colors sm:min-h-0"
                 :class="
                     quality === option.value
                         ? 'bg-primary font-semibold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)]'
@@ -36,7 +37,7 @@ const quality = defineModel<ImageQuality>({ required: true });
             >
                 <span class="font-medium">{{ option.label }}</span>
                 <span
-                    class="block font-mono text-[10px]"
+                    class="block font-mono text-[10px] max-[359px]:hidden"
                     :class="
                         quality === option.value
                             ? 'text-primary-foreground/80'

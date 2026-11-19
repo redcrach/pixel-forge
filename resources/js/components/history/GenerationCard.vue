@@ -139,7 +139,7 @@ const isFinished = computed(
                 </p>
                 <div class="flex flex-wrap items-center gap-0.5 pt-0.5">
                     <span
-                        v-for="tag in [generation.size, generation.quality]"
+                        v-for="tag in [generation.shape, generation.quality]"
                         :key="tag"
                         class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
                     >

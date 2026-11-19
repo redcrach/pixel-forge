@@ -22,6 +22,7 @@ const characterCount = computed(() => [...prompt.value].length);
 
 <template>
     <section
+        data-field="prompt"
         class="flex flex-col overflow-hidden rounded-lg border bg-surface-raised transition-colors"
         :class="
             error
@@ -53,7 +54,7 @@ const characterCount = computed(() => [...prompt.value].length);
                 id="prompt"
                 v-model="prompt"
                 rows="5"
-                class="w-full resize-none bg-transparent font-mono text-body-default leading-relaxed text-on-surface placeholder:text-outline/50 focus:outline-none"
+                class="w-full resize-none bg-transparent font-mono text-base leading-relaxed text-on-surface placeholder:text-outline/50 focus:outline-none sm:text-sm"
                 placeholder="Describe the image you want to generate..."
                 @change="emit('change')"
             />

@@ -11,6 +11,7 @@ const size = defineModel<ImageSize>({ required: true });
 
 <template>
     <section
+        data-field="size"
         class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
     >
         <SectionLabel>Size</SectionLabel>
@@ -22,7 +23,7 @@ const size = defineModel<ImageSize>({ required: true });
                 type="button"
                 role="radio"
                 :aria-checked="size === option.value"
-                class="relative flex flex-col rounded-lg p-2 text-left transition-all"
+                class="relative flex flex-col rounded-lg p-2 text-left transition-all max-[359px]:p-1.5"
                 :class="
                     size === option.value
                         ? 'border-2 border-primary bg-surface-container-low shadow-[0_0_12px_rgba(154,230,0,0.25)]'
@@ -37,7 +38,9 @@ const size = defineModel<ImageSize>({ required: true });
                     Default
                 </span>
 
-                <span class="my-0.5 flex h-20 items-center justify-center">
+                <span
+                    class="my-0.5 flex h-16 items-center justify-center sm:h-20"
+                >
                     <span
                         class="flex items-center justify-center rounded-sm"
                         :class="[
@@ -62,7 +65,7 @@ const size = defineModel<ImageSize>({ required: true });
 
                 <span class="mt-auto flex flex-col">
                     <span
-                        class="text-label-default font-semibold text-on-surface"
+                        class="text-label-default font-semibold whitespace-nowrap text-on-surface max-[359px]:text-[10px] max-[359px]:tracking-tight"
                     >
                         {{ option.dimensions }}
                     </span>

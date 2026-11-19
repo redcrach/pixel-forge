@@ -129,7 +129,10 @@ export type GenerationSummary = {
     prompt: string;
     status: GenerationStatus;
     statusLabel: string;
+    /** Exact pixels, e.g. "1536×1024". */
     size: string;
+    /** "Square", "Landscape" or "Portrait". */
+    shape: string;
     quality: string;
     imageUrl?: string;
     isExpired?: boolean;

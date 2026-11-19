@@ -7,6 +7,7 @@ import type {
     HistoryFilters,
     HistoryStatusFilter,
     ImageQuality,
+    ImageSize,
 } from '@/types';
 
 const statusLabels: Record<GenerationStatus, string> = {
@@ -16,6 +17,12 @@ const statusLabels: Record<GenerationStatus, string> = {
     processing: 'Processing',
     succeeded: 'Succeeded',
     failed: 'Failed',
+};
+
+const shapeLabels: Record<ImageSize, string> = {
+    '1024x1024': 'Square',
+    '1536x1024': 'Landscape',
+    '1024x1536': 'Portrait',
 };
 
 const qualityLabels: Record<ImageQuality, string> = {
@@ -100,6 +107,7 @@ export function toGenerationSummary(
         status: generation.status,
         statusLabel: statusLabels[generation.status],
         size: generation.size.replace('x', '×'),
+        shape: shapeLabels[generation.size],
         quality: qualityLabels[generation.quality],
         imageUrl: generation.image_url ?? undefined,
         isExpired: generation.is_image_expired,

@@ -28,6 +28,7 @@ class StoreGenerationRequest extends FormRequest
         return [
             'reference_images.max' => 'You can add up to 4 reference images.',
             'reference_images.*.url' => 'Reference images must be http(s) URLs.',
+            'reference_images.*.max' => 'Reference image URLs can be at most 2,048 characters.',
         ];
     }
 }

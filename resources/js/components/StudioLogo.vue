@@ -10,7 +10,9 @@
                 <rect x="9" y="9" width="6" height="6" rx="1" />
             </svg>
         </div>
-        <div class="flex items-center gap-1 font-display text-headline-sm">
+        <div
+            class="hidden items-center gap-1 font-display text-headline-sm min-[400px]:flex"
+        >
             <span class="tracking-tight text-on-surface">Pixelforge</span>
             <span class="text-primary">Studio</span>
         </div>
