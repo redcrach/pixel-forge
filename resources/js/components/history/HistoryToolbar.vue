@@ -30,9 +30,7 @@ const viewModes: {
 </script>
 
 <template>
-    <div
-        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-2 lg:flex-row lg:items-center"
-    >
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
         <HistoryFilterBar v-model="status" :tabs="tabs" />
 
         <div class="flex flex-1 flex-wrap items-center gap-2 sm:flex-nowrap">
@@ -44,8 +42,8 @@ const viewModes: {
                 <input
                     v-model="search"
                     type="search"
-                    placeholder="Search prompts…"
-                    class="min-h-11 w-full rounded border border-border-subtle bg-[#141414] py-1.5 pr-2 pl-8 text-base text-on-surface placeholder:text-outline focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
+                    placeholder="[ Find prompt / keyword… ]"
+                    class="min-h-11 w-full border-2 border-surface-container-highest bg-surface-container-lowest py-1.5 pr-2 pl-8 text-base text-primary placeholder:text-outline placeholder:uppercase focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                 />
             </label>
 
@@ -53,7 +51,7 @@ const viewModes: {
                 <span class="sr-only">Sort</span>
                 <select
                     v-model="isDescending"
-                    class="min-h-11 w-full rounded border border-border-subtle bg-[#141414] py-1.5 pr-7 pl-2 font-mono text-base text-on-surface focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
+                    class="min-h-11 w-full border-2 border-surface-container-highest bg-surface-container-lowest py-1.5 pr-7 pl-2 font-mono text-base text-on-surface uppercase focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                 >
                     <option :value="true">Newest first</option>
                     <option :value="false">Oldest first</option>
@@ -61,7 +59,7 @@ const viewModes: {
             </label>
 
             <div
-                class="flex shrink-0 items-center gap-0.5 rounded border border-border-subtle bg-surface-container-lowest p-0.5"
+                class="flex shrink-0 items-center gap-0.5 border-2 border-surface-container-highest bg-surface-container-lowest p-0.5"
                 role="radiogroup"
                 aria-label="Layout"
             >
@@ -72,10 +70,10 @@ const viewModes: {
                     role="radio"
                     :aria-checked="viewMode === mode.value"
                     :title="mode.label"
-                    class="flex size-11 items-center justify-center rounded transition-colors sm:size-7"
+                    class="flex size-11 items-center justify-center transition-colors sm:size-7"
                     :class="
                         viewMode === mode.value
-                            ? 'bg-primary/10 text-primary'
+                            ? 'bg-primary text-primary-foreground'
                             : 'text-outline hover:text-on-surface'
                     "
                     @click="viewMode = mode.value"

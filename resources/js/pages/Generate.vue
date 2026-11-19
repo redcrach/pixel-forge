@@ -186,10 +186,10 @@ onMounted(refreshEstimate);
     <Head title="Generate" />
 
     <form
-        class="grid grid-cols-1 items-start gap-3 pb-24 lg:grid-cols-12 lg:pb-0"
+        class="grid grid-cols-1 items-start gap-4 lg:grid-cols-12"
         @submit.prevent="submit"
     >
-        <div class="flex flex-col gap-3 lg:col-span-7 xl:col-span-8">
+        <div class="flex flex-col gap-4 lg:col-span-7 xl:col-span-8">
             <PromptEditor
                 v-model="form.prompt"
                 :error="form.errors.prompt"

@@ -130,11 +130,18 @@ useEcho<GenerationUpdatedPayload>(
     <Head title="History" />
 
     <div class="flex flex-col gap-4">
-        <div class="flex flex-col gap-0.5">
-            <h1
-                class="font-display text-headline-lg text-on-surface sm:text-headline-xl"
+        <div
+            class="flex flex-col gap-1 bg-surface-container-low p-4 shadow-pixel"
+        >
+            <span
+                class="font-mono text-label-default font-bold tracking-wider text-primary uppercase"
             >
-                History
+                Archive_node // History
+            </span>
+            <h1
+                class="font-display text-headline-lg font-bold text-on-surface uppercase sm:text-headline-xl"
+            >
+                Generation logs &amp; archive
             </h1>
             <p class="text-body-default text-on-surface-variant">
                 Your generations, their status and what they cost.
@@ -154,10 +161,10 @@ useEcho<GenerationUpdatedPayload>(
 
             <div
                 v-if="generationSummaries.length === 0"
-                class="flex flex-col items-center gap-1 rounded-lg border border-border-subtle bg-surface-raised px-6 py-10 text-center"
+                class="flex flex-col items-center gap-1 border-2 border-border-subtle bg-surface-raised px-6 py-10 text-center shadow-pixel"
             >
                 <SearchX class="size-6 text-outline" />
-                <p class="text-body-default text-on-surface">
+                <p class="text-body-default text-on-surface uppercase">
                     No generations match these filters.
                 </p>
             </div>
@@ -192,7 +199,7 @@ useEcho<GenerationUpdatedPayload>(
 
                 <template #loading>
                     <div
-                        class="flex items-center justify-center gap-1 py-3 text-label-default text-on-surface-variant"
+                        class="flex items-center justify-center gap-1 py-3 text-label-default text-wheat uppercase"
                     >
                         <LoaderCircle class="size-4 animate-spin" />
                         Loading older generations…

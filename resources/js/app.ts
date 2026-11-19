@@ -35,7 +35,7 @@ void createInertiaApp({
         });
     },
     progress: {
-        color: '#4B5563',
+        color: '#6ee7b7',
     },
     // Live props reload themselves when their broadcast event arrives, and after a dropped connection returns.
     live: echo(),

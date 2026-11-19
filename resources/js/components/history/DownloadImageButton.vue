@@ -15,7 +15,7 @@ defineProps<{
     <a
         :href="downloadGenerationImage.url(generationId)"
         title="Download image"
-        class="relative z-20 flex size-11 shrink-0 items-center justify-center rounded border border-border-prominent bg-surface-raised text-[#a3a3a3] transition-colors hover:border-primary hover:text-primary sm:size-8"
+        class="pixel-press relative z-20 flex size-11 shrink-0 items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary-container sm:size-8"
         @click.stop
     >
         <Download class="size-4" />

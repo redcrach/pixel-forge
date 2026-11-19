@@ -12,9 +12,11 @@ const size = defineModel<ImageSize>({ required: true });
 <template>
     <section
         data-field="size"
-        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+        class="flex flex-col gap-2 border-2 border-border-subtle bg-surface-raised p-2 shadow-pixel"
     >
-        <SectionLabel>Size</SectionLabel>
+        <div class="bg-surface-container-high px-2 py-1">
+            <SectionLabel>Aspect ratio &amp; size</SectionLabel>
+        </div>
 
         <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Size">
             <button
@@ -23,17 +25,17 @@ const size = defineModel<ImageSize>({ required: true });
                 type="button"
                 role="radio"
                 :aria-checked="size === option.value"
-                class="relative flex flex-col rounded-lg p-2 text-left transition-all max-[359px]:p-1.5"
+                class="relative flex flex-col p-2 text-left transition-transform hover:-translate-y-0.5 max-[359px]:p-1.5"
                 :class="
                     size === option.value
-                        ? 'border-2 border-primary bg-surface-container-low shadow-[0_0_12px_rgba(154,230,0,0.25)]'
-                        : 'border border-border-subtle bg-surface-container-lowest hover:border-border-prominent hover:bg-surface-container-low'
+                        ? 'bg-primary text-primary-foreground shadow-pixel'
+                        : 'bg-surface-container-low text-on-surface shadow-pixel-sm hover:bg-surface-container-high'
                 "
                 @click="size = option.value"
             >
                 <span
                     v-if="option.isDefault"
-                    class="absolute top-2 right-2 hidden rounded-full bg-primary px-1.5 py-0.5 font-mono text-mono-badge font-semibold text-primary-foreground uppercase sm:inline"
+                    class="absolute top-2 right-2 hidden bg-primary-foreground px-1 py-0.5 font-mono text-mono-badge font-bold text-primary uppercase sm:inline"
                 >
                     Default
                 </span>
@@ -42,12 +44,12 @@ const size = defineModel<ImageSize>({ required: true });
                     class="my-0.5 flex h-16 items-center justify-center sm:h-20"
                 >
                     <span
-                        class="flex items-center justify-center rounded-sm"
+                        class="flex items-center justify-center shadow-pixel-inset"
                         :class="[
                             option.previewClass,
                             size === option.value
-                                ? 'border-2 border-primary bg-primary/10'
-                                : 'border border-border-prominent bg-surface-container',
+                                ? 'bg-primary-foreground'
+                                : 'bg-surface-container-lowest',
                         ]"
                     >
                         <span
@@ -55,7 +57,7 @@ const size = defineModel<ImageSize>({ required: true });
                             :class="
                                 size === option.value
                                     ? 'font-bold text-primary'
-                                    : 'text-on-surface-variant'
+                                    : 'text-wheat'
                             "
                         >
                             {{ option.ratio }}
@@ -65,12 +67,19 @@ const size = defineModel<ImageSize>({ required: true });
 
                 <span class="mt-auto flex flex-col">
                     <span
-                        class="text-label-default font-semibold whitespace-nowrap text-on-surface max-[359px]:text-[10px] max-[359px]:tracking-tight"
+                        class="text-label-default font-bold whitespace-nowrap max-[359px]:text-[10px] max-[359px]:tracking-tight"
                     >
                         {{ option.dimensions }}
                     </span>
-                    <span class="font-mono text-label-dense text-outline">
-                        {{ option.description }}
+                    <span
+                        class="font-mono text-label-dense uppercase"
+                        :class="
+                            size === option.value
+                                ? 'text-primary-foreground/80'
+                                : 'text-outline'
+                        "
+                    >
+                        [{{ option.description }}]
                     </span>
                 </span>
             </button>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { Calculator, LoaderCircle, LogIn, Zap } from '@lucide/vue';
+import { LoaderCircle, LogIn, Zap } from '@lucide/vue';
 import { computed } from 'vue';
 import InsufficientCreditsNotice from '@/components/generate/InsufficientCreditsNotice.vue';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,15 +61,17 @@ function formatTokens(line: EstimateLine): string {
 <template>
     <TooltipProvider>
         <section
-            class="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface-raised p-4"
+            class="flex flex-col gap-3 border-2 border-border-subtle bg-surface-raised p-2 shadow-pixel"
         >
             <div
-                class="flex items-center justify-between border-b border-border-subtle pb-2"
+                class="flex items-center justify-between bg-surface-container-high px-2 py-1.5"
             >
-                <div class="flex items-center gap-1">
-                    <Calculator class="size-4.5 text-primary" />
-                    <h2 class="font-display text-headline-sm text-on-surface">
-                        Cost estimate
+                <div class="flex items-center gap-1.5">
+                    <span class="size-3 animate-pulse bg-primary" />
+                    <h2
+                        class="font-display text-headline-sm font-bold tracking-wider text-primary uppercase"
+                    >
+                        [ Cost estimate ]
                     </h2>
                 </div>
                 <LoaderCircle
@@ -95,29 +97,24 @@ function formatTokens(line: EstimateLine): string {
                 class="flex flex-col gap-2 transition-opacity"
                 :class="{ 'opacity-60': isEstimating }"
             >
-                <div class="flex flex-wrap items-baseline gap-1 py-0.5">
+                <div
+                    class="flex flex-col gap-0.5 bg-surface-container-lowest p-2 shadow-pixel-inset"
+                >
                     <span
-                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-on-surface tabular-nums"
+                        class="font-mono text-label-dense text-on-surface-variant uppercase"
                     >
-                        {{ formatMoney(estimate.total_min_nano) }}
+                        Estimated run cost (USD)
                     </span>
                     <span
-                        class="font-mono text-headline-sm font-normal text-outline"
+                        class="font-display text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
                     >
-                        –
-                    </span>
-                    <span
-                        class="font-mono text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
-                    >
-                        {{ formatMoney(estimate.total_max_nano, 4, 'up') }}
-                    </span>
-                    <span class="ml-1 font-mono text-label-dense text-outline">
-                        USD
+                        [ {{ formatMoney(estimate.total_min_nano) }} –
+                        {{ formatMoney(estimate.total_max_nano, 4, 'up') }} ]
                     </span>
                 </div>
 
                 <div
-                    class="flex flex-col divide-y divide-border-subtle border-y border-border-subtle py-0.5 text-label-default"
+                    class="flex flex-col divide-y-2 divide-surface-container-high bg-surface-container-low px-2 text-label-default"
                 >
                     <div
                         v-for="line in lines"
@@ -126,13 +123,13 @@ function formatTokens(line: EstimateLine): string {
                     >
                         <div class="flex flex-col">
                             <div class="flex items-center gap-1.5">
-                                <span class="font-medium text-on-surface">
+                                <span class="text-on-surface-variant uppercase">
                                     {{ line.label }}
                                 </span>
                                 <Tooltip v-if="line.isEstimate">
                                     <TooltipTrigger as-child>
                                         <span
-                                            class="cursor-help rounded-full border border-border-prominent bg-surface-container-lowest px-1 font-mono text-[9px] text-outline uppercase"
+                                            class="cursor-help border border-border-prominent bg-surface-container-lowest px-1 font-mono text-[9px] text-wheat uppercase"
                                         >
                                             est
                                         </span>
@@ -148,7 +145,7 @@ function formatTokens(line: EstimateLine): string {
                             </span>
                         </div>
                         <span
-                            class="shrink-0 font-mono text-on-surface tabular-nums"
+                            class="shrink-0 font-mono font-bold text-on-surface tabular-nums"
                         >
                             {{
                                 formatMoneyRange(
@@ -168,24 +165,24 @@ function formatTokens(line: EstimateLine): string {
 
             <template v-if="isAuthenticated">
                 <div
-                    class="flex flex-col divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface-container-lowest text-label-default"
+                    class="flex flex-col bg-surface-container-lowest py-1 text-label-default"
                 >
                     <div
-                        class="flex items-center justify-between gap-2 px-3 py-2"
+                        class="flex items-center justify-between gap-2 px-3 py-1"
                     >
-                        <span class="text-on-surface-variant">
+                        <span class="text-on-surface-variant uppercase">
                             Current balance
                         </span>
                         <span
-                            class="font-mono font-semibold text-on-surface tabular-nums"
+                            class="font-mono font-bold tracking-wider text-wheat tabular-nums"
                         >
                             {{ formatMoney(balanceNano) }}
                         </span>
                     </div>
                     <div
-                        class="flex items-center justify-between gap-2 px-3 py-2"
+                        class="flex items-center justify-between gap-2 px-3 py-1"
                     >
-                        <span class="text-on-surface-variant">
+                        <span class="text-on-surface-variant uppercase">
                             Balance after max charge
                             <span v-if="estimate" class="font-mono">
                                 ({{
@@ -198,7 +195,7 @@ function formatTokens(line: EstimateLine): string {
                             </span>
                         </span>
                         <span
-                            class="flex shrink-0 items-center gap-1.5 font-mono font-semibold tabular-nums"
+                            class="flex shrink-0 items-center gap-1.5 font-mono font-bold tracking-wider tabular-nums"
                             :class="
                                 hasInsufficientBalance
                                     ? 'text-error'
@@ -206,7 +203,7 @@ function formatTokens(line: EstimateLine): string {
                             "
                         >
                             <span
-                                class="size-1.5 rounded-full"
+                                class="size-1.5"
                                 :class="
                                     hasInsufficientBalance
                                         ? 'bg-error'
@@ -227,14 +224,14 @@ function formatTokens(line: EstimateLine): string {
                     :disabled="
                         isSubmitting || isPromptEmpty || hasInsufficientBalance
                     "
-                    class="hidden w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:flex"
+                    class="pixel-press hidden w-full items-center justify-center gap-1 bg-primary py-3 font-display text-headline-sm font-bold tracking-wider text-primary-foreground uppercase transition-colors hover:bg-primary-container disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:flex"
                 >
                     <LoaderCircle
                         v-if="isSubmitting"
                         class="size-4.5 animate-spin"
                     />
                     <Zap v-else class="size-4.5" />
-                    Generate image
+                    [ Generate image ]
                 </button>
 
                 <InsufficientCreditsNotice
@@ -247,10 +244,10 @@ function formatTokens(line: EstimateLine): string {
             <Link
                 v-else
                 :href="login()"
-                class="hidden w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container lg:flex"
+                class="pixel-press hidden w-full items-center justify-center gap-1 bg-primary py-3 font-display text-headline-sm font-bold tracking-wider text-primary-foreground uppercase transition-colors hover:bg-primary-container lg:flex"
             >
                 <LogIn class="size-4.5" />
-                Log in to generate
+                [ Log in to generate ]
             </Link>
         </section>
     </TooltipProvider>

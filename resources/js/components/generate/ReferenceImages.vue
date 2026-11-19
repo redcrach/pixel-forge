@@ -69,18 +69,20 @@ function markPreviewBroken(url: string): void {
 <template>
     <section
         data-field="reference_images"
-        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+        class="flex flex-col gap-2 border-2 border-border-subtle bg-surface-raised p-2 shadow-pixel"
     >
-        <div class="flex flex-col gap-0.5">
-            <div class="flex items-center gap-1">
+        <div class="flex flex-col gap-1">
+            <div
+                class="flex items-center justify-between gap-1 bg-surface-container-high px-2 py-1"
+            >
                 <SectionLabel>Reference images</SectionLabel>
                 <span
-                    class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 font-mono text-mono-badge text-on-surface"
+                    class="bg-surface-container-lowest px-1 font-mono text-mono-badge text-wheat"
                 >
-                    {{ urls.length }} / {{ maxImages }}
+                    [ {{ urls.length }} / {{ maxImages }} ]
                 </span>
             </div>
-            <p class="text-label-dense text-on-surface-variant">
+            <p class="px-1 text-label-dense text-on-surface-variant">
                 Optional. Image URLs only, each billed as 765 image tokens.
             </p>
         </div>
@@ -93,15 +95,15 @@ function markPreviewBroken(url: string): void {
                 class="flex flex-col gap-0.5"
             >
                 <div
-                    class="flex items-center gap-2 rounded border bg-surface-container-lowest p-1.5"
+                    class="flex items-center gap-2 border-2 bg-surface-container-lowest p-1.5 shadow-pixel-sm"
                     :class="
                         errors[`reference_images.${index}`]
-                            ? 'border-error/60'
-                            : 'border-border-subtle'
+                            ? 'border-error'
+                            : 'border-transparent'
                     "
                 >
                     <span
-                        class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded border border-outline-variant/50 bg-surface-container-highest text-outline"
+                        class="flex size-10 shrink-0 items-center justify-center overflow-hidden bg-surface-container-highest text-outline [image-rendering:pixelated]"
                     >
                         <ImageOff
                             v-if="brokenPreviews.has(url)"
@@ -123,7 +125,7 @@ function markPreviewBroken(url: string): void {
                     <button
                         type="button"
                         title="Remove"
-                        class="flex size-11 shrink-0 items-center justify-center rounded text-outline transition-colors hover:bg-error/10 hover:text-error sm:size-7"
+                        class="flex size-11 shrink-0 items-center justify-center bg-error-container text-error transition-colors hover:bg-error hover:text-error-container sm:size-7"
                         @click="removeUrl(index)"
                     >
                         <Trash2 class="size-4" />
@@ -145,11 +147,9 @@ function markPreviewBroken(url: string): void {
                         placeholder="https://example.com/reference.png"
                         aria-label="Reference image URL"
                         :aria-invalid="newUrlError !== null"
-                        class="min-h-11 w-full rounded border bg-surface-container-lowest py-1.5 pr-2 pl-8 font-mono text-base text-on-surface placeholder:text-outline focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
+                        class="min-h-11 w-full border-2 bg-surface-container-lowest py-1.5 pr-2 pl-8 font-mono text-base text-primary shadow-pixel-inset placeholder:text-outline focus:border-primary focus:outline-none sm:min-h-0 sm:text-sm"
                         :class="
-                            newUrlError
-                                ? 'border-error/60'
-                                : 'border-border-subtle'
+                            newUrlError ? 'border-error' : 'border-transparent'
                         "
                         @keydown.enter.prevent="addUrl"
                     />
@@ -157,11 +157,11 @@ function markPreviewBroken(url: string): void {
                 <button
                     type="button"
                     :disabled="newUrl.trim() === ''"
-                    class="flex min-h-11 shrink-0 items-center gap-0.5 rounded border border-border-prominent bg-surface-raised px-3 py-1.5 text-label-dense text-canvas-light transition-colors hover:border-[#4a4a4a] hover:bg-[#242424] disabled:opacity-50 sm:min-h-0 sm:px-2"
+                    class="pixel-press flex min-h-11 shrink-0 items-center gap-0.5 bg-surface-container-high px-3 py-1.5 text-label-dense font-bold text-on-surface uppercase transition-colors hover:bg-surface-container-highest disabled:opacity-50 sm:min-h-0 sm:px-2"
                     @click="addUrl"
                 >
-                    <Plus class="size-3.5" />
-                    Add
+                    <Plus class="size-3.5 text-wheat" />
+                    [ Add ]
                 </button>
             </div>
             <InputError :message="newUrlError ?? undefined" />

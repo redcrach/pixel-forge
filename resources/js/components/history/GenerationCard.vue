@@ -21,21 +21,21 @@ const isFinished = computed(
 
 <template>
     <article
-        class="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border transition-all"
+        class="group relative flex cursor-pointer flex-col overflow-hidden border-2 bg-surface-raised p-1.5 shadow-pixel transition-colors"
         :class="
             isSelected
-                ? 'border-primary bg-surface-raised shadow-[0_0_12px_rgba(154,230,0,0.25)]'
-                : 'border-border-subtle bg-surface-raised hover:border-border-prominent'
+                ? 'border-primary'
+                : 'border-transparent hover:border-border-prominent'
         "
     >
         <div
-            class="relative flex aspect-video w-full items-center justify-center overflow-hidden border-b border-border-subtle bg-surface-container-lowest"
+            class="relative flex aspect-video w-full items-center justify-center overflow-hidden bg-surface-container-lowest shadow-pixel-inset"
         >
             <template v-if="generation.imageUrl">
                 <img
                     :src="generation.imageUrl"
                     :alt="generation.prompt"
-                    class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    class="size-full object-cover"
                 />
                 <div
                     class="absolute inset-0 bg-linear-to-t from-surface-container-lowest via-transparent to-transparent opacity-80"
@@ -47,10 +47,10 @@ const isFinished = computed(
                 class="flex flex-col items-center gap-1"
             >
                 <div
-                    class="absolute inset-0 animate-shimmer bg-linear-to-r from-transparent via-surface-container-high/40 to-transparent"
+                    class="absolute inset-0 animate-pulse bg-[repeating-linear-gradient(90deg,transparent_0,transparent_24px,color-mix(in_srgb,var(--color-primary)_18%,transparent)_24px,color-mix(in_srgb,var(--color-primary)_18%,transparent)_48px)]"
                 />
                 <div
-                    class="relative flex size-9 items-center justify-center rounded-full border border-amber-400/30 bg-amber-400/10"
+                    class="relative flex size-9 items-center justify-center bg-surface-container-high"
                 >
                     <LoaderCircle class="size-5 animate-spin text-amber-400" />
                 </div>
@@ -67,7 +67,7 @@ const isFinished = computed(
                 title="Waiting for a free slot, it will be sent automatically"
             >
                 <div
-                    class="flex size-9 items-center justify-center rounded-full border border-border-prominent bg-surface-container-high text-outline"
+                    class="flex size-9 items-center justify-center bg-surface-container-high text-on-surface-variant"
                 >
                     <Hourglass class="size-5" />
                 </div>
@@ -82,7 +82,7 @@ const isFinished = computed(
                 class="flex flex-col items-center gap-1"
             >
                 <div
-                    class="flex size-9 items-center justify-center rounded-full border border-tertiary/30 bg-tertiary/10 text-tertiary"
+                    class="flex size-9 items-center justify-center bg-surface-container-high text-wheat"
                 >
                     <ListOrdered class="size-5" />
                 </div>
@@ -97,18 +97,20 @@ const isFinished = computed(
                 class="flex flex-col items-center p-2 text-center"
             >
                 <div
-                    class="mb-0.5 flex size-9 items-center justify-center rounded-full bg-surface-container-high text-outline"
+                    class="mb-0.5 flex size-9 items-center justify-center bg-surface-container-high text-outline"
                 >
                     <CloudOff class="size-5" />
                 </div>
-                <span class="text-body-dense font-medium text-on-surface">
+                <span
+                    class="font-mono text-label-default tracking-wider text-outline uppercase"
+                >
                     Image expired
                 </span>
             </div>
 
             <template v-else-if="isFailed">
                 <div
-                    class="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--color-error),var(--color-error)_10px,transparent_10px,transparent_20px)] opacity-10"
+                    class="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--color-error),var(--color-error)_10px,transparent_10px,transparent_20px)] opacity-15"
                 />
                 <div
                     class="relative flex flex-col items-center gap-0.5 p-2 text-center"
@@ -126,13 +128,13 @@ const isFinished = computed(
 
             <StatusBadge
                 v-if="isFinished"
-                class="absolute top-2 right-2 backdrop-blur-sm"
+                class="absolute top-2 right-2 shadow-pixel-sm"
                 :status="generation.status"
                 :label="generation.statusLabel"
             />
         </div>
 
-        <div class="flex flex-1 flex-col justify-between gap-3 p-3">
+        <div class="flex flex-1 flex-col justify-between gap-2 px-1 pt-2">
             <div class="flex flex-col gap-0.5">
                 <p class="line-clamp-2 text-body-dense text-on-surface">
                     {{ generation.prompt }}
@@ -141,15 +143,15 @@ const isFinished = computed(
                     <span
                         v-for="tag in [generation.shape, generation.quality]"
                         :key="tag"
-                        class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
+                        class="bg-surface-container-lowest px-1 py-0.5 font-mono text-mono-badge text-on-surface-variant uppercase"
                     >
-                        {{ tag }}
+                        [ {{ tag }} ]
                     </span>
                 </div>
             </div>
 
             <div
-                class="flex items-center justify-between border-t border-border-subtle pt-2"
+                class="flex items-center justify-between bg-surface-container-lowest px-2 py-1"
             >
                 <div class="flex flex-col">
                     <span class="text-label-dense text-outline">
@@ -159,7 +161,7 @@ const isFinished = computed(
                         class="font-mono text-mono-metric tabular-nums"
                         :class="{
                             'text-primary': isFailed,
-                            'font-semibold text-on-surface':
+                            'font-bold text-primary':
                                 generation.status === 'succeeded',
                             'text-on-surface-variant': !isFinished,
                         }"
@@ -181,7 +183,7 @@ const isFinished = computed(
         <!-- The whole card opens the generation; the download button sits above this link. -->
         <Link
             :href="showGeneration(generation.id)"
-            class="absolute inset-0 z-10 rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
             <span class="sr-only">View generation</span>
         </Link>

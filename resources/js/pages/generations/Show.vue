@@ -10,10 +10,7 @@ import {
     ImageIcon,
     ListOrdered,
     LoaderCircle,
-    Receipt,
-    SlidersHorizontal,
     Sparkles,
-    Type,
 } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -107,13 +104,15 @@ useEcho<GenerationUpdatedPayload>(
             <div class="flex items-center gap-2">
                 <Link
                     :href="history()"
-                    class="flex min-h-11 items-center gap-1 rounded border border-border-subtle bg-surface-raised px-2 py-1 font-mono text-label-default text-on-surface-variant transition-colors hover:border-border-prominent hover:text-on-surface sm:min-h-0"
+                    class="pixel-press flex min-h-11 items-center gap-1 bg-surface-container-high px-2 py-1 font-mono text-label-default font-bold text-on-surface uppercase transition-colors hover:bg-surface-container-highest sm:min-h-0"
                 >
                     <ArrowLeft class="size-4" />
-                    History
+                    [ History ]
                 </Link>
                 <span class="font-mono text-label-default text-outline">/</span>
-                <h1 class="font-display text-headline-lg text-on-surface">
+                <h1
+                    class="font-display text-headline-lg font-bold text-on-surface uppercase"
+                >
                     Generation
                 </h1>
             </div>
@@ -123,7 +122,7 @@ useEcho<GenerationUpdatedPayload>(
                     :label="summary.statusLabel"
                 />
                 <span
-                    class="rounded-full border border-border-subtle bg-surface-raised px-2 py-0.5 font-mono text-label-default tabular-nums"
+                    class="border-2 border-surface-container-highest bg-surface-container-low px-2 py-0.5 font-mono text-label-default font-bold tabular-nums"
                     :class="
                         generation.status === 'succeeded'
                             ? 'text-primary'
@@ -137,15 +136,17 @@ useEcho<GenerationUpdatedPayload>(
 
         <div class="grid grid-cols-1 items-start gap-4 xl:grid-cols-12">
             <section
-                class="flex min-w-0 flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface-raised xl:col-span-8"
+                class="flex min-w-0 flex-col gap-2 overflow-hidden bg-surface-raised p-2 shadow-pixel xl:col-span-8"
             >
                 <div
-                    class="flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle px-3 py-2"
+                    class="flex flex-wrap items-center justify-between gap-2 bg-surface-container-high px-2 py-1"
                 >
-                    <span class="font-mono text-label-default text-on-surface">
-                        {{ summary.size }} px
-                        <span class="text-outline"
-                            >· PNG · {{ summary.quality }}</span
+                    <span
+                        class="font-mono text-label-default font-bold text-primary uppercase"
+                    >
+                        [ {{ summary.size }} px ]
+                        <span class="text-on-surface-variant"
+                            >[ PNG · {{ summary.quality }} ]</span
                         >
                     </span>
 
@@ -154,7 +155,7 @@ useEcho<GenerationUpdatedPayload>(
                         class="flex items-center gap-2"
                     >
                         <div
-                            class="flex items-center gap-0.5 rounded border border-border-subtle bg-surface-container-lowest p-0.5 font-mono text-label-default"
+                            class="flex items-center gap-1 font-mono text-label-default"
                             role="radiogroup"
                             aria-label="Zoom"
                         >
@@ -167,31 +168,31 @@ useEcho<GenerationUpdatedPayload>(
                                 type="button"
                                 role="radio"
                                 :aria-checked="isActualSize === option.isActual"
-                                class="flex min-h-11 min-w-11 items-center justify-center rounded px-2 py-0.5 transition-colors sm:min-h-0 sm:min-w-0"
+                                class="flex min-h-11 min-w-11 items-center justify-center px-2 py-0.5 uppercase transition-colors sm:min-h-0 sm:min-w-0"
                                 :class="
                                     isActualSize === option.isActual
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-outline hover:text-on-surface'
+                                        ? 'bg-primary font-bold text-primary-foreground'
+                                        : 'bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
                                 "
                                 @click="isActualSize = option.isActual"
                             >
-                                {{ option.label }}
+                                [ {{ option.label }} ]
                             </button>
                         </div>
 
                         <a
                             v-if="summary.canDownload"
                             :href="downloadGenerationImage.url(generation.id)"
-                            class="flex min-h-11 items-center gap-1 rounded border border-border-prominent bg-surface-container-lowest px-2 py-1 font-mono text-label-default font-semibold text-canvas-light transition-colors hover:border-primary hover:text-primary sm:min-h-0"
+                            class="flex min-h-11 items-center gap-1 bg-surface-container-lowest px-2 py-1 font-mono text-label-default font-bold text-primary uppercase transition-colors hover:bg-surface-container-highest sm:min-h-0"
                         >
                             <Download class="size-4" />
-                            Download PNG
+                            [ Save .png ]
                         </a>
                     </div>
                 </div>
 
                 <div
-                    class="flex min-h-64 items-center-safe justify-center-safe bg-surface-container-lowest sm:min-h-[420px]"
+                    class="flex min-h-64 items-center-safe justify-center-safe bg-surface-container-lowest shadow-pixel-inset sm:min-h-[420px]"
                     :class="
                         isActualSize
                             ? 'max-h-[75vh] overflow-auto'
@@ -202,7 +203,7 @@ useEcho<GenerationUpdatedPayload>(
                         v-if="summary.imageUrl"
                         :src="summary.imageUrl"
                         :alt="generation.prompt"
-                        class="rounded"
+                        class="shadow-pixel"
                         :class="
                             isActualSize
                                 ? 'max-w-none'
@@ -215,7 +216,7 @@ useEcho<GenerationUpdatedPayload>(
                         class="flex flex-col items-center gap-2 text-center"
                     >
                         <div
-                            class="flex size-12 items-center justify-center rounded-full border border-amber-400/30 bg-amber-400/10"
+                            class="flex size-12 items-center justify-center bg-surface-container-high"
                         >
                             <LoaderCircle
                                 class="size-6 animate-spin text-amber-400"
@@ -237,7 +238,7 @@ useEcho<GenerationUpdatedPayload>(
                         class="flex flex-col items-center gap-2 text-center"
                     >
                         <div
-                            class="flex size-12 items-center justify-center rounded-full border border-tertiary/30 bg-tertiary/10 text-tertiary"
+                            class="flex size-12 items-center justify-center bg-surface-container-high text-wheat"
                         >
                             <ListOrdered
                                 v-if="generation.status === 'queued'"
@@ -288,25 +289,25 @@ useEcho<GenerationUpdatedPayload>(
             <aside class="flex min-w-0 flex-col gap-3 xl:col-span-4">
                 <Link
                     :href="home({ query: { remix: generation.id } })"
-                    class="flex items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)]"
+                    class="pixel-press flex items-center justify-center gap-1 border-2 border-primary-container bg-primary py-4 font-display text-headline-sm font-bold tracking-wider text-primary-foreground uppercase transition-colors hover:bg-primary-container"
                 >
                     <Sparkles class="size-4.5" />
-                    Remix this prompt
+                    [ Remix this prompt ]
                 </Link>
 
                 <section
-                    class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+                    class="flex flex-col gap-2 bg-surface-raised p-3 shadow-pixel"
                 >
                     <div class="flex items-center justify-between">
                         <h2
-                            class="flex items-center gap-1 font-display text-headline-sm text-on-surface"
+                            class="flex items-center gap-1.5 font-mono text-label-default font-bold tracking-[0.08em] text-primary uppercase"
                         >
-                            <Type class="size-4 text-primary" />
-                            Prompt
+                            <span class="size-2 bg-primary" />
+                            [ Prompt command ]
                         </h2>
                         <button
                             type="button"
-                            class="flex min-h-11 items-center gap-1 px-1 font-mono text-label-default text-primary hover:underline sm:min-h-0 sm:px-0"
+                            class="flex min-h-11 items-center gap-1 bg-surface-container-lowest px-1.5 font-mono text-label-default text-wheat uppercase hover:text-on-surface sm:min-h-0"
                             @click="copyPrompt"
                         >
                             <Copy class="size-3.5" />
@@ -314,24 +315,22 @@ useEcho<GenerationUpdatedPayload>(
                         </button>
                     </div>
                     <p
-                        class="font-mono text-body-dense leading-relaxed whitespace-pre-wrap text-on-surface"
+                        class="bg-surface-container-lowest p-2 font-mono text-body-dense leading-relaxed whitespace-pre-wrap text-primary shadow-pixel-inset"
                     >
                         {{ generation.prompt }}
                     </p>
                 </section>
 
                 <section
-                    class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+                    class="flex flex-col gap-2 bg-surface-raised p-3 shadow-pixel"
                 >
                     <h2
-                        class="flex items-center gap-1 font-display text-headline-sm text-on-surface"
+                        class="flex items-center gap-1.5 font-mono text-label-default font-bold tracking-[0.08em] text-wheat uppercase"
                     >
-                        <SlidersHorizontal class="size-4 text-tertiary" />
-                        Settings
+                        <span class="size-2 bg-wheat" />
+                        [ Parameters ]
                     </h2>
-                    <dl
-                        class="grid grid-cols-1 gap-x-3 gap-y-2 min-[400px]:grid-cols-2"
-                    >
+                    <dl class="grid grid-cols-1 gap-1 min-[400px]:grid-cols-2">
                         <div
                             v-for="setting in [
                                 { label: 'Size', value: summary.size },
@@ -360,12 +359,13 @@ useEcho<GenerationUpdatedPayload>(
                                 },
                             ]"
                             :key="setting.label"
+                            class="bg-surface-container-low px-2 py-1"
                         >
-                            <dt class="text-label-dense text-outline">
+                            <dt class="text-label-dense text-outline uppercase">
                                 {{ setting.label }}
                             </dt>
                             <dd
-                                class="font-mono text-label-default text-on-surface"
+                                class="font-mono text-label-default font-bold text-wheat"
                             >
                                 {{ setting.value }}
                             </dd>
@@ -373,7 +373,7 @@ useEcho<GenerationUpdatedPayload>(
                     </dl>
                     <ul
                         v-if="generation.reference_images.length"
-                        class="flex flex-col gap-1 border-t border-border-subtle pt-2"
+                        class="flex flex-col gap-1 border-t-2 border-surface-container-high pt-2"
                     >
                         <li
                             v-for="url in generation.reference_images"
@@ -387,17 +387,17 @@ useEcho<GenerationUpdatedPayload>(
                 </section>
 
                 <section
-                    class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+                    class="flex flex-col gap-2 bg-surface-raised p-3 shadow-pixel"
                 >
                     <div class="flex items-center justify-between">
                         <h2
-                            class="flex items-center gap-1 font-display text-headline-sm text-on-surface"
+                            class="flex items-center gap-1.5 font-mono text-label-default font-bold tracking-[0.08em] text-primary uppercase"
                         >
-                            <Receipt class="size-4 text-primary" />
-                            Billing
+                            <span class="size-2 bg-primary" />
+                            [ Billing ]
                         </h2>
                         <span
-                            class="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-label-default text-primary tabular-nums"
+                            class="bg-surface-container-lowest px-1.5 py-0.5 font-mono text-label-default font-bold text-primary tabular-nums"
                         >
                             {{ summary.cost }}
                         </span>
@@ -423,14 +423,14 @@ useEcho<GenerationUpdatedPayload>(
                     </div>
                     <ul
                         v-if="tokenLines.length"
-                        class="flex flex-col divide-y divide-border-subtle border-t border-border-subtle"
+                        class="flex flex-col divide-y-2 divide-surface-container-high bg-surface-container-lowest px-2"
                     >
                         <li
                             v-for="line in tokenLines"
                             :key="line.label"
                             class="flex items-center justify-between py-1.5 text-label-default"
                         >
-                            <span class="text-on-surface-variant">
+                            <span class="text-on-surface-variant uppercase">
                                 {{ line.label }}
                             </span>
                             <span

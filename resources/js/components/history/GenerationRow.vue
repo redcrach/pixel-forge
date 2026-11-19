@@ -19,7 +19,7 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
 
 const costClasses = computed(() => ({
     'text-primary': isFailed.value,
-    'font-semibold text-on-surface': props.generation.status === 'succeeded',
+    'font-bold text-primary': props.generation.status === 'succeeded',
     'text-on-surface-variant':
         !isFailed.value && props.generation.status !== 'succeeded',
 }));
@@ -27,10 +27,10 @@ const costClasses = computed(() => ({
 
 <template>
     <article
-        class="relative flex items-center gap-3 rounded-lg border border-border-subtle bg-surface-raised p-2 transition-colors hover:border-border-prominent"
+        class="relative flex items-center gap-3 border-2 border-transparent bg-surface-raised p-2 shadow-pixel transition-colors hover:border-border-prominent"
     >
         <div
-            class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded border border-border-subtle bg-surface-container-lowest text-outline"
+            class="flex size-14 shrink-0 items-center justify-center overflow-hidden bg-surface-container-lowest text-outline shadow-pixel-inset"
         >
             <img
                 v-if="generation.imageUrl"
@@ -54,9 +54,9 @@ const costClasses = computed(() => ({
                 <span
                     v-for="tag in [generation.shape, generation.quality]"
                     :key="tag"
-                    class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
+                    class="bg-surface-container-lowest px-1 py-0.5 font-mono text-mono-badge text-on-surface-variant uppercase"
                 >
-                    {{ tag }}
+                    [ {{ tag }} ]
                 </span>
                 <span
                     v-if="isFailed && generation.errorMessage"
@@ -108,7 +108,7 @@ const costClasses = computed(() => ({
         <!-- The whole row opens the generation; the download button sits above this link. -->
         <Link
             :href="showGeneration(generation.id)"
-            class="absolute inset-0 z-10 rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
             <span class="sr-only">View generation</span>
         </Link>

@@ -37,7 +37,7 @@ defineEmits<{
             </div>
             <button
                 type="button"
-                class="flex size-7 items-center justify-center rounded text-outline transition-colors hover:bg-surface-container hover:text-on-surface"
+                class="flex size-7 items-center justify-center text-outline transition-colors hover:bg-surface-container hover:text-on-surface"
                 @click="$emit('close')"
             >
                 <X class="size-4.5" />
@@ -58,7 +58,7 @@ defineEmits<{
                         class="size-full object-cover"
                     />
                     <span
-                        class="absolute right-2 bottom-2 rounded bg-surface-container-lowest/80 px-0.5 py-0.5 font-mono text-mono-badge text-on-surface backdrop-blur"
+                        class="absolute right-2 bottom-2 bg-surface-container-lowest/80 px-0.5 py-0.5 font-mono text-mono-badge text-on-surface backdrop-blur"
                     >
                         {{ generation.imageMeta }}
                     </span>

@@ -10,7 +10,7 @@ const activeStatus = defineModel<HistoryStatusFilter>({ required: true });
 
 <template>
     <div
-        class="grid w-full grid-cols-2 gap-0.5 rounded-lg border border-border-subtle bg-surface-container-lowest p-0.5 sm:flex sm:[scrollbar-width:none] sm:items-center sm:overflow-x-auto lg:w-auto lg:self-start [&::-webkit-scrollbar]:hidden"
+        class="grid w-full grid-cols-2 gap-1 sm:flex sm:[scrollbar-width:none] sm:items-center sm:overflow-x-auto lg:w-auto lg:self-start [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="Filter by status"
     >
@@ -20,25 +20,17 @@ const activeStatus = defineModel<HistoryStatusFilter>({ required: true });
             type="button"
             role="tab"
             :aria-selected="activeStatus === tab.value"
-            class="flex min-h-11 min-w-0 items-center justify-between gap-1 rounded border px-2 py-1 text-label-default whitespace-nowrap transition-all sm:min-h-0 sm:justify-start"
+            class="flex min-h-11 min-w-0 items-center justify-between gap-1 px-2 py-1 text-label-default whitespace-nowrap uppercase transition-colors sm:min-h-0 sm:justify-start"
             :class="
                 activeStatus === tab.value
-                    ? 'border-primary/40 bg-primary/10 font-semibold text-primary'
-                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                    ? 'bg-primary font-bold text-primary-foreground shadow-pixel-sm'
+                    : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
             "
             @click="activeStatus = tab.value"
         >
-            {{ tab.label }}
-            <span
-                class="rounded-full px-1.5 font-mono text-mono-badge tabular-nums"
-                :class="
-                    activeStatus === tab.value
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-surface-container-high text-outline'
-                "
-            >
-                {{ tab.count }}
-            </span>
+            [ {{ tab.label }}:
+            <span class="font-mono tabular-nums">{{ tab.count }}</span>
+            ]
         </button>
     </div>
 </template>

@@ -40,7 +40,8 @@ const estimateLabel = computed(() => {
 
 <template>
     <div
-        class="fixed inset-x-0 bottom-0 z-30 border-t border-border-subtle bg-surface-container-lowest/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-md md:left-64 lg:hidden"
+        data-mobile-generate-bar
+        class="fixed inset-x-0 bottom-0 z-30 border-t-2 border-surface-container-highest bg-surface-container-lowest px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:left-64 lg:hidden"
     >
         <div class="mx-auto flex max-w-3xl items-center gap-3">
             <div class="flex min-w-0 flex-col">
@@ -50,7 +51,7 @@ const estimateLabel = computed(() => {
                     Estimated cost
                 </span>
                 <span
-                    class="truncate font-mono text-mono-metric font-semibold text-primary tabular-nums transition-opacity"
+                    class="truncate font-mono text-mono-metric font-bold text-primary tabular-nums transition-opacity"
                     :class="{ 'opacity-60': isEstimating }"
                 >
                     {{ estimateLabel }}
@@ -60,31 +61,31 @@ const estimateLabel = computed(() => {
             <button
                 v-if="isAuthenticated && hasInsufficientBalance"
                 type="button"
-                class="ml-auto flex shrink-0 items-center gap-1 rounded bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground transition-colors hover:bg-primary-container"
+                class="pixel-press ml-auto flex shrink-0 items-center gap-1 bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground uppercase transition-colors hover:bg-primary-container"
                 @click="openBuyCredits"
             >
                 <Plus class="size-4.5" />
-                Buy credits
+                [ Insert coin ]
             </button>
 
             <button
                 v-else-if="isAuthenticated"
                 type="submit"
                 :disabled="isSubmitting || isPromptEmpty"
-                class="ml-auto flex shrink-0 items-center gap-1 rounded bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-colors hover:bg-primary-container active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
+                class="pixel-press ml-auto flex shrink-0 items-center gap-1 bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground uppercase transition-colors hover:bg-primary-container disabled:pointer-events-none disabled:opacity-50"
             >
                 <LoaderCircle
                     v-if="isSubmitting"
                     class="size-4.5 animate-spin"
                 />
                 <Zap v-else class="size-4.5" />
-                Generate
+                [ Generate ]
             </button>
 
             <Link
                 v-else
                 :href="login()"
-                class="ml-auto flex shrink-0 items-center gap-1 rounded bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground"
+                class="pixel-press ml-auto flex shrink-0 items-center gap-1 bg-primary px-4 py-2.5 font-display text-headline-sm font-bold text-primary-foreground uppercase"
             >
                 <LogIn class="size-4.5" />
                 Log in

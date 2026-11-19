@@ -12,14 +12,11 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
             fonts: [
-                bunny('Inter', {
-                    weights: [400, 500, 600, 700],
+                bunny('Space Mono', {
+                    weights: [400, 700],
                 }),
-                bunny('JetBrains Mono', {
-                    weights: [400, 500, 600],
-                }),
-                bunny('Bricolage Grotesque', {
-                    weights: [600, 700],
+                bunny('Space Grotesk', {
+                    weights: [500, 700],
                 }),
             ],
         }),

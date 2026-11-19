@@ -8,32 +8,45 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    /* Pixelforge Studio design tokens: "Syntactic Studio" (docs/DESIGN.md) */
-    --color-surface: #131313;
-    --color-surface-container-lowest: #0e0e0e;
-    --color-surface-container-low: #1c1b1b;
-    --color-surface-container: #201f1f;
-    --color-surface-container-high: #2a2a2a;
-    --color-surface-container-highest: #353534;
-    /* Panels and cards (Layer 1), framed by border-subtle */
-    --color-surface-raised: #1a1a1a;
-    --color-on-surface: #e5e2e1;
-    --color-on-surface-variant: #c1caae;
-    --color-outline: #8b947b;
-    /* Neutral hairlines: the screens use grey borders, not the olive M3 outline-variant */
-    --color-outline-variant: #383838;
-    --color-border-subtle: #262626;
-    --color-border-prominent: #383838;
-    --color-canvas-light: #f8f6f2;
-    /* Electric lime (bg-primary) brightens to this on hover */
-    --color-primary-container: #abf926;
-    /* Radiant cyan: queued, metrics, references */
-    --color-tertiary: #38bdf8;
-    --color-tertiary-container: #99d9ff;
-    --color-on-tertiary-container: #006083;
-    /* Acid pink: waiting / throttled notices */
-    --color-neon-pink: #ff5eb0;
+    /* Pixelforge Studio design tokens: "Chrono Mint & Warm Pine" (docs/DESIGN.md) */
+    --color-surface: #0f1413;
+    --color-surface-container-lowest: #0a0f0e;
+    --color-surface-container-low: #181d1c;
+    --color-surface-container: #1c211f;
+    --color-surface-container-high: #262b2a;
+    --color-surface-container-highest: #313635;
+    /* Panels and cards (Tier 1), framed by border-subtle and a hard pine-pitch drop shadow */
+    --color-surface-raised: #161f1d;
+    --color-on-surface: #dfe3e1;
+    --color-on-surface-variant: #bccac1;
+    --color-outline: #86948c;
+    --color-outline-variant: #3d4a43;
+    --color-border-subtle: #24332f;
+    --color-border-prominent: #3d4a43;
+    --color-canvas-light: #f0fdf4;
+    /* Mint (bg-primary) shifts to this on hover */
+    --color-primary-container: #5eead4;
+    /* Wheat sand: balances, metrics, highlights and links */
+    --color-wheat: #fde68a;
+    /* Dusty teal: queued and telemetry */
+    --color-tertiary: #14b8a6;
+    --color-tertiary-container: #2dd4bf;
+    --color-on-tertiary-container: #003731;
     --color-error: #ffb4ab;
+    --color-error-container: #93000a;
+
+    /* Pixel art has no curves: every rounded-* utility resolves to a square corner */
+    --radius-xs: 0;
+    --radius-sm: 0;
+    --radius-md: 0;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-2xl: 0;
+
+    /* Hard offset shadows instead of blurs */
+    --shadow-pixel-sm: 2px 2px 0 #080b0a;
+    --shadow-pixel: 4px 4px 0 #080b0a;
+    --shadow-pixel-inset: inset 3px 3px 0 #080b0a;
 
     --text-headline-xl: 2rem;
     --text-headline-xl--line-height: 2.5rem;
@@ -81,20 +94,14 @@
 }
 
 @theme inline {
-    /* Titles and big metrics; Inter for text, JetBrains Mono for labels and numbers */
-    --font-display:
-        'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    /* Space Grotesk for titles and big metrics, Space Mono for everything else */
+    --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
     --font-sans:
-        'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
     --font-mono:
-        'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
         monospace;
-
-    /* Cards and panels 8px, controls 4px (DESIGN.md "Shapes") */
-    --radius-lg: var(--radius);
-    --radius-md: 0.25rem;
-    --radius-sm: 0.125rem;
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -165,7 +172,7 @@
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.5rem;
+    --radius: 0;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -177,38 +184,38 @@
 }
 
 .dark {
-    --background: #131313;
-    --foreground: #e5e2e1;
-    --card: #1a1a1a;
-    --card-foreground: #e5e2e1;
-    --popover: #202020;
-    --popover-foreground: #e5e2e1;
-    --primary: #9ae600;
-    --primary-foreground: #111111;
-    --secondary: #1a1a1a;
-    --secondary-foreground: #f8f6f2;
-    --muted: #202020;
-    --muted-foreground: #a3a3a3;
-    --accent: #202020;
-    --accent-foreground: #f8f6f2;
+    --background: #0f1413;
+    --foreground: #dfe3e1;
+    --card: #161f1d;
+    --card-foreground: #dfe3e1;
+    --popover: #1d2b27;
+    --popover-foreground: #dfe3e1;
+    --primary: #6ee7b7;
+    --primary-foreground: #101514;
+    --secondary: #161f1d;
+    --secondary-foreground: #f0fdf4;
+    --muted: #1d2b27;
+    --muted-foreground: #8ba39c;
+    --accent: #1d2b27;
+    --accent-foreground: #f0fdf4;
     --destructive: #93000a;
     --destructive-foreground: #ffb4ab;
-    --border: #262626;
-    --input: #383838;
-    --ring: #9ae600;
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: #111111;
-    --sidebar-foreground: #c1caae;
-    --sidebar-primary: #9ae600;
-    --sidebar-primary-foreground: #111111;
-    --sidebar-accent: #202020;
-    --sidebar-accent-foreground: #9ae600;
-    --sidebar-border: #262626;
-    --sidebar-ring: #9ae600;
+    --border: #24332f;
+    --input: #3d4a43;
+    --ring: #6ee7b7;
+    --chart-1: #6ee7b7;
+    --chart-2: #fde68a;
+    --chart-3: #14b8a6;
+    --chart-4: #f59e0b;
+    --chart-5: #86948c;
+    --sidebar: #0a0f0e;
+    --sidebar-foreground: #bccac1;
+    --sidebar-primary: #6ee7b7;
+    --sidebar-primary-foreground: #101514;
+    --sidebar-accent: #1d2b27;
+    --sidebar-accent-foreground: #6ee7b7;
+    --sidebar-border: #24332f;
+    --sidebar-ring: #6ee7b7;
 }
 
 @layer base {
@@ -218,5 +225,25 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer components {
+    /* Faint screen-door scanlines over the whole screen; purely decorative */
+    .crt-scanlines {
+        background: linear-gradient(
+            rgba(15, 20, 19, 0) 50%,
+            rgba(8, 11, 10, 0.08) 50%
+        );
+        background-size: 100% 2px;
+    }
+
+    /* Arcade buttons sink into their shadow when pressed */
+    .pixel-press {
+        box-shadow: var(--shadow-pixel-sm);
+    }
+    .pixel-press:active:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: none;
     }
 }

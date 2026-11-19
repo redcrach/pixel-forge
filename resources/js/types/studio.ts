@@ -1,5 +1,4 @@
 import type { InertiaLinkProps } from '@inertiajs/vue3';
-import type { LucideIcon } from '@lucide/vue';
 
 export type GenerationStatus =
     | 'pending'
@@ -12,7 +11,6 @@ export type GenerationStatus =
 export type StudioNavItem = {
     title: string;
     href: NonNullable<InertiaLinkProps['href']>;
-    icon: LucideIcon;
     badge?: string;
 };
 

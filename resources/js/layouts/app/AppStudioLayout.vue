@@ -4,6 +4,7 @@ import { useMediaQuery } from '@vueuse/core';
 import { computed } from 'vue';
 import BuyCreditsDialog from '@/components/credits/BuyCreditsDialog.vue';
 import GenerationNotifications from '@/components/GenerationNotifications.vue';
+import StudioFooter from '@/components/StudioFooter.vue';
 import StudioHeader from '@/components/StudioHeader.vue';
 import StudioSidebar from '@/components/StudioSidebar.vue';
 import { Toaster } from '@/components/ui/sonner';
@@ -26,18 +27,28 @@ const belowHeaderOffset = {
 </script>
 
 <template>
-    <div class="min-h-svh bg-surface text-on-surface">
+    <!-- The Generate page's fixed bottom bar would otherwise cover the footer on small screens -->
+    <div
+        class="flex min-h-svh flex-col bg-surface text-on-surface max-lg:has-[[data-mobile-generate-bar]]:pb-24"
+    >
+        <div
+            class="crt-scanlines pointer-events-none fixed inset-0 z-[100] opacity-40"
+            aria-hidden="true"
+        />
+
         <StudioHeader />
 
-        <div class="flex">
+        <div class="flex flex-1">
             <StudioSidebar
                 class="sticky top-14 hidden h-[calc(100svh-3.5rem)] shrink-0 md:flex"
             />
 
-            <main class="min-w-0 flex-1 px-4 pt-3 pb-6 sm:pt-2">
+            <main class="min-w-0 flex-1 px-4 pt-4 pb-8">
                 <slot />
             </main>
         </div>
+
+        <StudioFooter />
 
         <BuyCreditsDialog />
         <Toaster

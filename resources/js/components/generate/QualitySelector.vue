@@ -12,12 +12,14 @@ const quality = defineModel<ImageQuality>({ required: true });
 <template>
     <section
         data-field="quality"
-        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
+        class="flex flex-col gap-2 border-2 border-border-subtle bg-surface-raised p-2 shadow-pixel"
     >
-        <SectionLabel>Quality</SectionLabel>
+        <div class="bg-surface-container-high px-2 py-1">
+            <SectionLabel>Quality</SectionLabel>
+        </div>
 
         <div
-            class="grid grid-cols-3 gap-1 rounded-lg border border-border-subtle bg-surface-container-lowest p-1"
+            class="grid grid-cols-3 gap-1 bg-surface-container-lowest p-1 shadow-pixel-inset"
             role="radiogroup"
             aria-label="Quality"
         >
@@ -27,15 +29,15 @@ const quality = defineModel<ImageQuality>({ required: true });
                 type="button"
                 role="radio"
                 :aria-checked="quality === option.value"
-                class="min-h-11 rounded px-2 py-1 text-center text-label-dense transition-colors sm:min-h-0"
+                class="min-h-11 px-2 py-1 text-center text-label-dense uppercase transition-colors sm:min-h-0"
                 :class="
                     quality === option.value
-                        ? 'bg-primary font-semibold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)]'
-                        : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                        ? 'bg-primary font-bold text-primary-foreground shadow-pixel-inset'
+                        : 'bg-surface-container-low text-on-surface-variant shadow-pixel-sm hover:bg-surface-container-high hover:text-on-surface'
                 "
                 @click="quality = option.value"
             >
-                <span class="font-medium">{{ option.label }}</span>
+                <span class="font-bold">[ {{ option.label }} ]</span>
                 <span
                     class="block font-mono text-[10px] max-[359px]:hidden"
                     :class="

@@ -27,7 +27,7 @@ const dotToneClasses: Record<TimelineEvent['tone'], string> = {
                 class="relative flex flex-col gap-0.5"
             >
                 <span
-                    class="absolute top-1 -left-6 size-2.5 rounded-full ring-4 ring-surface-container-low"
+                    class="absolute top-1 -left-6 size-2.5 ring-4 ring-surface-container-low"
                     :class="dotToneClasses[event.tone]"
                 />
                 <div class="flex items-center justify-between gap-2">
