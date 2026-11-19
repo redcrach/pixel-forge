@@ -10,6 +10,9 @@ class FormatMoney
 {
     private const NANO_DIGITS = 9;
 
+    /** Pixelforge shows billed dollars with 5 decimals; the admin uses the same so the numbers compare directly. */
+    public const PIXELFORGE_DECIMALS = 5;
+
     /**
      * @param  bool  $roundUp  For maximums: never show less than the real amount
      */

@@ -32,13 +32,13 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * `composer run dev` must also work the generations queue, or submitted generations never reach Pixelforge,
-     * and run the Reverb WebSocket server that pushes generation updates to the browser.
+     * `composer run dev`
      */
     protected function configureDevCommands(): void
     {
         DevCommands::artisan('queue:listen --queue=generations,default --tries=1 --timeout=0', 'queue');
         DevCommands::artisan('reverb:start', 'reverb');
+        DevCommands::artisan('schedule:work', 'scheduler');
     }
 
     /**

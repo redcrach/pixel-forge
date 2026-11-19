@@ -16,7 +16,7 @@ return [
 
     'api_key' => env('PIXELFORGE_API_KEY'),
 
-    'timeout' => (int) env('PIXELFORGE_TIMEOUT', 10),
+    'timeout' => (int) env('PIXELFORGE_TIMEOUT', 30),
 
     /*
     |--------------------------------------------------------------------------

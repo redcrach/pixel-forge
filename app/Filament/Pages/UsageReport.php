@@ -27,8 +27,6 @@ class UsageReport extends Page implements HasTable
 
     private const DEFAULT_DAYS = 14;
 
-    private const MONEY_DECIMALS = 6;
-
     protected string $view = 'filament.pages.usage-report';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
@@ -63,7 +61,7 @@ class UsageReport extends Page implements HasTable
                     ->label('Reasoning')
                     ->numeric(),
 
-                 TextColumn::make('provider_cost_nano')
+                TextColumn::make('provider_cost_nano')
                     ->label('Provider cost')
                     ->formatStateUsing(fn (int $state): string => $this->formatMoney($state)),
 
@@ -142,6 +140,6 @@ class UsageReport extends Page implements HasTable
 
     private function formatMoney(int $nano): string
     {
-        return app(FormatMoney::class)($nano, self::MONEY_DECIMALS);
+        return app(FormatMoney::class)($nano, FormatMoney::PIXELFORGE_DECIMALS);
     }
 }
