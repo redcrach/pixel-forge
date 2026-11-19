@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, useForm, useHttp } from '@inertiajs/vue3';
+import { Head, useForm, useHttp, usePage } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import storeGeneration from '@/actions/App/Http/Controllers/GenerationController';
 import estimateGeneration from '@/actions/App/Http/Controllers/GenerationEstimateController';
 import CostEstimatePanel from '@/components/generate/CostEstimatePanel.vue';
@@ -48,16 +48,37 @@ const qualities: QualityOption[] = [
     { value: 'high', label: 'High', description: 'Most detail' },
 ];
 
-/** The generation form, submitted as an Inertia visit (redirects, errors, flash toasts). */
+/**
+ * The generation form, submitted as an Inertia visit (redirects, errors, flash toasts).
+ * Precognition validates fields live against the server's StoreGenerationRequest rules.
+ */
 const form = useForm<GenerateForm>({
     prompt: '',
     size: '1024x1024',
     quality: 'medium',
     reference_images: [],
-});
+})
+    .withPrecognition(storeGeneration())
+    .setValidationTimeout(500);
+
+const page = usePage();
+const isAuthenticated = computed(() => page.props.auth.user !== null);
+
+/** Guests can't submit, so their fields aren't validated live either. */
+function validatePrompt(): void {
+    if (isAuthenticated.value) {
+        form.validate('prompt');
+    }
+}
+
+function validateReferenceImages(): void {
+    if (isAuthenticated.value) {
+        form.validate({ only: ['reference_images', 'reference_images.*'] });
+    }
+}
 
 function submit(): void {
-    form.submit(storeGeneration(), {
+    form.submit({
         preserveScroll: true,
         onSuccess: (page) => {
             const toast = page.flash.toast as FlashToast | undefined;
@@ -134,13 +155,18 @@ onMounted(refreshEstimate);
         @submit.prevent="submit"
     >
         <div class="flex flex-col gap-3 xl:col-span-8">
-            <PromptEditor v-model="form.prompt" :error="form.errors.prompt" />
+            <PromptEditor
+                v-model="form.prompt"
+                :error="form.errors.prompt"
+                @change="validatePrompt"
+            />
             <SizePicker v-model="form.size" :options="sizes" />
             <QualitySelector v-model="form.quality" :options="qualities" />
             <ReferenceImages
                 v-model="form.reference_images"
                 :max-images="4"
                 :errors="form.errors"
+                @change="validateReferenceImages"
             />
         </div>
 

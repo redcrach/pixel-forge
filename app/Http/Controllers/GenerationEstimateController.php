@@ -16,7 +16,7 @@ class GenerationEstimateController extends Controller
     {
         try {
             $estimateDto = $estimateGenerationCost(
-                prompt: $request->validated('prompt'),
+                prompt: (string) $request->validated('prompt'),
                 size: $request->enum('size', ImageSize::class),
                 quality: $request->enum('quality', ImageQuality::class),
                 referenceImageCount: $request->integer('reference_image_count'),

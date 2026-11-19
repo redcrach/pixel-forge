@@ -7,6 +7,11 @@ defineProps<{
     error?: string;
 }>();
 
+const emit = defineEmits<{
+    /** The prompt was edited and the textarea lost focus. */
+    change: [];
+}>();
+
 const prompt = defineModel<string>({ required: true });
 
 const maxCharacters = 4000;
@@ -46,6 +51,7 @@ const characterCount = computed(() => [...prompt.value].length);
                 rows="5"
                 class="w-full resize-none bg-transparent font-mono text-body-default leading-relaxed text-on-surface placeholder:text-outline/50 focus:outline-none"
                 placeholder="Describe the image you want to generate..."
+                @change="emit('change')"
             />
             <InputError :message="error" />
         </div>
