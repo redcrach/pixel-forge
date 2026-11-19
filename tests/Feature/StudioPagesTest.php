@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Generation;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -38,4 +39,19 @@ test('authenticated users can visit history', function () {
     $response = $this->get(route('history'));
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page->component('History'));
+});
+
+test('the sidebar counts only the signed-in user\'s generations', function () {
+    $user = User::factory()->create();
+    Generation::factory()->for($user)->count(2)->create();
+    Generation::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page->where('generationCount', 2));
+});
+
+test('guests get no generation count', function () {
+    $this->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page->where('generationCount', null));
 });

@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'generationCount' => fn (): ?int => $request->user()?->generations()->count(),
         ];
     }
 }

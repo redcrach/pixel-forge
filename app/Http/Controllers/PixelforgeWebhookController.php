@@ -10,11 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Receives Pixelforge webhooks, already signature-checked by VerifyPixelforgeSignature.
- * Delivery is at least once and in any order: events are deduplicated by id, and
- * ApplyGenerationUpdate never moves a generation backwards.
- */
 class PixelforgeWebhookController extends Controller
 {
     private const PING = 'ping';

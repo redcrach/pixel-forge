@@ -19,6 +19,8 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            /** How many generations the signed-in user has, null for guests. */
+            generationCount: number | null;
             [key: string]: unknown;
         };
     }

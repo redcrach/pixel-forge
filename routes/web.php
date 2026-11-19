@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\GenerationEstimateController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PixelforgeWebhookController;
 use App\Http\Middleware\VerifyPixelforgeSignature;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
@@ -21,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('generations', GenerationController::class)
         ->middleware(HandlePrecognitiveRequests::class)
         ->name('generations.store');
-    Route::inertia('history', 'History')->name('history');
+    Route::get('history', HistoryController::class)->name('history');
 });
 
 require __DIR__.'/settings.php';

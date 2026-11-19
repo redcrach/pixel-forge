@@ -1,25 +1,32 @@
 <script setup lang="ts">
 import { CloudOff, Hourglass, ListOrdered, LoaderCircle } from '@lucide/vue';
+import { computed } from 'vue';
 import StatusBadge from '@/components/StatusBadge.vue';
+import { isFailedStatus } from '@/lib/generationSummary';
 import type { GenerationSummary } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     generation: GenerationSummary;
     isSelected?: boolean;
 }>();
+
+const isFailed = computed(() => isFailedStatus(props.generation.status));
+const isFinished = computed(
+    () => isFailed.value || props.generation.status === 'succeeded',
+);
 </script>
 
 <template>
     <article
-        class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl transition-all"
+        class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border shadow-sm transition-all"
         :class="
             isSelected
-                ? 'bg-surface-container shadow-xl ring-2 shadow-primary/5 ring-primary'
-                : 'bg-surface-container-low hover:bg-surface-container'
+                ? 'border-primary bg-surface-container shadow-xl ring-2 shadow-primary/5 ring-primary'
+                : 'border-outline-variant/40 bg-surface-container-low hover:border-outline-variant/70 hover:bg-surface-container'
         "
     >
         <div
-            class="relative flex aspect-video w-full items-center justify-center overflow-hidden bg-surface-container-lowest"
+            class="relative flex aspect-video w-full items-center justify-center overflow-hidden border-b border-outline-variant/30 bg-surface-container-lowest"
         >
             <template v-if="generation.imageUrl">
                 <img
@@ -96,7 +103,7 @@ defineProps<{
                 </span>
             </div>
 
-            <template v-else-if="generation.status === 'failed'">
+            <template v-else-if="isFailed">
                 <div
                     class="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--color-error),var(--color-error)_10px,transparent_10px,transparent_20px)] opacity-10"
                 />
@@ -112,17 +119,8 @@ defineProps<{
                 </div>
             </template>
 
-            <span
-                class="absolute top-2 left-2 rounded bg-surface-container-lowest/80 px-0.5 py-0.5 font-mono text-mono-badge"
-                :class="isSelected ? 'text-primary' : 'text-outline'"
-            >
-                #{{ generation.id }}
-            </span>
             <StatusBadge
-                v-if="
-                    generation.status === 'succeeded' ||
-                    generation.status === 'failed'
-                "
+                v-if="isFinished"
                 class="absolute top-2 right-2 backdrop-blur-sm"
                 :status="generation.status"
                 :label="generation.statusLabel"
@@ -146,7 +144,7 @@ defineProps<{
             </div>
 
             <div
-                class="-mx-2 -mb-2 flex items-end justify-between rounded-b-xl bg-surface-container-lowest/40 p-2"
+                class="flex items-end justify-between border-t border-outline-variant/30 pt-2"
             >
                 <div class="flex flex-col">
                     <span class="text-label-dense text-outline">
@@ -155,13 +153,10 @@ defineProps<{
                     <span
                         class="font-mono text-mono-metric tabular-nums"
                         :class="{
-                            'text-green-400': generation.status === 'failed',
+                            'text-green-400': isFailed,
                             'font-semibold text-on-surface':
                                 generation.status === 'succeeded',
-                            'text-on-surface-variant': ![
-                                'succeeded',
-                                'failed',
-                            ].includes(generation.status),
+                            'text-on-surface-variant': !isFinished,
                         }"
                     >
                         {{ generation.cost }}

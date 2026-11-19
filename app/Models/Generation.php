@@ -54,6 +54,8 @@ class Generation extends Model
     /** @use HasFactory<GenerationFactory> */
     use HasFactory, HasUuids;
 
+    private const IMAGE_URL_LIFETIME_HOURS = 24;
+
     /**
      * @var array<string, mixed>
      */
@@ -68,6 +70,15 @@ class Generation extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Pixelforge's signed image URL stops working 24 hours after the generation completed.
+     */
+    public function isImageUrlExpired(): bool
+    {
+        return $this->completed_at !== null
+            && $this->completed_at->toImmutable()->addHours(self::IMAGE_URL_LIFETIME_HOURS)->isPast();
     }
 
     /**

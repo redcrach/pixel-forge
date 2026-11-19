@@ -68,6 +68,30 @@ export type TopUpPreset = {
     isSelected?: boolean;
 };
 
+/** A generation as GenerationResource sends it. Money is in integer nanodollars. */
+export type GenerationHistoryItem = {
+    id: string;
+    prompt: string;
+    status: GenerationStatus;
+    size: ImageSize;
+    quality: ImageQuality;
+    reference_image_count: number;
+    estimated_min_nano: number | null;
+    estimated_max_nano: number | null;
+    final_price_nano: number | null;
+    image_url: string | null;
+    is_image_expired: boolean;
+    error: { code: string; message: string } | null;
+    created_at: string;
+    completed_at: string | null;
+};
+
+/** Props of the History page (HistoryController). */
+export type HistoryPageProps = {
+    generations: { data: GenerationHistoryItem[] };
+};
+
+/** What a history card displays, already formatted. */
 export type GenerationSummary = {
     id: string;
     prompt: string;

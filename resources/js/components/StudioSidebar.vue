@@ -16,7 +16,7 @@ const navItems = computed<StudioNavItem[]>(() => [
         title: 'History',
         href: history(),
         icon: History,
-        badge: isAuthenticated.value ? '18' : undefined,
+        badge: page.props.generationCount?.toString(),
     },
 ]);
 
