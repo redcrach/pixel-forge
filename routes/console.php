@@ -1,8 +1,10 @@
 <?php
 
+use App\Jobs\PollStuckGenerations;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+
+// Fallback for missed webhooks: re-check generations stuck in queued/processing with Pixelforge
+Schedule::job(new PollStuckGenerations)->everyThirtyMinutes();
