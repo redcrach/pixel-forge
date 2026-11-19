@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import { CloudOff, ImageIcon } from '@lucide/vue';
 import { computed } from 'vue';
+import showGeneration from '@/actions/App/Http/Controllers/ShowGenerationController';
 import DownloadImageButton from '@/components/history/DownloadImageButton.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { isFailedStatus } from '@/lib/generationSummary';
@@ -87,5 +89,12 @@ const isFailed = computed(() => isFailedStatus(props.generation.status));
             :generation-id="generation.id"
         />
         <span v-else class="size-8 shrink-0" aria-hidden="true" />
+        <!-- The whole row opens the generation; the download button sits above this link. -->
+        <Link
+            :href="showGeneration(generation.id)"
+            class="absolute inset-0 z-10 rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+        >
+            <span class="sr-only">View generation</span>
+        </Link>
     </article>
 </template>

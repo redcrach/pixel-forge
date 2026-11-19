@@ -51,6 +51,6 @@ class GenerationController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Your image is being generated.')]);
 
-        return back();
+        return to_route('home');
     }
 }

@@ -75,10 +75,18 @@ export type GenerationHistoryItem = {
     status: GenerationStatus;
     size: ImageSize;
     quality: ImageQuality;
+    reference_images: string[];
     reference_image_count: number;
     estimated_min_nano: number | null;
     estimated_max_nano: number | null;
     final_price_nano: number | null;
+    /** Token counts once succeeded, keyed like Pixelforge's usage object. */
+    usage: {
+        input_text_tokens: number;
+        input_image_tokens: number;
+        output_tokens: number;
+        reasoning_tokens: number;
+    } | null;
     image_url: string | null;
     is_image_expired: boolean;
     error: { code: string; message: string } | null;

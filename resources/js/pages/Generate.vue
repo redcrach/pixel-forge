@@ -11,6 +11,7 @@ import ReferenceImages from '@/components/generate/ReferenceImages.vue';
 import SizePicker from '@/components/generate/SizePicker.vue';
 import type {
     GenerateForm,
+    GenerationHistoryItem,
     GenerationEstimate,
     QualityOption,
     SizeOption,
@@ -42,6 +43,11 @@ const sizes: SizeOption[] = [
     },
 ];
 
+const props = defineProps<{
+    /** The generation being remixed, or null for a fresh form. */
+    remix: GenerationHistoryItem | null;
+}>();
+
 const qualities: QualityOption[] = [
     { value: 'low', label: 'Low', description: 'Fastest' },
     { value: 'medium', label: 'Medium', description: 'Default' },
@@ -60,6 +66,17 @@ const form = useForm<GenerateForm>({
 })
     .withPrecognition(storeGeneration())
     .setValidationTimeout(500);
+
+/**
+ * Remixing (/?remix={id}) starts from that generation's prompt and settings.
+ * They are filled in after the form is created, so form.reset() still empties it after a submit.
+ */
+if (props.remix) {
+    form.prompt = props.remix.prompt;
+    form.size = props.remix.size;
+    form.quality = props.remix.quality;
+    form.reference_images = [...props.remix.reference_images];
+}
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);

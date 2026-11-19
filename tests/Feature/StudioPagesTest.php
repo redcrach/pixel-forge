@@ -55,3 +55,31 @@ test('guests get no generation count', function () {
     $this->get(route('home'))
         ->assertInertia(fn (Assert $page) => $page->where('generationCount', null));
 });
+
+test('remixing one of your generations prefills the generate page', function () {
+    $user = User::factory()->create();
+    $generation = Generation::factory()->for($user)->create(['prompt' => 'A red fox in the snow']);
+
+    $this->actingAs($user)
+        ->get(route('home', ['remix' => $generation->id]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Generate')
+            ->where('remix.id', $generation->id)
+            ->where('remix.prompt', 'A red fox in the snow')
+        );
+});
+
+test('someone else\'s generation cannot be remixed', function (bool $isGuest) {
+    $generation = Generation::factory()->create();
+
+    if (! $isGuest) {
+        $this->actingAs(User::factory()->create());
+    }
+
+    $this->get(route('home', ['remix' => $generation->id]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->where('remix', null));
+})->with([
+    'another user' => [false],
+    'a guest' => [true],
+]);

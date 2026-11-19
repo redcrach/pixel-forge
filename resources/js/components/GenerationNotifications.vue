@@ -2,12 +2,12 @@
 import { router } from '@inertiajs/vue3';
 import { useEcho } from '@laravel/echo-vue';
 import { toast } from 'vue-sonner';
+import showGeneration from '@/actions/App/Http/Controllers/ShowGenerationController';
 import {
     GENERATION_UPDATED_EVENT,
     generationChannel,
 } from '@/lib/generationChannel';
 import { isFailedStatus } from '@/lib/generationSummary';
-import { history } from '@/routes';
 import type { GenerationUpdatedPayload } from '@/types';
 
 /**
@@ -21,8 +21,11 @@ const props = defineProps<{
 /** A redelivered or repeated event must not toast twice for the same generation. */
 const notifiedGenerationIds = new Set<string>();
 
-function viewHistoryAction() {
-    return { label: 'View', onClick: () => router.visit(history()) };
+function viewGenerationAction(generationId: string) {
+    return {
+        label: 'View',
+        onClick: () => router.visit(showGeneration(generationId)),
+    };
 }
 
 useEcho<GenerationUpdatedPayload>(
@@ -42,7 +45,7 @@ useEcho<GenerationUpdatedPayload>(
         if (generation.status === 'succeeded') {
             toast.success('Your image is ready', {
                 description: generation.prompt,
-                action: viewHistoryAction(),
+                action: viewGenerationAction(generation.id),
             });
 
             return;
@@ -50,7 +53,7 @@ useEcho<GenerationUpdatedPayload>(
 
         toast.error('Generation failed · not charged', {
             description: generation.error?.message,
-            action: viewHistoryAction(),
+            action: viewGenerationAction(generation.id),
         });
     },
 );

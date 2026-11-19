@@ -1,15 +1,17 @@
 <?php
 
 use App\Http\Controllers\DownloadGenerationImageController;
+use App\Http\Controllers\GeneratePageController;
 use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\GenerationEstimateController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PixelforgeWebhookController;
+use App\Http\Controllers\ShowGenerationController;
 use App\Http\Middleware\VerifyPixelforgeSignature;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Generate')->name('home');
+Route::get('/', GeneratePageController::class)->name('home');
 
 Route::post('generations/estimate', GenerationEstimateController::class)
     ->middleware('throttle:120,1')
@@ -24,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(HandlePrecognitiveRequests::class)
         ->name('generations.store');
     Route::get('history', HistoryController::class)->name('history');
+    Route::get('generations/{generation}', ShowGenerationController::class)->name('generations.show');
     Route::get('generations/{generation}/image', DownloadGenerationImageController::class)
         ->name('generations.image.download');
 });

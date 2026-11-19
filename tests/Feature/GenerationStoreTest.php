@@ -72,7 +72,9 @@ test('reference images are optional', function () {
         ->with('A red fox in the snow', ImageSize::SQUARE, ImageQuality::MEDIUM, 0)
         ->andReturn(new GenerationEstimateDto($emptyLine, $emptyLine, $emptyLine, $emptyLine, 0, 0));
 
-    $this->post(route('generations.store'), validGeneration(['reference_images' => null]))
+    $this->from(route('home', ['remix' => 'some-generation']))
+        ->post(route('generations.store'), validGeneration(['reference_images' => null]))
+        ->assertRedirect(route('home'))
         ->assertInertiaFlash('toast.type', 'success');
 
     expect($user->generations()->sole()->reference_images)->toBe([]);
