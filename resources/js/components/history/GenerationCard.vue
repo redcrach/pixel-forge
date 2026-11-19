@@ -18,15 +18,15 @@ const isFinished = computed(
 
 <template>
     <article
-        class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border shadow-sm transition-all"
+        class="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border transition-all"
         :class="
             isSelected
-                ? 'border-primary bg-surface-container shadow-xl ring-2 shadow-primary/5 ring-primary'
-                : 'border-outline-variant/40 bg-surface-container-low hover:border-outline-variant/70 hover:bg-surface-container'
+                ? 'border-primary bg-surface-raised shadow-[0_0_12px_rgba(154,230,0,0.25)]'
+                : 'border-border-subtle bg-surface-raised hover:border-border-prominent'
         "
     >
         <div
-            class="relative flex aspect-video w-full items-center justify-center overflow-hidden border-b border-outline-variant/30 bg-surface-container-lowest"
+            class="relative flex aspect-video w-full items-center justify-center overflow-hidden border-b border-border-subtle bg-surface-container-lowest"
         >
             <template v-if="generation.imageUrl">
                 <img
@@ -47,7 +47,7 @@ const isFinished = computed(
                     class="absolute inset-0 animate-shimmer bg-linear-to-r from-transparent via-surface-container-high/40 to-transparent"
                 />
                 <div
-                    class="relative flex size-8 items-center justify-center rounded-full bg-amber-500/10"
+                    class="relative flex size-9 items-center justify-center rounded-full border border-amber-400/30 bg-amber-400/10"
                 >
                     <LoaderCircle class="size-5 animate-spin text-amber-400" />
                 </div>
@@ -64,7 +64,7 @@ const isFinished = computed(
                 title="Waiting for a free slot, it will be sent automatically"
             >
                 <div
-                    class="flex size-8 items-center justify-center rounded-full bg-surface-container-high text-outline"
+                    class="flex size-9 items-center justify-center rounded-full border border-border-prominent bg-surface-container-high text-outline"
                 >
                     <Hourglass class="size-5" />
                 </div>
@@ -79,7 +79,7 @@ const isFinished = computed(
                 class="flex flex-col items-center gap-1"
             >
                 <div
-                    class="flex size-8 items-center justify-center rounded-full bg-tertiary-container/20 text-tertiary"
+                    class="flex size-9 items-center justify-center rounded-full border border-tertiary/30 bg-tertiary/10 text-tertiary"
                 >
                     <ListOrdered class="size-5" />
                 </div>
@@ -110,7 +110,9 @@ const isFinished = computed(
                 <div
                     class="relative flex flex-col items-center gap-0.5 p-2 text-center"
                 >
-                    <span class="text-body-dense font-medium text-rose-400">
+                    <span
+                        class="font-mono text-label-default font-semibold tracking-[0.04em] text-error uppercase"
+                    >
                         {{ generation.errorMessage }}
                     </span>
                     <span class="font-mono text-mono-badge text-outline">
@@ -127,7 +129,7 @@ const isFinished = computed(
             />
         </div>
 
-        <div class="flex flex-1 flex-col justify-between gap-2 p-2">
+        <div class="flex flex-1 flex-col justify-between gap-3 p-3">
             <div class="flex flex-col gap-0.5">
                 <p class="line-clamp-2 text-body-dense text-on-surface">
                     {{ generation.prompt }}
@@ -136,7 +138,7 @@ const isFinished = computed(
                     <span
                         v-for="tag in [generation.size, generation.quality]"
                         :key="tag"
-                        class="rounded bg-surface-container-high px-0.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
+                        class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
                     >
                         {{ tag }}
                     </span>
@@ -144,7 +146,7 @@ const isFinished = computed(
             </div>
 
             <div
-                class="flex items-end justify-between border-t border-outline-variant/30 pt-2"
+                class="flex items-end justify-between border-t border-border-subtle pt-2"
             >
                 <div class="flex flex-col">
                     <span class="text-label-dense text-outline">
@@ -153,7 +155,7 @@ const isFinished = computed(
                     <span
                         class="font-mono text-mono-metric tabular-nums"
                         :class="{
-                            'text-green-400': isFailed,
+                            'text-primary': isFailed,
                             'font-semibold text-on-surface':
                                 generation.status === 'succeeded',
                             'text-on-surface-variant': !isFinished,

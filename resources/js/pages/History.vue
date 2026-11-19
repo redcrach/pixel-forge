@@ -63,7 +63,7 @@ useEcho<GenerationUpdatedPayload>(
 
     <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-0.5">
-            <h1 class="text-headline-xl tracking-tight text-on-surface">
+            <h1 class="font-display text-headline-xl text-on-surface">
                 History
             </h1>
             <p class="text-body-default text-on-surface-variant">

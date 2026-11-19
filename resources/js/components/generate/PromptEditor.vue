@@ -22,17 +22,21 @@ const characterCount = computed(() => [...prompt.value].length);
 
 <template>
     <section
-        class="flex flex-col overflow-hidden rounded-lg border bg-surface-container-lowest shadow-sm"
-        :class="error ? 'border-error/60' : 'border-outline-variant/40'"
+        class="flex flex-col overflow-hidden rounded-lg border bg-surface-raised transition-colors"
+        :class="
+            error
+                ? 'border-error/60'
+                : 'border-border-subtle focus-within:border-primary'
+        "
     >
         <div
-            class="flex items-center justify-between border-b border-outline-variant/30 bg-surface-container-low px-2 py-1"
+            class="flex items-center justify-between border-b border-border-subtle px-3 py-2"
         >
             <label for="prompt">
                 <SectionLabel>Prompt</SectionLabel>
             </label>
             <span
-                class="rounded bg-surface-container px-1 py-0.5 font-mono text-mono-badge tabular-nums"
+                class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 py-0.5 font-mono text-mono-badge tabular-nums"
                 :class="
                     characterCount > maxCharacters
                         ? 'text-error'
@@ -44,7 +48,7 @@ const characterCount = computed(() => [...prompt.value].length);
             </span>
         </div>
 
-        <div class="p-2">
+        <div class="p-3">
             <textarea
                 id="prompt"
                 v-model="prompt"

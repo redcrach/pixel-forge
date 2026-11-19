@@ -23,22 +23,24 @@ const presets: TopUpPreset[] = [
     <Dialog v-model:open="isOpen">
         <DialogContent
             :show-close-button="false"
-            class="gap-4 rounded-xl border-0 bg-surface-container-low p-6 shadow-2xl sm:max-w-md"
+            class="gap-4 rounded-lg border border-border-prominent bg-[#202020] p-6 shadow-[0_8px_24px_rgba(0,0,0,0.65)] sm:max-w-md"
         >
             <div class="flex flex-col gap-0.5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-1">
                         <div
-                            class="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                            class="flex size-9 items-center justify-center rounded border border-primary/30 bg-primary/10 text-primary"
                         >
                             <Wallet class="size-4.5" />
                         </div>
-                        <DialogTitle class="text-headline-lg text-on-surface">
+                        <DialogTitle
+                            class="font-display text-headline-lg text-on-surface"
+                        >
                             Buy credits
                         </DialogTitle>
                     </div>
                     <DialogClose
-                        class="flex size-8 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+                        class="flex size-8 items-center justify-center rounded text-[#a3a3a3] transition-colors hover:bg-surface-container-high hover:text-canvas-light"
                     >
                         <X class="size-5" />
                         <span class="sr-only">Close</span>
@@ -53,7 +55,7 @@ const presets: TopUpPreset[] = [
             </div>
 
             <div
-                class="flex items-center justify-between rounded-lg bg-surface-container p-2"
+                class="flex items-center justify-between rounded-lg border border-border-subtle bg-surface-raised p-3"
             >
                 <span class="text-label-default text-on-surface-variant">
                     Current balance
@@ -67,7 +69,7 @@ const presets: TopUpPreset[] = [
 
             <div class="flex flex-col gap-2">
                 <span
-                    class="text-label-dense font-semibold tracking-wider text-outline uppercase"
+                    class="font-mono text-label-default font-semibold tracking-[0.04em] text-on-surface uppercase"
                 >
                     Amount
                 </span>
@@ -77,11 +79,11 @@ const presets: TopUpPreset[] = [
                         v-for="preset in presets"
                         :key="preset.amount"
                         type="button"
-                        class="rounded-lg py-3 font-mono text-base font-semibold transition-all"
+                        class="rounded-lg border py-3 font-display text-headline-sm font-bold transition-all"
                         :class="
                             preset.isSelected
-                                ? 'bg-surface-container-high text-primary ring-1 ring-primary'
-                                : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                                ? 'border-2 border-primary bg-surface-raised text-primary shadow-[0_0_12px_rgba(154,230,0,0.25)]'
+                                : 'border-border-subtle bg-surface-raised text-on-surface hover:border-border-prominent'
                         "
                     >
                         {{ preset.amount }}
@@ -108,7 +110,7 @@ const presets: TopUpPreset[] = [
                             max="500"
                             step="1"
                             placeholder="15.00"
-                            class="w-full rounded-lg bg-surface-container-lowest py-1 pr-2 pl-7 font-mono text-mono-metric text-on-surface transition-all placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+                            class="w-full rounded border border-border-subtle bg-[#141414] py-2 pr-2 pl-7 font-mono text-mono-metric text-on-surface transition-colors placeholder:text-outline focus:border-primary focus:outline-none"
                         />
                     </div>
                     <span class="text-label-dense text-outline">
@@ -118,7 +120,7 @@ const presets: TopUpPreset[] = [
             </div>
 
             <div
-                class="flex items-center gap-2 rounded-lg bg-amber-400/10 p-2 text-label-default text-amber-300"
+                class="flex items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-label-default text-amber-300"
             >
                 <Info class="size-4 shrink-0" />
                 Demo only — no real payment is taken.
@@ -130,20 +132,20 @@ const presets: TopUpPreset[] = [
                         New balance
                     </span>
                     <span
-                        class="font-mono text-lg font-semibold text-on-surface tabular-nums"
+                        class="font-display text-headline-lg text-on-surface tabular-nums"
                     >
                         $14.2731
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
                     <DialogClose
-                        class="w-1/3 rounded-lg px-2 py-1 text-center text-label-default text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+                        class="w-1/3 rounded border border-border-prominent bg-surface-raised px-2 py-2 text-center text-label-default font-semibold text-canvas-light transition-colors hover:border-[#4a4a4a] hover:bg-[#242424]"
                     >
                         Cancel
                     </DialogClose>
                     <button
                         type="button"
-                        class="flex w-2/3 items-center justify-center gap-0.5 rounded-lg bg-primary px-2 py-1 text-label-default font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary-container active:scale-[0.98]"
+                        class="flex w-2/3 items-center justify-center gap-1 rounded bg-primary px-2 py-2 text-label-default font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container active:scale-[0.98]"
                     >
                         <CirclePlus class="size-4.5" />
                         Add $10.00

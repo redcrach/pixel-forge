@@ -18,6 +18,9 @@ export default defineConfig({
                 bunny('JetBrains Mono', {
                     weights: [400, 500, 600],
                 }),
+                bunny('Bricolage Grotesque', {
+                    weights: [600, 700],
+                }),
             ],
         }),
         inertia(),

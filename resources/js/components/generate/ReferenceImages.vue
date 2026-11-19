@@ -68,13 +68,13 @@ function markPreviewBroken(url: string): void {
 
 <template>
     <section
-        class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-2 shadow-sm"
+        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
     >
         <div class="flex flex-col gap-0.5">
             <div class="flex items-center gap-1">
                 <SectionLabel>Reference images</SectionLabel>
                 <span
-                    class="rounded bg-surface-container-high px-1.5 font-mono text-mono-badge text-on-surface-variant"
+                    class="rounded-full border border-border-subtle bg-surface-container-lowest px-1.5 font-mono text-mono-badge text-on-surface"
                 >
                     {{ urls.length }} / {{ maxImages }}
                 </span>
@@ -91,11 +91,11 @@ function markPreviewBroken(url: string): void {
                 class="flex flex-col gap-0.5"
             >
                 <div
-                    class="flex items-center gap-2 rounded border bg-surface-container-low p-1"
+                    class="flex items-center gap-2 rounded border bg-surface-container-lowest p-1.5"
                     :class="
                         errors[`reference_images.${index}`]
                             ? 'border-error/60'
-                            : 'border-outline-variant/30'
+                            : 'border-border-subtle'
                     "
                 >
                     <span
@@ -143,11 +143,11 @@ function markPreviewBroken(url: string): void {
                         placeholder="https://example.com/reference.png"
                         aria-label="Reference image URL"
                         :aria-invalid="newUrlError !== null"
-                        class="w-full rounded border bg-surface-container-low py-1 pr-2 pl-8 font-mono text-[11px] text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+                        class="w-full rounded border bg-surface-container-lowest py-1.5 pr-2 pl-8 font-mono text-[11px] text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
                         :class="
                             newUrlError
                                 ? 'border-error/60'
-                                : 'border-outline-variant/30'
+                                : 'border-border-subtle'
                         "
                         @keydown.enter.prevent="addUrl"
                     />
@@ -155,7 +155,7 @@ function markPreviewBroken(url: string): void {
                 <button
                     type="button"
                     :disabled="newUrl.trim() === ''"
-                    class="flex shrink-0 items-center gap-0.5 rounded border border-outline-variant/30 bg-surface-container px-2 py-1 text-label-dense text-on-surface transition-colors hover:bg-surface-container-high disabled:opacity-50"
+                    class="flex shrink-0 items-center gap-0.5 rounded border border-border-prominent bg-surface-raised px-2 py-1.5 text-label-dense text-canvas-light transition-colors hover:border-[#4a4a4a] hover:bg-[#242424] disabled:opacity-50"
                     @click="addUrl"
                 >
                     <Plus class="size-3.5" />

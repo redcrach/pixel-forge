@@ -29,7 +29,7 @@ const { openBuyCredits } = useBuyCreditsDialog();
 
 <template>
     <header
-        class="sticky top-0 z-40 flex h-14 items-center justify-between bg-surface-container-lowest/90 px-4 backdrop-blur-md"
+        class="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border-subtle bg-surface-container-lowest/90 px-4 backdrop-blur-md"
     >
         <div class="flex items-center gap-2">
             <Sheet>
@@ -58,10 +58,10 @@ const { openBuyCredits } = useBuyCreditsDialog();
 
         <div v-if="user" class="flex items-center gap-3">
             <div
-                class="flex items-center gap-1 rounded-lg bg-surface-container-high px-2 py-0.5"
+                class="flex items-center gap-1 rounded-full border border-border-subtle bg-surface-raised px-2 py-0.5"
             >
                 <span
-                    class="hidden text-label-default text-on-surface-variant sm:inline"
+                    class="hidden font-mono text-label-default text-outline sm:inline"
                 >
                     Balance:
                 </span>
@@ -74,7 +74,7 @@ const { openBuyCredits } = useBuyCreditsDialog();
 
             <button
                 type="button"
-                class="flex items-center gap-0.5 rounded-lg bg-surface-container px-2 py-0.5 text-label-default text-on-surface transition-colors hover:bg-surface-container-high"
+                class="flex items-center gap-0.5 rounded bg-primary px-2 py-1 text-label-default font-semibold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-colors hover:bg-primary-container"
                 @click="openBuyCredits"
             >
                 <Plus class="size-4" />
@@ -109,13 +109,13 @@ const { openBuyCredits } = useBuyCreditsDialog();
         <div v-else class="flex items-center gap-1">
             <Link
                 :href="login()"
-                class="rounded-lg px-2 py-1 text-label-default text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+                class="rounded px-2 py-1 text-label-default text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
             >
                 Log in
             </Link>
             <Link
                 :href="register()"
-                class="rounded-lg bg-primary px-2 py-1 text-label-default text-primary-foreground transition-colors hover:bg-primary-container"
+                class="rounded bg-primary px-2 py-1 text-label-default font-semibold text-primary-foreground transition-colors hover:bg-primary-container"
             >
                 Register
             </Link>

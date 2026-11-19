@@ -11,7 +11,7 @@ const size = defineModel<ImageSize>({ required: true });
 
 <template>
     <section
-        class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-2 shadow-sm"
+        class="flex flex-col gap-2 rounded-lg border border-border-subtle bg-surface-raised p-3"
     >
         <SectionLabel>Size</SectionLabel>
 
@@ -25,14 +25,14 @@ const size = defineModel<ImageSize>({ required: true });
                 class="relative flex flex-col rounded-lg p-2 text-left transition-all"
                 :class="
                     size === option.value
-                        ? 'border-2 border-primary/90 bg-surface-container-low shadow-sm hover:bg-surface-container'
-                        : 'border border-outline-variant/40 bg-surface-container-lowest hover:border-outline hover:bg-surface-container-low'
+                        ? 'border-2 border-primary bg-surface-container-low shadow-[0_0_12px_rgba(154,230,0,0.25)]'
+                        : 'border border-border-subtle bg-surface-container-lowest hover:border-border-prominent hover:bg-surface-container-low'
                 "
                 @click="size = option.value"
             >
                 <span
                     v-if="option.isDefault"
-                    class="absolute top-2 right-2 hidden rounded bg-primary px-1.5 py-0.5 font-mono text-mono-badge font-semibold text-primary-foreground sm:inline"
+                    class="absolute top-2 right-2 hidden rounded-full bg-primary px-1.5 py-0.5 font-mono text-mono-badge font-semibold text-primary-foreground uppercase sm:inline"
                 >
                     Default
                 </span>
@@ -44,7 +44,7 @@ const size = defineModel<ImageSize>({ required: true });
                             option.previewClass,
                             size === option.value
                                 ? 'border-2 border-primary bg-primary/10'
-                                : 'border border-outline-variant/60 bg-surface-container',
+                                : 'border border-border-prominent bg-surface-container',
                         ]"
                     >
                         <span
@@ -66,7 +66,7 @@ const size = defineModel<ImageSize>({ required: true });
                     >
                         {{ option.dimensions }}
                     </span>
-                    <span class="text-label-dense text-on-surface-variant">
+                    <span class="font-mono text-label-dense text-outline">
                         {{ option.description }}
                     </span>
                 </span>

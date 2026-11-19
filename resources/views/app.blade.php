@@ -8,7 +8,7 @@
         {{-- Inline style so the page is dark before the stylesheet loads (matches app.css) --}}
         <style>
             html {
-                background-color: #131315;
+                background-color: #131313;
             }
         </style>
 

@@ -51,14 +51,14 @@ function formatTokens(line: EstimateLine): string {
 <template>
     <TooltipProvider>
         <section
-            class="flex flex-col gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest/95 p-4 shadow-md backdrop-blur"
+            class="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface-raised p-4"
         >
             <div
-                class="flex items-center justify-between border-b border-outline-variant/30 pb-1"
+                class="flex items-center justify-between border-b border-border-subtle pb-2"
             >
                 <div class="flex items-center gap-1">
                     <Calculator class="size-4.5 text-primary" />
-                    <h2 class="text-headline-sm tracking-tight text-on-surface">
+                    <h2 class="font-display text-headline-sm text-on-surface">
                         Cost estimate
                     </h2>
                 </div>
@@ -107,7 +107,7 @@ function formatTokens(line: EstimateLine): string {
                 </div>
 
                 <div
-                    class="flex flex-col divide-y divide-outline-variant/20 border-y border-outline-variant/30 py-0.5 text-label-default"
+                    class="flex flex-col divide-y divide-border-subtle border-y border-border-subtle py-0.5 text-label-default"
                 >
                     <div
                         v-for="line in lines"
@@ -122,7 +122,7 @@ function formatTokens(line: EstimateLine): string {
                                 <Tooltip v-if="line.isEstimate">
                                     <TooltipTrigger as-child>
                                         <span
-                                            class="cursor-help rounded border border-outline-variant/30 bg-surface-container px-1 font-mono text-[9px] text-outline uppercase"
+                                            class="cursor-help rounded-full border border-border-prominent bg-surface-container-lowest px-1 font-mono text-[9px] text-outline uppercase"
                                         >
                                             est
                                         </span>
@@ -160,7 +160,7 @@ function formatTokens(line: EstimateLine): string {
                 <button
                     type="submit"
                     :disabled="isSubmitting || hasInsufficientBalance"
-                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
+                    class="flex w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container hover:shadow-[0_0_18px_rgba(154,230,0,0.4)] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
                     <LoaderCircle
                         v-if="isSubmitting"
@@ -180,7 +180,7 @@ function formatTokens(line: EstimateLine): string {
             <Link
                 v-else
                 :href="login()"
-                class="flex w-full items-center justify-center gap-1 rounded bg-primary py-2 text-headline-sm text-primary-foreground shadow-md transition-all hover:bg-primary-container"
+                class="flex w-full items-center justify-center gap-1 rounded bg-primary py-3 font-display text-headline-sm font-bold text-primary-foreground shadow-[0_0_12px_rgba(154,230,0,0.25)] transition-all hover:bg-primary-container"
             >
                 <LogIn class="size-4.5" />
                 Log in to generate

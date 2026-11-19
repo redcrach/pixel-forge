@@ -8,30 +8,40 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    /* Pixelforge Studio design tokens (docs/DESIGN.md) */
-    --color-surface: #131315;
-    --color-surface-container-lowest: #0e0e10;
-    --color-surface-container-low: #1c1b1d;
-    --color-surface-container: #201f22;
-    --color-surface-container-high: #2a2a2c;
-    --color-surface-container-highest: #353437;
-    --color-on-surface: #e5e1e4;
-    --color-on-surface-variant: #cbc3d7;
-    --color-outline: #958ea0;
-    --color-outline-variant: #494454;
-    --color-primary-container: #a078ff;
-    --color-tertiary: #7bd0ff;
-    --color-tertiary-container: #009bd1;
-    --color-on-tertiary-container: #002d40;
+    /* Pixelforge Studio design tokens: "Syntactic Studio" (docs/DESIGN.md) */
+    --color-surface: #131313;
+    --color-surface-container-lowest: #0e0e0e;
+    --color-surface-container-low: #1c1b1b;
+    --color-surface-container: #201f1f;
+    --color-surface-container-high: #2a2a2a;
+    --color-surface-container-highest: #353534;
+    /* Panels and cards (Layer 1), framed by border-subtle */
+    --color-surface-raised: #1a1a1a;
+    --color-on-surface: #e5e2e1;
+    --color-on-surface-variant: #c1caae;
+    --color-outline: #8b947b;
+    /* Neutral hairlines: the screens use grey borders, not the olive M3 outline-variant */
+    --color-outline-variant: #383838;
+    --color-border-subtle: #262626;
+    --color-border-prominent: #383838;
+    --color-canvas-light: #f8f6f2;
+    /* Electric lime (bg-primary) brightens to this on hover */
+    --color-primary-container: #abf926;
+    /* Radiant cyan: queued, metrics, references */
+    --color-tertiary: #38bdf8;
+    --color-tertiary-container: #99d9ff;
+    --color-on-tertiary-container: #006083;
+    /* Acid pink: waiting / throttled notices */
+    --color-neon-pink: #ff5eb0;
     --color-error: #ffb4ab;
 
-    --text-headline-xl: 1.75rem;
-    --text-headline-xl--line-height: 2.25rem;
-    --text-headline-xl--letter-spacing: -0.025em;
-    --text-headline-xl--font-weight: 600;
-    --text-headline-lg: 1.25rem;
-    --text-headline-lg--line-height: 1.75rem;
-    --text-headline-lg--letter-spacing: -0.02em;
+    --text-headline-xl: 2rem;
+    --text-headline-xl--line-height: 2.5rem;
+    --text-headline-xl--letter-spacing: -0.02em;
+    --text-headline-xl--font-weight: 700;
+    --text-headline-lg: 1.5rem;
+    --text-headline-lg--line-height: 2rem;
+    --text-headline-lg--letter-spacing: -0.015em;
     --text-headline-lg--font-weight: 600;
     --text-headline-sm: 1rem;
     --text-headline-sm--line-height: 1.5rem;
@@ -71,6 +81,9 @@
 }
 
 @theme inline {
+    /* Titles and big metrics; Inter for text, JetBrains Mono for labels and numbers */
+    --font-display:
+        'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-sans:
         'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -78,9 +91,10 @@
         'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
         monospace;
 
+    /* Cards and panels 8px, controls 4px (DESIGN.md "Shapes") */
     --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: 0.25rem;
+    --radius-sm: 0.125rem;
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -163,38 +177,38 @@
 }
 
 .dark {
-    --background: #131315;
-    --foreground: #e5e1e4;
-    --card: #1c1b1d;
-    --card-foreground: #e5e1e4;
-    --popover: #2a2a2c;
-    --popover-foreground: #e5e1e4;
-    --primary: #d0bcff;
-    --primary-foreground: #3c0091;
-    --secondary: #201f22;
-    --secondary-foreground: #e5e1e4;
-    --muted: #2a2a2c;
-    --muted-foreground: #958ea0;
-    --accent: #2a2a2c;
-    --accent-foreground: #e5e1e4;
+    --background: #131313;
+    --foreground: #e5e2e1;
+    --card: #1a1a1a;
+    --card-foreground: #e5e2e1;
+    --popover: #202020;
+    --popover-foreground: #e5e2e1;
+    --primary: #9ae600;
+    --primary-foreground: #111111;
+    --secondary: #1a1a1a;
+    --secondary-foreground: #f8f6f2;
+    --muted: #202020;
+    --muted-foreground: #a3a3a3;
+    --accent: #202020;
+    --accent-foreground: #f8f6f2;
     --destructive: #93000a;
     --destructive-foreground: #ffb4ab;
-    --border: rgb(73 68 84 / 0.5);
-    --input: rgb(73 68 84 / 0.6);
-    --ring: #d0bcff;
+    --border: #262626;
+    --input: #383838;
+    --ring: #9ae600;
     --chart-1: oklch(0.488 0.243 264.376);
     --chart-2: oklch(0.696 0.17 162.48);
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: #0e0e10;
-    --sidebar-foreground: #cbc3d7;
-    --sidebar-primary: #d0bcff;
-    --sidebar-primary-foreground: #3c0091;
-    --sidebar-accent: #2a2a2c;
-    --sidebar-accent-foreground: #d0bcff;
-    --sidebar-border: rgb(73 68 84 / 0.5);
-    --sidebar-ring: #d0bcff;
+    --sidebar: #111111;
+    --sidebar-foreground: #c1caae;
+    --sidebar-primary: #9ae600;
+    --sidebar-primary-foreground: #111111;
+    --sidebar-accent: #202020;
+    --sidebar-accent-foreground: #9ae600;
+    --sidebar-border: #262626;
+    --sidebar-ring: #9ae600;
 }
 
 @layer base {

@@ -23,17 +23,22 @@ const navItems = computed<StudioNavItem[]>(() => [
 const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
 
 const navItemClass =
-    'flex items-center justify-between rounded-lg px-2 py-1 text-body-dense transition-colors';
-const activeClass = 'bg-surface-container-high font-medium text-primary';
+    'group flex items-center justify-between rounded-lg border px-2 py-1 text-body-dense transition-colors';
+const activeClass = 'border-primary/40 bg-primary/10 font-medium text-primary';
 const inactiveClass =
-    'text-on-surface-variant hover:bg-surface-container hover:text-on-surface';
+    'border-transparent text-on-surface-variant hover:bg-surface-container hover:text-on-surface';
 </script>
 
 <template>
     <aside
-        class="flex w-64 flex-col justify-between bg-surface-container-lowest p-2"
+        class="flex w-64 flex-col justify-between border-r border-border-subtle bg-surface-container-lowest p-2"
     >
         <nav class="flex flex-col gap-0.5">
+            <span
+                class="px-2 pt-1 pb-1.5 font-mono text-mono-badge tracking-[0.04em] text-outline uppercase"
+            >
+                Workspace
+            </span>
             <Link
                 v-for="item in navItems"
                 :key="item.title"
@@ -49,7 +54,12 @@ const inactiveClass =
                 </span>
                 <span
                     v-if="item.badge"
-                    class="rounded bg-surface-container-high px-0.5 py-0.5 font-mono text-mono-badge text-on-surface-variant"
+                    class="rounded-full px-1.5 py-0.5 font-mono text-mono-badge"
+                    :class="
+                        isCurrentUrl(item.href)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-surface-container-high text-on-surface-variant'
+                    "
                 >
                     {{ item.badge }}
                 </span>
