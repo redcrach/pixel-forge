@@ -7,6 +7,7 @@ use App\Models\Generation;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,7 +22,8 @@ class DatabaseSeeder extends Seeder
 
         $user = User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test@test.com',
+            'password' => Hash::make('password'),
         ]);
 
         $estimate = ['min_nano' => 58_437_500, 'max_nano' => 86_637_500];

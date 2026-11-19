@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Foundation\DevCommands;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureHttpClients();
+        $this->configureDevCommands();
+    }
+
+    /**
+     * `composer run dev` must also work the generations queue, or submitted generations never reach Pixelforge.
+     */
+    protected function configureDevCommands(): void
+    {
+        DevCommands::artisan('queue:listen --queue=generations,default --tries=1 --timeout=0', 'queue');
     }
 
     /**

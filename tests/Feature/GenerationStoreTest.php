@@ -6,8 +6,14 @@ use App\Dto\Pricing\GenerationEstimateDto;
 use App\Enums\GenerationStatus;
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
+use App\Jobs\SubmitGeneration;
 use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Queue;
+
+beforeEach(function () {
+    Queue::fake();
+});
 
 function validGeneration(array $overrides = []): array
 {
@@ -24,7 +30,7 @@ test('guests are redirected to the login page', function () {
         ->assertRedirect(route('login'));
 });
 
-test('it stores a pending generation with the estimate and says it is being generated', function () {
+test('it stores a pending generation with the estimate, queues its submission and says it is being generated', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -50,6 +56,8 @@ test('it stores a pending generation with the estimate and says it is being gene
         ->and($generation->quality)->toBe(ImageQuality::MEDIUM)
         ->and($generation->reference_images)->toBe(['https://example.com/fox.png'])
         ->and($generation->meta_data)->toBe(['estimate' => ['min_nano' => 58_437_500, 'max_nano' => 86_637_500]]);
+
+    Queue::assertPushedOn('generations', SubmitGeneration::class, fn (SubmitGeneration $job) => $job->generation->is($generation));
 });
 
 test('reference images are optional', function () {
@@ -85,6 +93,34 @@ test('it stores nothing and shows an error toast when pricing is unavailable', f
         ->assertInertiaFlash('toast.type', 'error');
 
     expect($user->generations()->exists())->toBeFalse();
+    Queue::assertNothingPushed();
+});
+
+test('a precognitive request only validates and stores nothing', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $this->mock(EstimateGenerationCost::class)->shouldNotReceive('__invoke');
+
+    $this->withPrecognition()
+        ->post(route('generations.store'), validGeneration())
+        ->assertSuccessfulPrecognition();
+
+    expect($user->generations()->exists())->toBeFalse();
+    Queue::assertNothingPushed();
+});
+
+test('a precognitive request reports an invalid reference image under its index', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->withPrecognition()
+        ->withHeader('Precognition-Validate-Only', 'reference_images,reference_images.*')
+        ->postJson(route('generations.store'), validGeneration([
+            'prompt' => '',
+            'reference_images' => ['https://example.com/fox.png', 'not a url'],
+        ]))
+        ->assertUnprocessable()
+        ->assertOnlyJsonValidationErrors(['reference_images.1']);
 });
 
 test('it validates the generation', function (array $overrides, string $invalidField) {

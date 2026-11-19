@@ -6,6 +6,7 @@ use App\Actions\EstimateGenerationCost;
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
 use App\Http\Requests\StoreGenerationRequest;
+use App\Jobs\SubmitGeneration;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,7 @@ class GenerationController extends Controller
 {
     public function __invoke(StoreGenerationRequest $request, EstimateGenerationCost $estimateGenerationCost): RedirectResponse
     {
-        $prompt = $request->validated('prompt');
+        $prompt = (string) $request->validated('prompt');
         $size = $request->enum('size', ImageSize::class);
         $quality = $request->enum('quality', ImageQuality::class);
         $referenceImages = $request->validated('reference_images') ?? [];
@@ -33,7 +34,7 @@ class GenerationController extends Controller
             return back();
         }
 
-        $request->user()->generations()->create([
+        $generation = $request->user()->generations()->create([
             'prompt' => $prompt,
             'size' => $size,
             'quality' => $quality,
@@ -45,6 +46,8 @@ class GenerationController extends Controller
                 ],
             ],
         ]);
+
+        SubmitGeneration::dispatch($generation);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Your image is being generated.')]);
 

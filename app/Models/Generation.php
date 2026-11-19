@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property string $id
  * @property int $user_id
+ * @property string|null $pixelforge_id
  * @property string $prompt
  * @property ImageSize $size
  * @property ImageQuality $quality
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  */
 #[Fillable([
+    'pixelforge_id',
     'prompt',
     'size',
     'quality',

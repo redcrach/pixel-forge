@@ -1,0 +1,26 @@
+{
+    "id": "gen_01JC2Z8Q4N6V0M3H7X5T9R2B1K",
+    "object": "generation",
+    "status": "failed",
+    "prompt": "A lighthouse on a cliff at dawn, oil painting",
+    "size": "1536x1024",
+    "quality": "high",
+    "reference_images": ["https://example.com/style.png"],
+    "metadata": { "order_id": "019a9a5e-0000-7000-8000-000000000000" },
+    "image_url": null,
+    "image_url_expires_at": null,
+    "usage": null,
+    "rates": {
+        "input_text_tokens": "5.00",
+        "input_image_tokens": "10.00",
+        "output_tokens": "40.00",
+        "reasoning_tokens": "12.50"
+    },
+    "error": {
+        "code": "internal_error",
+        "message": "Something went wrong on our side while generating. You were not charged; please retry."
+    },
+    "created_at": "2026-11-04T14:03:11Z",
+    "started_at": "2026-11-04T14:03:13Z",
+    "completed_at": "2026-11-04T14:03:20Z"
+}
