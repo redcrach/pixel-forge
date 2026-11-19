@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property int $balance_nano Cached sum of credit_transactions, in nanodollars
+ * @property bool $is_admin Can open the /admin panel
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -39,6 +40,7 @@ class User extends Authenticatable
      */
     protected $attributes = [
         'balance_nano' => 0,
+        'is_admin' => false,
     ];
 
     /**
@@ -68,6 +70,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'balance_nano' => 'integer',
+            'is_admin' => 'boolean',
         ];
     }
 }
