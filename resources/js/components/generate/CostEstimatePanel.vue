@@ -14,7 +14,7 @@ import { formatMoney, formatMoneyRange } from '@/lib/money';
 import { login } from '@/routes';
 import type { EstimateLine, GenerationEstimate } from '@/types';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         estimate: GenerationEstimate | null;
         isEstimating: boolean;
@@ -30,6 +30,15 @@ withDefaults(
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
+
+const balanceNano = computed(() => page.props.balanceNano ?? 0);
+
+/** What would be left if this run cost its maximum, the amount held when it is submitted. */
+const balanceAfterMaxChargeNano = computed(() =>
+    props.estimate === null
+        ? null
+        : balanceNano.value - props.estimate.total_max_nano,
+);
 
 const lines: {
     key: keyof GenerationEstimate['lines'];
@@ -158,6 +167,61 @@ function formatTokens(line: EstimateLine): string {
             </p>
 
             <template v-if="isAuthenticated">
+                <div
+                    class="flex flex-col divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface-container-lowest text-label-default"
+                >
+                    <div
+                        class="flex items-center justify-between gap-2 px-3 py-2"
+                    >
+                        <span class="text-on-surface-variant">
+                            Current balance
+                        </span>
+                        <span
+                            class="font-mono font-semibold text-on-surface tabular-nums"
+                        >
+                            {{ formatMoney(balanceNano) }}
+                        </span>
+                    </div>
+                    <div
+                        class="flex items-center justify-between gap-2 px-3 py-2"
+                    >
+                        <span class="text-on-surface-variant">
+                            Balance after max charge
+                            <span v-if="estimate" class="font-mono">
+                                ({{
+                                    formatMoney(
+                                        estimate.total_max_nano,
+                                        4,
+                                        'up',
+                                    )
+                                }})
+                            </span>
+                        </span>
+                        <span
+                            class="flex shrink-0 items-center gap-1.5 font-mono font-semibold tabular-nums"
+                            :class="
+                                hasInsufficientBalance
+                                    ? 'text-error'
+                                    : 'text-primary'
+                            "
+                        >
+                            <span
+                                class="size-1.5 rounded-full"
+                                :class="
+                                    hasInsufficientBalance
+                                        ? 'bg-error'
+                                        : 'bg-primary'
+                                "
+                            />
+                            {{
+                                balanceAfterMaxChargeNano === null
+                                    ? '—'
+                                    : formatMoney(balanceAfterMaxChargeNano)
+                            }}
+                        </span>
+                    </div>
+                </div>
+
                 <button
                     type="submit"
                     :disabled="
