@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vite-plus/test';
-import { dollarsToNano, formatMoney, formatMoneyRange } from '@/lib/money';
+import {
+    dollarsToNano,
+    formatMoney,
+    formatMoneyCompact,
+    formatMoneyRange,
+} from '@/lib/money';
 
 describe('formatMoney', () => {
     test('shows every nanodollar by default, like cost_usd in Pixelforge usage', () => {
@@ -24,18 +29,29 @@ describe('formatMoney', () => {
     });
 });
 
+describe('formatMoneyCompact', () => {
+    test('drops trailing zeros for users but keeps cents', () => {
+        expect(formatMoneyCompact(58_125_000)).toBe('$0.058125');
+        expect(formatMoneyCompact(86_250_000)).toBe('$0.08625');
+        expect(formatMoneyCompact(23_451_953_125)).toBe('$23.451953125');
+        expect(formatMoneyCompact(10_000_000_000)).toBe('$10.00');
+        expect(formatMoneyCompact(0)).toBe('$0.00');
+        expect(formatMoneyCompact(-74_087_500)).toBe('-$0.0740875');
+    });
+});
+
 describe('formatMoneyRange', () => {
-    test('shows both ends to the nanodollar', () => {
-        expect(formatMoneyRange(250_012_500, 340_018_750)).toBe(
-            '$0.250012500 – $0.340018750',
+    test('shows both ends exactly, without trailing zeros', () => {
+        expect(formatMoneyRange(58_125_000, 86_250_000)).toBe(
+            '$0.058125 – $0.08625',
         );
         expect(formatMoneyRange(340_000_000, 447_531_250)).toBe(
-            '$0.340000000 – $0.447531250',
+            '$0.34 – $0.44753125',
         );
     });
 
     test('a single amount is shown once', () => {
-        expect(formatMoneyRange(447_531_250, 447_531_250)).toBe('$0.447531250');
+        expect(formatMoneyRange(447_531_250, 447_531_250)).toBe('$0.44753125');
     });
 });
 

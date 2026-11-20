@@ -100,24 +100,46 @@ function validateReferenceImages(): void {
 }
 
 /**
- * Async, so it can't be cancelled by the live props reload that the new generation's broadcast
- * triggers (a sync reload interrupts any sync visit in flight). If it were cancelled, onSuccess
- * would never run: the prompt would stay, Generate would unlock, and new typing would be appended.
+ * The request takes its own copy of the form, so the prompt box is emptied the moment Generate is
+ * clicked: anything typed while the request is in flight starts a new prompt instead of being
+ * appended to the one being sent. If the generation isn't created, the prompt is put back.
+ *
+ * Async, so the live props reload triggered by the new generation's broadcast can't cancel it.
  */
 function submit(): void {
+    const submittedPrompt = form.prompt;
+
     form.submit({
         async: true,
         preserveScroll: true,
         onSuccess: (page) => {
             const toast = page.flash.toast as FlashToast | undefined;
 
-            if (toast?.type === 'success') {
-                form.reset();
+            if (toast?.type !== 'success') {
+                restorePrompt(submittedPrompt);
+
+                return;
             }
+
+            const nextPrompt = form.prompt;
+            form.reset();
+            form.prompt = nextPrompt;
         },
-        // On a phone the failing field is often scrolled away behind the bottom bar
-        onError: (errors) => nextTick(() => focusFirstInvalidField(errors)),
+        onError: (errors) => {
+            restorePrompt(submittedPrompt);
+            // On a phone the failing field is often scrolled away behind the bottom bar
+            nextTick(() => focusFirstInvalidField(errors));
+        },
     });
+
+    form.prompt = '';
+}
+
+/** Puts a prompt that wasn't generated back, unless a new one is already being typed. */
+function restorePrompt(prompt: string): void {
+    if (form.prompt === '') {
+        form.prompt = prompt;
+    }
 }
 
 /** The live estimate, fetched as plain JSON (no page visit) whenever the form changes. */
@@ -199,7 +221,6 @@ onMounted(refreshEstimate);
             <PromptEditor
                 v-model="form.prompt"
                 :error="form.errors.prompt"
-                :readonly="form.processing"
                 @change="validatePrompt"
             />
             <SizePicker v-model="form.size" :options="sizes" />

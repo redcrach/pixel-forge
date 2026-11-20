@@ -15,6 +15,16 @@ test('it formats nanodollars like the frontend formatter', function (int $nano, 
     'negative' => [-74_087_500, 4, false, '-$0.0741'],
 ]);
 
+test('the compact form for users drops trailing zeros but keeps cents', function (int $nano, string $expected) {
+    expect(app(FormatMoney::class)->compact($nano))->toBe($expected);
+})->with([
+    'estimate' => [58_125_000, '$0.058125'],
+    'every digit used' => [23_451_953_125, '$23.451953125'],
+    'whole dollars' => [10_000_000_000, '$10.00'],
+    'zero' => [0, '$0.00'],
+    'negative' => [-74_087_500, '-$0.0740875'],
+]);
+
 test('it shows every nanodollar by default, like cost_usd in pixelforge\'s usage report', function () {
     expect(app(FormatMoney::class)(343_675_000))->toBe('$0.343675000');
 });

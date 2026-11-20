@@ -26,4 +26,13 @@ class FormatMoney
 
         return ($nano < 0 ? '-' : '').'$'.intdiv($rounded, $scale).'.'.$fraction;
     }
+
+    /**
+     * The exact amount without trailing zeros, for users: 58_125_000 → "$0.058125", 10_000_000_000 → "$10.00".
+     * Mirrors formatMoneyCompact() in resources/js/lib/money.ts. The admin keeps all 9 decimals.
+     */
+    public function compact(int $nano): string
+    {
+        return (string) preg_replace('/(\.\d{2}\d*?)0+$/', '$1', ($this)($nano));
+    }
 }

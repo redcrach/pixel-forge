@@ -10,7 +10,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { MONEY_DECIMALS, formatMoney, formatMoneyRange } from '@/lib/money';
+import { formatMoneyCompact, formatMoneyRange } from '@/lib/money';
 import { login } from '@/routes';
 import type { EstimateLine, GenerationEstimate } from '@/types';
 
@@ -108,14 +108,8 @@ function formatTokens(line: EstimateLine): string {
                     <span
                         class="font-display text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
                     >
-                        [ {{ formatMoney(estimate.total_min_nano) }} –
-                        {{
-                            formatMoney(
-                                estimate.total_max_nano,
-                                MONEY_DECIMALS,
-                                'up',
-                            )
-                        }}
+                        [ {{ formatMoneyCompact(estimate.total_min_nano) }} –
+                        {{ formatMoneyCompact(estimate.total_max_nano) }}
                         ]
                     </span>
                 </div>
@@ -184,7 +178,7 @@ function formatTokens(line: EstimateLine): string {
                         <span
                             class="font-mono font-bold tracking-wider text-wheat tabular-nums"
                         >
-                            {{ formatMoney(balanceNano) }}
+                            {{ formatMoneyCompact(balanceNano) }}
                         </span>
                     </div>
                     <div
@@ -194,11 +188,7 @@ function formatTokens(line: EstimateLine): string {
                             Balance after max charge
                             <span v-if="estimate" class="font-mono">
                                 ({{
-                                    formatMoney(
-                                        estimate.total_max_nano,
-                                        MONEY_DECIMALS,
-                                        'up',
-                                    )
+                                    formatMoneyCompact(estimate.total_max_nano)
                                 }})
                             </span>
                         </span>
@@ -221,7 +211,9 @@ function formatTokens(line: EstimateLine): string {
                             {{
                                 balanceAfterMaxChargeNano === null
                                     ? '—'
-                                    : formatMoney(balanceAfterMaxChargeNano)
+                                    : formatMoneyCompact(
+                                          balanceAfterMaxChargeNano,
+                                      )
                             }}
                         </span>
                     </div>
@@ -244,14 +236,8 @@ function formatTokens(line: EstimateLine): string {
 
                 <InsufficientCreditsNotice
                     v-if="hasInsufficientBalance && estimate"
-                    :max-cost="
-                        formatMoney(
-                            estimate.total_max_nano,
-                            MONEY_DECIMALS,
-                            'up',
-                        )
-                    "
-                    :balance="formatMoney(page.props.balanceNano ?? 0)"
+                    :max-cost="formatMoneyCompact(estimate.total_max_nano)"
+                    :balance="formatMoneyCompact(page.props.balanceNano ?? 0)"
                 />
             </template>
 

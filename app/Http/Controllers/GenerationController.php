@@ -65,8 +65,8 @@ class GenerationController extends Controller
             });
         } catch (InsufficientCreditsException $exception) {
             Inertia::flash('toast', ['type' => 'error', 'message' => __('Not enough credits: this image can cost up to :maximum and your balance is :balance.', [
-                'maximum' => $formatMoney($exception->requiredNano, roundUp: true),
-                'balance' => $formatMoney($exception->balanceNano),
+                'maximum' => $formatMoney->compact($exception->requiredNano),
+                'balance' => $formatMoney->compact($exception->balanceNano),
             ])]);
 
             return back();

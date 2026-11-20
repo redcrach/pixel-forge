@@ -30,13 +30,21 @@ export function formatMoney(
 }
 
 /**
- * "$0.077500000 – $0.105800000", or a single amount when both ends are equal.
- * The maximum is what gets held from the balance, so it is rounded up, never down.
+ * The exact amount without trailing zeros, for users: 58_125_000 → "$0.058125", 10_000_000_000 → "$10.00".
+ * Nothing is rounded; billing details and the admin show all 9 decimals with formatMoney().
+ */
+export function formatMoneyCompact(nano: number): string {
+    return formatMoney(nano).replace(/(\.\d{2}\d*?)0+$/, '$1');
+}
+
+/**
+ * "$0.0775 – $0.1058", or a single amount when both ends are equal. Exact, so the maximum shown is
+ * exactly what gets held from the balance.
  */
 export function formatMoneyRange(minNano: number, maxNano: number): string {
     return minNano === maxNano
-        ? formatMoney(maxNano, MONEY_DECIMALS, 'up')
-        : `${formatMoney(minNano)} – ${formatMoney(maxNano, MONEY_DECIMALS, 'up')}`;
+        ? formatMoneyCompact(maxNano)
+        : `${formatMoneyCompact(minNano)} – ${formatMoneyCompact(maxNano)}`;
 }
 
 /**

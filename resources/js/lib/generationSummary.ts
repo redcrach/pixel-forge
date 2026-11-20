@@ -1,5 +1,5 @@
 import { formatTimeAgo } from '@vueuse/core';
-import { formatMoney, formatMoneyRange } from '@/lib/money';
+import { formatMoneyCompact, formatMoneyRange } from '@/lib/money';
 import type {
     GenerationHistoryItem,
     GenerationStatus,
@@ -78,7 +78,7 @@ function formatCost(generation: GenerationHistoryItem): string {
 
     return generation.final_price_nano === null
         ? 'Pending'
-        : formatMoney(generation.final_price_nano);
+        : formatMoneyCompact(generation.final_price_nano);
 }
 
 function formatEstimate(generation: GenerationHistoryItem): string {

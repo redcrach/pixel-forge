@@ -20,7 +20,7 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useBuyCreditsDialog } from '@/composables/useBuyCreditsDialog';
 import { useInitials } from '@/composables/useInitials';
-import { formatMoney } from '@/lib/money';
+import { formatMoneyCompact } from '@/lib/money';
 import { home, login, register } from '@/routes';
 
 const page = usePage();
@@ -62,7 +62,11 @@ const { openBuyCredits } = useBuyCreditsDialog();
                             <span
                                 class="font-mono text-mono-metric font-bold tracking-wider text-wheat tabular-nums"
                             >
-                                {{ formatMoney(page.props.balanceNano ?? 0) }}
+                                {{
+                                    formatMoneyCompact(
+                                        page.props.balanceNano ?? 0,
+                                    )
+                                }}
                             </span>
                         </div>
                         <SheetClose as-child>
@@ -101,7 +105,7 @@ const { openBuyCredits } = useBuyCreditsDialog();
                 <span
                     class="font-mono text-mono-metric font-bold tracking-wider text-wheat tabular-nums"
                 >
-                    {{ formatMoney(page.props.balanceNano ?? 0) }}
+                    {{ formatMoneyCompact(page.props.balanceNano ?? 0) }}
                 </span>
             </div>
 

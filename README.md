@@ -155,7 +155,7 @@ The brief ranks correctness of money first, then robustness, then UX, then code 
 - **One formula, in PHP.** `CalculateProviderCost` and `ApplyMarkup` are the only place prices are computed. The cost estimate on the Generate page comes from a debounced `POST /generations/estimate`, so the browser never re-implements pricing.
 - **The markup is in basis points.** Price = provider cost × (10,000 + `PIXELFORGE_MARKUP_BPS`) / 10,000. If that leaves a fraction of a nanodollar, it is rounded up and logged.
 - **The real cost uses the generation's own rates.** Pixelforge freezes rates when a generation is created. The final charge uses those rates and the actual token usage, never the current `/pricing`.
-- **Dollars are shown with 9 decimals,** every nanodollar, like `cost_usd` in Pixelforge's `/v1/usage`. Nothing is rounded on screen, so any amount can be compared with Pixelforge's to the nanodollar.
+- **Amounts are never rounded on screen.** The admin and billing details show all 9 decimals, like `cost_usd` in Pixelforge's `/v1/usage`, so they compare to the nanodollar. Elsewhere, users see the same exact amount without trailing zeros (`$0.058125`, `$10.00`), which is easier to read.
 
 ### Credits
 

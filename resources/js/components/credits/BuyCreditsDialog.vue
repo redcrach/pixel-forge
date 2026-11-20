@@ -12,7 +12,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useBuyCreditsDialog } from '@/composables/useBuyCreditsDialog';
-import { dollarsToNano, formatMoney } from '@/lib/money';
+import { dollarsToNano, formatMoney, formatMoneyCompact } from '@/lib/money';
 
 const { isOpen } = useBuyCreditsDialog();
 const page = usePage();
@@ -86,7 +86,7 @@ function submit(): void {
                     <span
                         class="font-mono text-base font-bold tracking-wider text-wheat tabular-nums"
                     >
-                        {{ formatMoney(balanceNano) }}
+                        {{ formatMoneyCompact(balanceNano) }}
                     </span>
                 </div>
 
@@ -168,7 +168,7 @@ function submit(): void {
                             {{
                                 newBalanceNano === null
                                     ? '—'
-                                    : formatMoney(newBalanceNano)
+                                    : formatMoneyCompact(newBalanceNano)
                             }}
                         </span>
                     </div>
