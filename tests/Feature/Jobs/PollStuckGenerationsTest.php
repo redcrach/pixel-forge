@@ -105,4 +105,3 @@ test('a rate limit stops the run so the next one continues', function () {
 
     Http::assertSentCount(1);
 });
-
