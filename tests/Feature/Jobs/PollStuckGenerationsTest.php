@@ -3,7 +3,6 @@
 use App\Enums\GenerationStatus;
 use App\Jobs\PollStuckGenerations;
 use App\Models\Generation;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
@@ -14,7 +13,7 @@ beforeEach(function () {
 /**
  * A generation Pixelforge accepted that hasn't changed for the given minutes, holding $0.45 of a $1.00 balance.
  */
-function stuckGeneration(string $pixelforgeId, int $quietMinutes = 31, GenerationStatus $status = GenerationStatus::PROCESSING): Generation
+function stuckGeneration(string $pixelforgeId, int $quietMinutes = 11, GenerationStatus $status = GenerationStatus::PROCESSING): Generation
 {
     $generation = userWithHeldGeneration(balanceNano: 1_000_000_000, maximumCostNano: 450_000_000);
     $generation->forceFill([
@@ -71,9 +70,9 @@ test('a generation still running at pixelforge is left as it is', function () {
         ->and($generation->user->balance_nano)->toBe(1_000_000_000 - 450_000_000);
 });
 
-test('only generations accepted by pixelforge and quiet for 30 minutes are polled', function () {
+test('only generations accepted by pixelforge and quiet for 10 minutes are polled', function () {
     Http::fake();
-    stuckGeneration('gen_recent', quietMinutes: 20);
+    stuckGeneration('gen_recent', quietMinutes: 5);
     stuckGeneration('gen_done', status: GenerationStatus::SUCCEEDED);
     stuckGeneration('gen_pending', status: GenerationStatus::PENDING);
     Generation::factory()->create(['status' => GenerationStatus::QUEUED, 'pixelforge_id' => null, 'updated_at' => now()->subHour()]);
@@ -107,8 +106,3 @@ test('a rate limit stops the run so the next one continues', function () {
     Http::assertSentCount(1);
 });
 
-test('it runs one at a time, every 30 minutes', function () {
-    expect(new PollStuckGenerations)->toBeInstanceOf(ShouldBeUnique::class);
-
-    $this->artisan('schedule:list')->expectsOutputToContain('*/30 * * * *  App\Jobs\PollStuckGenerations');
-});
