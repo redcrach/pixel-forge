@@ -16,7 +16,7 @@ class GeneratePageController extends Controller
         $remixedGeneration = empty($remixId) ? null : $request->user()?->generations()->find($remixId);
 
         return Inertia::render('Generate', [
-            'remix' => $remixedGeneration  ? GenerationResource::make($remixedGeneration)->resolve() : null,
+            'remix' => $remixedGeneration ? GenerationResource::make($remixedGeneration)->resolve() : null,
         ]);
     }
 }

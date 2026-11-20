@@ -16,7 +16,6 @@ use Illuminate\Queue\Attributes\UniqueFor;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
 
-
 #[UniqueFor(30 * 60)]
 class PollStuckGenerations implements ShouldBeUnique, ShouldQueue
 {
@@ -35,9 +34,10 @@ class PollStuckGenerations implements ShouldBeUnique, ShouldQueue
                 $response = Http::pixelforge()->get("/generations/{$generation->pixelforge_id}")->throw();
             } catch (RequestException $exception) {
                 if ($exception->response->status() === Response::HTTP_TOO_MANY_REQUESTS) {
-                    //Pixelforge rate limit reached while polling stuck generations; the next run continues.
+                    // Pixelforge rate limit reached while polling stuck generations; the next run continues.
                     return;
                 }
+
                 continue;
             } catch (ConnectionException $exception) {
                 continue;
