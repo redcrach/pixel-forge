@@ -21,8 +21,8 @@ class PollStuckGenerations implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
-    /** A webhook normally moves a generation within seconds; 30 quiet minutes means it was missed. */
-    private const STUCK_AFTER_MINUTES = 30;
+    /** A webhook normally moves a generation within seconds; 10 quiet minutes means it was missed. */
+    private const STUCK_AFTER_MINUTES = 10;
 
     /** Keeps a run well inside Pixelforge's 60 requests per minute, which every environment shares. */
     private const MAX_GENERATIONS_PER_RUN = 50;
