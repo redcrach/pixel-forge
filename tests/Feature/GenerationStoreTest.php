@@ -89,7 +89,7 @@ test('a balance below the maximum estimate is refused and nothing is created', f
         ->post(route('generations.store'), validGeneration())
         ->assertRedirect(route('home'))
         ->assertInertiaFlash('toast.type', 'error')
-        ->assertInertiaFlash('toast.message', 'Not enough credits: this image can cost up to $0.0867 and your balance is $0.0866.');
+        ->assertInertiaFlash('toast.message', 'Not enough credits: this image can cost up to $0.08664 and your balance is $0.08664.');
 
     expect($user->generations()->exists())->toBeFalse()
         ->and($user->refresh()->balance_nano)->toBe(86_637_499);

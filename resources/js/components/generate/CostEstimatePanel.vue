@@ -10,7 +10,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { formatMoney, formatMoneyRange } from '@/lib/money';
+import { MONEY_DECIMALS, formatMoney, formatMoneyRange } from '@/lib/money';
 import { login } from '@/routes';
 import type { EstimateLine, GenerationEstimate } from '@/types';
 
@@ -109,7 +109,14 @@ function formatTokens(line: EstimateLine): string {
                         class="font-display text-[26px] leading-tight font-bold tracking-tight text-primary tabular-nums"
                     >
                         [ {{ formatMoney(estimate.total_min_nano) }} –
-                        {{ formatMoney(estimate.total_max_nano, 4, 'up') }} ]
+                        {{
+                            formatMoney(
+                                estimate.total_max_nano,
+                                MONEY_DECIMALS,
+                                'up',
+                            )
+                        }}
+                        ]
                     </span>
                 </div>
 
@@ -188,7 +195,7 @@ function formatTokens(line: EstimateLine): string {
                                 ({{
                                     formatMoney(
                                         estimate.total_max_nano,
-                                        4,
+                                        MONEY_DECIMALS,
                                         'up',
                                     )
                                 }})
@@ -236,7 +243,13 @@ function formatTokens(line: EstimateLine): string {
 
                 <InsufficientCreditsNotice
                     v-if="hasInsufficientBalance && estimate"
-                    :max-cost="formatMoney(estimate.total_max_nano, 4, 'up')"
+                    :max-cost="
+                        formatMoney(
+                            estimate.total_max_nano,
+                            MONEY_DECIMALS,
+                            'up',
+                        )
+                    "
                     :balance="formatMoney(page.props.balanceNano ?? 0)"
                 />
             </template>

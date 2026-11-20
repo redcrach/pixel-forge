@@ -3,11 +3,13 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { history, home } from '@/routes';
+import { dashboard as adminDashboard } from '@/routes/filament/admin/pages';
 import { edit as editProfile } from '@/routes/profile';
 import type { StudioNavItem } from '@/types';
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
+const isAdmin = computed(() => page.props.auth.user?.is_admin === true);
 
 const navItems = computed<StudioNavItem[]>(() => [
     { title: 'Generate', href: home() },
@@ -33,12 +35,6 @@ const inactiveClass =
         class="flex w-64 flex-col justify-between border-r-2 border-surface-container-highest bg-surface-container-lowest p-2"
     >
         <nav class="flex flex-col gap-1">
-            <div
-                class="mb-1 flex items-center justify-between border-b-2 border-surface-container-highest bg-surface-container-low px-2 py-1 font-mono text-label-dense tracking-widest text-on-surface-variant uppercase"
-            >
-                <span>[ Workspace ]</span>
-                <span class="text-primary">CH.01</span>
-            </div>
             <Link
                 v-for="item in navItems"
                 :key="item.title"
@@ -58,16 +54,31 @@ const inactiveClass =
             </Link>
         </nav>
 
-        <Link
-            v-if="isAuthenticated"
-            :href="editProfile()"
-            :class="[
-                navItemClass,
-                'justify-center tracking-wider',
-                isCurrentOrParentUrl('/settings') ? activeClass : inactiveClass,
-            ]"
-        >
-            [ Settings ]
-        </Link>
+        <div v-if="isAuthenticated" class="flex flex-col gap-1">
+            <!-- The admin panel is Filament, not Inertia: a full page load -->
+            <a
+                v-if="isAdmin"
+                :href="adminDashboard().url"
+                :class="[
+                    navItemClass,
+                    inactiveClass,
+                    'justify-center tracking-wider',
+                ]"
+            >
+                [ Admin panel ]
+            </a>
+            <Link
+                :href="editProfile()"
+                :class="[
+                    navItemClass,
+                    'justify-center tracking-wider',
+                    isCurrentOrParentUrl('/settings')
+                        ? activeClass
+                        : inactiveClass,
+                ]"
+            >
+                [ Settings ]
+            </Link>
+        </div>
     </aside>
 </template>

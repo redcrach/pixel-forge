@@ -76,6 +76,6 @@ class GenerationStatsOverview extends StatsOverviewWidget
 
     private function formatMoney(int $nano): string
     {
-        return app(FormatMoney::class)($nano, FormatMoney::PIXELFORGE_DECIMALS);
+        return app(FormatMoney::class)($nano);
     }
 }

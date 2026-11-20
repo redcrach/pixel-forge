@@ -2,7 +2,10 @@
 
 namespace App\Enums;
 
-enum GenerationStatus: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum GenerationStatus: string implements HasColor, HasLabel
 {
     /** Created locally, not yet accepted by Pixelforge. */
     case PENDING = 'pending';
@@ -30,5 +33,29 @@ enum GenerationStatus: string
     public function canTransitionTo(self $nextStatus): bool
     {
         return ! $this->isFinal() && $nextStatus->rank() > $this->rank();
+    }
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::PENDING => 'Pending',
+            self::SUBMISSION_FAILED => 'Submission failed',
+            self::QUEUED => 'Queued',
+            self::PROCESSING => 'Processing',
+            self::SUCCEEDED => 'Succeeded',
+            self::FAILED => 'Failed',
+        };
+    }
+
+    /**
+     * Badge color in the admin panel.
+     */
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::PENDING, self::QUEUED, self::PROCESSING => 'warning',
+            self::SUCCEEDED => 'success',
+            self::SUBMISSION_FAILED, self::FAILED => 'danger',
+        };
     }
 }

@@ -140,6 +140,6 @@ class UsageReport extends Page implements HasTable
 
     private function formatMoney(int $nano): string
     {
-        return app(FormatMoney::class)($nano, FormatMoney::PIXELFORGE_DECIMALS);
+        return app(FormatMoney::class)($nano);
     }
 }

@@ -7,7 +7,6 @@ use App\Enums\GenerationStatus;
 use App\Models\Generation;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Str;
 
 class GenerationsByStatusChart extends ChartWidget
 {
@@ -42,7 +41,7 @@ class GenerationsByStatusChart extends ChartWidget
             ->pluck('generations', 'status');
 
         return [
-            'labels' => array_map(fn (GenerationStatus $status): string => Str::headline($status->value), GenerationStatus::cases()),
+            'labels' => array_map(fn (GenerationStatus $status): string => $status->getLabel(), GenerationStatus::cases()),
             'datasets' => [[
                 'label' => 'Generations',
                 'data' => array_map(fn (GenerationStatus $status): int => (int) ($countsByStatus[$status->value] ?? 0), GenerationStatus::cases()),

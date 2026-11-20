@@ -3,20 +3,20 @@
 namespace App\Actions\Pricing;
 
 /**
- * Formats integer nanodollars as dollars for display, e.g. 92_887_500 → "$0.0929".
+ * Formats integer nanodollars as dollars for display, e.g. 343_675_000 → "$0.34368".
  * Mirrors formatMoney() in resources/js/lib/money.ts. Charges stay exact: only the display rounds.
  */
 class FormatMoney
 {
     private const NANO_DIGITS = 9;
 
-    /** Pixelforge shows billed dollars with 5 decimals; the admin uses the same so the numbers compare directly. */
+    /** Pixelforge shows billed dollars with 5 decimals; we show the same so the numbers compare directly. */
     public const PIXELFORGE_DECIMALS = 5;
 
     /**
      * @param  bool  $roundUp  For maximums: never show less than the real amount
      */
-    public function __invoke(int $nano, int $decimals = 4, bool $roundUp = false): string
+    public function __invoke(int $nano, int $decimals = self::PIXELFORGE_DECIMALS, bool $roundUp = false): string
     {
         $unit = 10 ** (self::NANO_DIGITS - $decimals);
         $absoluteNano = abs($nano);

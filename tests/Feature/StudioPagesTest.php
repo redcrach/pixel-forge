@@ -27,6 +27,17 @@ test('authenticated users see the generate page on the home route', function () 
     );
 });
 
+test('the studio knows whether the user is an admin, to show the admin panel link', function (bool $isAdmin) {
+    $this->actingAs(User::factory()->create(['is_admin' => $isAdmin]));
+
+    $this->get(route('home'))->assertInertia(fn (Assert $page) => $page
+        ->where('auth.user.is_admin', $isAdmin)
+    );
+})->with([
+    'admin' => [true],
+    'regular user' => [false],
+]);
+
 test('guests are redirected from history to the login page', function () {
     $response = $this->get(route('history'));
     $response->assertRedirect(route('login'));
