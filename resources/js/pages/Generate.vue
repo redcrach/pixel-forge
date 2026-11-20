@@ -100,46 +100,28 @@ function validateReferenceImages(): void {
 }
 
 /**
- * The request takes its own copy of the form, so the prompt box is emptied the moment Generate is
- * clicked: anything typed while the request is in flight starts a new prompt instead of being
- * appended to the one being sent. If the generation isn't created, the prompt is put back.
- *
+ * The inputs are locked while the request is in flight, so nothing typed meanwhile lands in it.
  * Async, so the live props reload triggered by the new generation's broadcast can't cancel it.
  */
 function submit(): void {
-    const submittedPrompt = form.prompt;
-
     form.submit({
         async: true,
         preserveScroll: true,
         onSuccess: (page) => {
             const toast = page.flash.toast as FlashToast | undefined;
 
-            if (toast?.type !== 'success') {
-                restorePrompt(submittedPrompt);
-
-                return;
+            if (toast?.type === 'success') {
+                form.reset();
             }
-
-            const nextPrompt = form.prompt;
-            form.reset();
-            form.prompt = nextPrompt;
         },
-        onError: (errors) => {
-            restorePrompt(submittedPrompt);
-            // On a phone the failing field is often scrolled away behind the bottom bar
-            nextTick(() => focusFirstInvalidField(errors));
+        // Not onError: the inputs are still disabled there, so the field couldn't take focus.
+        // On a phone the failing field is often scrolled away behind the bottom bar.
+        onFinish: () => {
+            if (form.hasErrors) {
+                nextTick(() => focusFirstInvalidField(form.errors));
+            }
         },
     });
-
-    form.prompt = '';
-}
-
-/** Puts a prompt that wasn't generated back, unless a new one is already being typed. */
-function restorePrompt(prompt: string): void {
-    if (form.prompt === '') {
-        form.prompt = prompt;
-    }
 }
 
 /** The live estimate, fetched as plain JSON (no page visit) whenever the form changes. */
@@ -217,7 +199,10 @@ onMounted(refreshEstimate);
         class="grid grid-cols-1 items-start gap-4 lg:grid-cols-12"
         @submit.prevent="submit"
     >
-        <div class="flex flex-col gap-4 lg:col-span-7 xl:col-span-8">
+        <fieldset
+            :disabled="form.processing"
+            class="flex min-w-0 flex-col gap-4 transition-opacity disabled:pointer-events-none disabled:opacity-60 lg:col-span-7 xl:col-span-8"
+        >
             <PromptEditor
                 v-model="form.prompt"
                 :error="form.errors.prompt"
@@ -231,7 +216,7 @@ onMounted(refreshEstimate);
                 :errors="form.errors"
                 @change="validateReferenceImages"
             />
-        </div>
+        </fieldset>
 
         <div class="lg:sticky lg:top-16 lg:col-span-5 xl:col-span-4">
             <CostEstimatePanel
