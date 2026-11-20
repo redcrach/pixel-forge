@@ -177,7 +177,7 @@ The brief ranks correctness of money first, then robustness, then UX, then code 
     - Duplicates: each event id is stored once (`webhook_events`), so a re-delivered event is ignored.
     - Order: statuses only move forward (`queued` → `processing` → `succeeded`/`failed`), so a late `processing` event can't undo a `succeeded` one.
     - A webhook can arrive before our own submit request has returned the Pixelforge id. It is matched through `metadata.order_id`, our generation id, which Pixelforge echoes back.
-- **Polling is a fallback for missed webhooks.** Every 30 minutes, `PollStuckGenerations` asks Pixelforge about generations that have been quiet for 30 minutes. It handles at most 50 per run, to stay well inside the 60 requests per minute that every environment shares.
+- **Polling is a fallback for missed webhooks.** Every 30 minutes, `PollStuckGenerations` asks Pixelforge about generations that have been quiet for 15 minutes. It handles at most 50 per run, to stay well inside the 60 requests per minute that every environment shares.
 - **`/pricing` is cached** for an hour, and its last known value can still be used for up to a day.
 
 ### UX
