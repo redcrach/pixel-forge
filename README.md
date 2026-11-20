@@ -1,5 +1,10 @@
 # Pixelforge Studio
 
+[![tests](https://github.com/redcrach/pixel-forge/actions/workflows/tests.yml/badge.svg)](https://github.com/redcrach/pixel-forge/actions/workflows/tests.yml)
+[![lint](https://github.com/redcrach/pixel-forge/actions/workflows/lint.yml/badge.svg)](https://github.com/redcrach/pixel-forge/actions/workflows/lint.yml)
+
+**Live:** [pixelforge.taibouni.dev](https://pixelforge.taibouni.dev)
+
 An image generation studio on top of the Pixelforge API. Users buy credits, see the cost range before they generate, and are charged the exact provider cost plus a markup once the image succeeds. Failed generations are free. Operators get an admin panel with a daily spend, cost and profit report.
 
 **Stack:** Laravel 13 (PHP 8.4), Inertia v3 + Vue 3 + TypeScript, Tailwind v4, Filament 5 (admin), Reverb (live updates), Pest.
@@ -15,6 +20,8 @@ An image generation studio on top of the Pixelforge API. Users buy credits, see 
 - [Tests and code style](#tests-and-code-style)
 - [Deploying with Docker](#deploying-with-docker)
 - [Decisions](#decisions)
+- [What I'd do next](#what-id-do-next)
+- [AI use](#ai-use)
 
 ## Running it locally
 
@@ -148,7 +155,7 @@ The brief ranks correctness of money first, then robustness, then UX, then code 
 - **One formula, in PHP.** `CalculateProviderCost` and `ApplyMarkup` are the only place prices are computed. The cost estimate on the Generate page comes from a debounced `POST /generations/estimate`, so the browser never re-implements pricing.
 - **The markup is in basis points.** Price = provider cost × (10,000 + `PIXELFORGE_MARKUP_BPS`) / 10,000. If that leaves a fraction of a nanodollar, it is rounded up and logged.
 - **The real cost uses the generation's own rates.** Pixelforge freezes rates when a generation is created. The final charge uses those rates and the actual token usage, never the current `/pricing`.
-- **Dollars are shown with 5 decimals,** like Pixelforge's usage report, so numbers can be compared at a glance. A cost range rounds its maximum up, so it never shows less than what will be held.
+- **Dollars are shown with 9 decimals,** every nanodollar, like `cost_usd` in Pixelforge's `/v1/usage`. Nothing is rounded on screen, so any amount can be compared with Pixelforge's to the nanodollar.
 
 ### Credits
 
@@ -166,7 +173,7 @@ The brief ranks correctness of money first, then robustness, then UX, then code 
     - Permanent rejections (for example the daily limit or a validation error): the generation becomes `submission_failed` straight away and its hold is released, because waiting won't help.
     - Still failing after 15 minutes: the generation becomes `submission_failed` and its hold is released.
 - **Webhooks are verified, deduplicated and ordered.**
-    - Signature: HMAC-SHA256 over `"{timestamp}.{body}"`, with a 5-minute replay window. If the secret is missing, every webhook is rejected.
+    - Signature: HMAC-SHA256 over `"{timestamp}.{body}"`, with a 5-minute replay window. If the secret is missing, every webhook is rejected. Rejections answer with a short JSON error, not an HTML page.
     - Duplicates: each event id is stored once (`webhook_events`), so a re-delivered event is ignored.
     - Order: statuses only move forward (`queued` → `processing` → `succeeded`/`failed`), so a late `processing` event can't undo a `succeeded` one.
     - A webhook can arrive before our own submit request has returned the Pixelforge id. It is matched through `metadata.order_id`, our generation id, which Pixelforge echoes back.
@@ -187,3 +194,16 @@ The brief ranks correctness of money first, then robustness, then UX, then code 
 ### Out of scope
 
 - **Images are not copied to our own storage.** Pixelforge image URLs expire after 24 hours. The app tracks that and shows an "image expired" state instead of a broken image. Storing images before they expire was intentionally left out.
+
+## What I'd do next
+
+- **Keep the images.** Copy each finished image to object storage (S3 or Cloudflare R2) in a queued job right after the success webhook, and serve it from there, so nothing expires after 24 hours.
+- **Real payments.** Replace the simulated top-up with Stripe Checkout, adding credits only from Stripe's webhook, using the same ledger.
+- **Automatic reconciliation.** A daily scheduled job that compares each day's provider cost with `GET /v1/usage` and alerts when they differ, instead of checking by hand.
+- **Fair use of the 3 shared slots.** A per-user limit on queued generations, so one user can't hold every Pixelforge slot while others wait.
+- **End-to-end tests.** Browser tests (Dusk or Playwright) for the whole generate flow: submit, live updates, the success toast and the balance changing.
+- **Monitoring.** Error tracking and an alert when `submission_failed` generations spike, which usually means a bad key or a Pixelforge incident.
+
+## AI use
+
+I built this with Claude Code (Anthropic) as a pair programmer: for scaffolding, a first draft of code and tests, debugging and QA passes. The architecture and decisions above are mine. I reviewed every change, and the behaviour is backed by the test suite and manual testing.

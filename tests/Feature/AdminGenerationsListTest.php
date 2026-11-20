@@ -30,8 +30,8 @@ test('admins see every user\'s generations with their cost', function () {
 
     Livewire::test(ManageGenerations::class)
         ->assertCanSeeTableRecords([$generation, $someoneElses])
-        ->assertSee('$0.34368')
-        ->assertSee('$0.42959');
+        ->assertSee('$0.343675000')
+        ->assertSee('$0.429593750');
 });
 
 test('generations can be filtered by status, user and creation date', function () {

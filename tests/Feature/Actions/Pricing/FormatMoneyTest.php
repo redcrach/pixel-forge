@@ -5,7 +5,7 @@ use App\Actions\Pricing\FormatMoney;
 test('it formats nanodollars like the frontend formatter', function (int $nano, int $decimals, bool $roundUp, string $expected) {
     expect(app(FormatMoney::class)($nano, $decimals, $roundUp))->toBe($expected);
 })->with([
-    'pixelforge precision' => [343_675_000, 5, false, '$0.34368'],
+    'five decimals' => [343_675_000, 5, false, '$0.34368'],
     'rounds half up' => [92_887_500, 4, false, '$0.0929'],
     'max rounds up' => [340_018_750, 4, true, '$0.3401'],
     'max rounds up, case 2' => [447_531_250, 4, true, '$0.4476'],
@@ -15,6 +15,6 @@ test('it formats nanodollars like the frontend formatter', function (int $nano, 
     'negative' => [-74_087_500, 4, false, '-$0.0741'],
 ]);
 
-test('it uses pixelforge\'s 5 decimals by default', function () {
-    expect(app(FormatMoney::class)(343_675_000))->toBe('$0.34368');
+test('it shows every nanodollar by default, like cost_usd in pixelforge\'s usage report', function () {
+    expect(app(FormatMoney::class)(343_675_000))->toBe('$0.343675000');
 });

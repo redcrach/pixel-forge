@@ -12,7 +12,8 @@ test('a correctly signed webhook is accepted', function () use ($pingBody) {
 
 test('a webhook signed with another secret is rejected', function () use ($pingBody) {
     postPixelforgeWebhook($pingBody, pixelforgeSignature($pingBody, secret: 'whsec_someone_else'))
-        ->assertUnauthorized();
+        ->assertUnauthorized()
+        ->assertExactJson(['error' => 'Invalid Pixelforge signature.']);
 });
 
 test('a webhook whose body was changed after signing is rejected', function () use ($pingBody) {
@@ -24,11 +25,14 @@ test('a replayed webhook with an old timestamp is rejected', function () use ($p
     $timestampSixMinutesAgo = now()->subMinutes(6)->getTimestamp();
 
     postPixelforgeWebhook($pingBody, pixelforgeSignature($pingBody, $timestampSixMinutesAgo))
-        ->assertUnauthorized();
+        ->assertUnauthorized()
+        ->assertExactJson(['error' => 'Stale Pixelforge signature.']);
 });
 
 test('a webhook with a malformed signature header is rejected', function (string $signatureHeader) use ($pingBody) {
-    postPixelforgeWebhook($pingBody, $signatureHeader)->assertBadRequest();
+    postPixelforgeWebhook($pingBody, $signatureHeader)
+        ->assertBadRequest()
+        ->assertExactJson(['error' => 'Malformed Pixelforge-Signature header.']);
 })->with([
     'empty' => [''],
     'no timestamp' => ['v1='.str_repeat('a', 64)],

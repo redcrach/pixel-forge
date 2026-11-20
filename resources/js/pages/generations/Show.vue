@@ -418,7 +418,7 @@ useEcho<GenerationUpdatedPayload>(
                     >
                         <span class="text-outline">Charged exactly</span>
                         <span class="font-mono text-on-surface tabular-nums">
-                            {{ formatMoney(generation.final_price_nano, 9) }}
+                            {{ formatMoney(generation.final_price_nano) }}
                         </span>
                     </div>
                     <ul

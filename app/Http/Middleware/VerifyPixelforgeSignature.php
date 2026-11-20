@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,20 +22,28 @@ class VerifyPixelforgeSignature
         $signatureHeader = $this->parseSignatureHeader((string) $request->header('Pixelforge-Signature'));
 
         if ($signatureHeader === null) {
-            abort(400, 'Malformed Pixelforge-Signature header.');
+            return $this->reject(400, 'Malformed Pixelforge-Signature header.');
         }
 
         if ($this->isStale($signatureHeader['timestamp'])) {
-            abort(401, 'Stale Pixelforge signature.');
+            return $this->reject(401, 'Stale Pixelforge signature.');
         }
 
         $expectedSignature = hash_hmac('sha256', "{$signatureHeader['timestamp']}.{$request->getContent()}", $this->secret());
 
         if (! hash_equals($expectedSignature, $signatureHeader['signature'])) {
-            abort(401, 'Invalid Pixelforge signature.');
+            return $this->reject(401, 'Invalid Pixelforge signature.');
         }
 
         return $next($request);
+    }
+
+    /**
+     * A short JSON answer for the sender, not the HTML error page Laravel shows browsers.
+     */
+    private function reject(int $status, string $message): JsonResponse
+    {
+        return response()->json(['error' => $message], $status);
     }
 
     /**

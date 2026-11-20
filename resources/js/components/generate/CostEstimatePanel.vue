@@ -151,8 +151,9 @@ function formatTokens(line: EstimateLine): string {
                                 {{ formatTokens(estimate.lines[line.key]) }}
                             </span>
                         </div>
+                        <!-- A 9-decimal range is wide: it wraps at the dash rather than leave the panel -->
                         <span
-                            class="shrink-0 font-mono font-bold text-on-surface tabular-nums"
+                            class="min-w-0 text-right font-mono font-bold text-on-surface tabular-nums"
                         >
                             {{
                                 formatMoneyRange(

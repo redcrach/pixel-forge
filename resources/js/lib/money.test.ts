@@ -2,10 +2,15 @@ import { describe, expect, test } from 'vite-plus/test';
 import { dollarsToNano, formatMoney, formatMoneyRange } from '@/lib/money';
 
 describe('formatMoney', () => {
-    test('rounds half up to 5 decimals by default, like Pixelforge', () => {
-        expect(formatMoney(343_675_000)).toBe('$0.34368');
-        expect(formatMoney(92_887_500)).toBe('$0.09289');
-        expect(formatMoney(447_531_250)).toBe('$0.44753');
+    test('shows every nanodollar by default, like cost_usd in Pixelforge usage', () => {
+        expect(formatMoney(343_675_000)).toBe('$0.343675000');
+        expect(formatMoney(92_887_500)).toBe('$0.092887500');
+        expect(formatMoney(-74_087_500)).toBe('-$0.074087500');
+    });
+
+    test('rounds half up when asked for fewer decimals', () => {
+        expect(formatMoney(343_675_000, 5)).toBe('$0.34368');
+        expect(formatMoney(447_531_250, 5)).toBe('$0.44753');
     });
 
     test('can round up so a maximum is never shown lower than it is', () => {
@@ -20,17 +25,17 @@ describe('formatMoney', () => {
 });
 
 describe('formatMoneyRange', () => {
-    test('rounds the minimum normally and the maximum up', () => {
+    test('shows both ends to the nanodollar', () => {
         expect(formatMoneyRange(250_012_500, 340_018_750)).toBe(
-            '$0.25001 – $0.34002',
+            '$0.250012500 – $0.340018750',
         );
         expect(formatMoneyRange(340_000_000, 447_531_250)).toBe(
-            '$0.34000 – $0.44754',
+            '$0.340000000 – $0.447531250',
         );
     });
 
-    test('a single amount is shown once, rounded up', () => {
-        expect(formatMoneyRange(447_531_250, 447_531_250)).toBe('$0.44754');
+    test('a single amount is shown once', () => {
+        expect(formatMoneyRange(447_531_250, 447_531_250)).toBe('$0.447531250');
     });
 });
 

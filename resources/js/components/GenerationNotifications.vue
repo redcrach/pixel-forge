@@ -58,3 +58,6 @@ useEcho<GenerationUpdatedPayload>(
     },
 );
 </script>
+
+<!-- Renders nothing, but Vue warns about a component without a template -->
+<template><!-- generation notifications --></template>

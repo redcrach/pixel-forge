@@ -1,7 +1,7 @@
 const NANO_DIGITS = 9;
 
-/** Pixelforge shows billed dollars with 5 decimals; we show the same (FormatMoney::PIXELFORGE_DECIMALS in PHP). */
-export const MONEY_DECIMALS = 5;
+/** GET /v1/usage reports cost_usd with 9 decimals (whole nanodollars); we show the same (FormatMoney::PIXELFORGE_DECIMALS in PHP). */
+export const MONEY_DECIMALS = 9;
 
 /**
  * 'nearest' rounds half up; 'up' never shows less than the real amount (for maximums we hold).
@@ -9,7 +9,7 @@ export const MONEY_DECIMALS = 5;
 export type MoneyRounding = 'nearest' | 'up';
 
 /**
- * Format integer nanodollars (1 USD = 1,000,000,000) as dollars, e.g. 343_675_000 → "$0.34368".
+ * Format integer nanodollars (1 USD = 1,000,000,000) as dollars, e.g. 343_675_000 → "$0.343675000".
  * Uses BigInt so no floating point math touches money. For display only: charges stay exact.
  */
 export function formatMoney(
@@ -30,7 +30,7 @@ export function formatMoney(
 }
 
 /**
- * "$0.07750 – $0.10580", or a single amount when both ends are equal.
+ * "$0.077500000 – $0.105800000", or a single amount when both ends are equal.
  * The maximum is what gets held from the balance, so it is rounded up, never down.
  */
 export function formatMoneyRange(minNano: number, maxNano: number): string {

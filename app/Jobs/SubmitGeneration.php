@@ -21,6 +21,7 @@ use Illuminate\Queue\Attributes\RetryFor;
 use Illuminate\Queue\Attributes\UniqueFor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -130,11 +131,29 @@ class SubmitGeneration implements ShouldBeUnique, ShouldQueue, ShouldQueueAfterC
             PixelforgeErrorCode::OVERLOADED => $this->release($retryAfterSeconds + random_int(1, 5)),
             default => $response->serverError()
                 ? $this->release(random_int(10, 30))
-                : $this->markSubmissionFailed(
-                    (string) $response->json('error.code', 'request_failed'),
-                    (string) $response->json('error.message', __('Pixelforge rejected the generation.')),
-                ),
+                : $this->failRejectedSubmission($response, $errorCode),
         };
+    }
+
+    /**
+     * Pixelforge's own message can expose details users shouldn't see (like "invalid API key"),
+     * so it is logged for us and the user gets our wording instead.
+     */
+    private function failRejectedSubmission(Response $response, ?PixelforgeErrorCode $errorCode): void
+    {
+        Log::error('Pixelforge rejected a generation.', [
+            'generation_id' => $this->generation->id,
+            'status' => $response->status(),
+            'error' => $response->json('error') ?? $response->body(),
+        ]);
+
+        if ($errorCode === null) {
+            $this->markSubmissionFailed('request_failed', PixelforgeErrorCode::genericMessage());
+
+            return;
+        }
+
+        $this->markSubmissionFailed($errorCode->value, $errorCode->userMessage());
     }
 
     /**

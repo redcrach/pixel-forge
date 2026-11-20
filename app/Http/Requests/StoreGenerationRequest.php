@@ -9,6 +9,9 @@ use Illuminate\Validation\Rule;
 
 class StoreGenerationRequest extends FormRequest
 {
+    /**
+     * @return array<string, array<int, mixed>>
+     */
     public function rules(): array
     {
         return [

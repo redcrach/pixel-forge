@@ -38,9 +38,9 @@ test('it shows the last 14 UTC days for all users by default', function () {
 
     Livewire::test(UsageReport::class)
         ->assertOk()
-        ->assertSee('$0.37500')
-        ->assertSee('$0.30000')
-        ->assertSee('$0.07500')
+        ->assertSee('$0.375000000')
+        ->assertSee('$0.300000000')
+        ->assertSee('$0.075000000')
         ->assertSee('1,530')
         ->assertSee('12,345');
 });

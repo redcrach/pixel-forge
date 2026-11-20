@@ -99,8 +99,14 @@ function validateReferenceImages(): void {
     }
 }
 
+/**
+ * Async, so it can't be cancelled by the live props reload that the new generation's broadcast
+ * triggers (a sync reload interrupts any sync visit in flight). If it were cancelled, onSuccess
+ * would never run: the prompt would stay, Generate would unlock, and new typing would be appended.
+ */
 function submit(): void {
     form.submit({
+        async: true,
         preserveScroll: true,
         onSuccess: (page) => {
             const toast = page.flash.toast as FlashToast | undefined;
@@ -193,6 +199,7 @@ onMounted(refreshEstimate);
             <PromptEditor
                 v-model="form.prompt"
                 :error="form.errors.prompt"
+                :readonly="form.processing"
                 @change="validatePrompt"
             />
             <SizePicker v-model="form.size" :options="sizes" />

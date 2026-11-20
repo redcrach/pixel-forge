@@ -9,6 +9,7 @@ use App\Jobs\SubmitGeneration;
 use App\Models\Generation;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 beforeEach(function () {
     Http::preventStrayRequests();
@@ -97,7 +98,7 @@ test('a temporary problem is retried later after a random delay', function (arra
     'connection failure' => [fn () => ['*/generations' => Http::failedConnection()], 10, 30],
 ]);
 
-test('a permanent rejection fails the generation without retrying', function (int $status, string $errorCode) {
+test('a permanent rejection fails the generation without retrying', function (int $status, string $errorCode, string $userMessage) {
     Http::fake(pixelforgeError($status, $errorCode));
     $generation = Generation::factory()->create();
 
@@ -106,13 +107,41 @@ test('a permanent rejection fails the generation without retrying', function (in
     $generation->refresh();
     expect($generation->status)->toBe(GenerationStatus::SUBMISSION_FAILED)
         ->and($generation->completed_at)->not->toBeNull()
-        ->and($generation->meta_data['error'])->toBe(['code' => $errorCode, 'message' => "Pixelforge says {$errorCode}."]);
+        ->and($generation->meta_data['error'])->toBe(['code' => $errorCode, 'message' => $userMessage]);
 })->with([
-    'daily limit' => [429, 'daily_limit_exceeded'],
-    'blocked prompt' => [400, 'content_policy_violation'],
-    'invalid request' => [422, 'validation_failed'],
-    'idempotency key reused' => [409, 'idempotency_key_reused'],
+    'daily limit' => [429, 'daily_limit_exceeded', 'The daily generation limit has been reached. Please try again tomorrow.'],
+    'blocked prompt' => [400, 'content_policy_violation', 'This prompt was blocked by the content policy. Try rewording it.'],
+    'invalid request' => [422, 'validation_failed', 'Something went wrong on our side, so the image could not be generated.'],
+    'idempotency key reused' => [409, 'idempotency_key_reused', 'Something went wrong on our side, so the image could not be generated.'],
 ]);
+
+test('pixelforge\'s own rejection message is logged, never shown to the user', function () {
+    Http::fake(pixelforgeError(401, 'invalid_api_key'));
+    Log::spy();
+    $generation = Generation::factory()->create();
+
+    runSubmitGeneration($generation);
+
+    expect($generation->refresh()->meta_data['error'])->toBe([
+        'code' => 'invalid_api_key',
+        'message' => 'Something went wrong on our side, so the image could not be generated.',
+    ]);
+    Log::shouldHaveReceived('error')->withArgs(fn (string $message, array $context): bool => $context['generation_id'] === $generation->id
+        && $context['status'] === 401
+        && $context['error']['message'] === 'Pixelforge says invalid_api_key.');
+});
+
+test('an unknown rejection gets the generic message', function () {
+    Http::fake(['*/generations' => Http::response(['error' => ['code' => 'something_new', 'message' => 'Internal detail.']], 400)]);
+    $generation = Generation::factory()->create();
+
+    runSubmitGeneration($generation);
+
+    expect($generation->refresh()->meta_data['error'])->toBe([
+        'code' => 'request_failed',
+        'message' => 'Something went wrong on our side, so the image could not be generated.',
+    ]);
+});
 
 test('running out of retries fails a pending generation', function () {
     $generation = Generation::factory()->create();

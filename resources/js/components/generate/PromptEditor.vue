@@ -5,6 +5,8 @@ import SectionLabel from '@/components/SectionLabel.vue';
 
 defineProps<{
     error?: string;
+    /** Locked while the prompt is being submitted, so nothing typed meanwhile is lost or sent twice. */
+    readonly?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -63,7 +65,8 @@ const characterCount = computed(() => [...prompt.value].length);
                     id="prompt"
                     v-model="prompt"
                     rows="5"
-                    class="w-full resize-none bg-transparent font-mono text-base leading-relaxed text-primary caret-primary placeholder:text-outline/60 focus:outline-none sm:text-sm"
+                    :readonly="readonly"
+                    class="w-full resize-none bg-transparent font-mono text-base leading-relaxed text-primary caret-primary placeholder:text-outline/60 read-only:opacity-60 focus:outline-none sm:text-sm"
                     placeholder="Describe the image you want to generate..."
                     @change="emit('change')"
                 />

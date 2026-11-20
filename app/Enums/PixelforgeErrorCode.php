@@ -15,4 +15,22 @@ enum PixelforgeErrorCode: string
     case CONCURRENCY_LIMIT_EXCEEDED = 'concurrency_limit_exceeded';
     case DAILY_LIMIT_EXCEEDED = 'daily_limit_exceeded';
     case OVERLOADED = 'overloaded';
+
+    /**
+     * What we tell the user when Pixelforge refuses a generation for good. Only the reasons a user can act
+     * on get their own message; anything else (a bad API key, a bug in our request) is our problem.
+     */
+    public function userMessage(): string
+    {
+        return match ($this) {
+            self::CONTENT_POLICY_VIOLATION => __('This prompt was blocked by the content policy. Try rewording it.'),
+            self::DAILY_LIMIT_EXCEEDED => __('The daily generation limit has been reached. Please try again tomorrow.'),
+            default => self::genericMessage(),
+        };
+    }
+
+    public static function genericMessage(): string
+    {
+        return __('Something went wrong on our side, so the image could not be generated.');
+    }
 }
