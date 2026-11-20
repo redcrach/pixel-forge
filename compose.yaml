@@ -94,7 +94,15 @@ services:
     queue:
         <<: *php
         # queue:listen reloads your code for every job; production runs queue:work
-        command: ['php', 'artisan', 'queue:listen', '--queue=generations,default', '--tries=1', '--timeout=0']
+        command:
+            [
+                'php',
+                'artisan',
+                'queue:listen',
+                '--queue=generations,default',
+                '--tries=1',
+                '--timeout=0',
+            ]
         stop_signal: SIGTERM
         # healthcheck-queue looks for queue:work, which queue:listen only starts between jobs
         healthcheck:
@@ -110,7 +118,8 @@ services:
 
     reverb:
         <<: *php
-        command: ['php', 'artisan', 'reverb:start', '--host=0.0.0.0', '--port=8080']
+        command:
+            ['php', 'artisan', 'reverb:start', '--host=0.0.0.0', '--port=8080']
         stop_signal: SIGTERM
         healthcheck:
             test: ['CMD', 'healthcheck-reverb']
